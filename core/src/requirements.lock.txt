@@ -1,7 +1,7 @@
 colorama==0.4.6
 et_xmlfile==2.0.0
 iniconfig==2.3.0
-numpy==2.4.6
+numpy==2.5.1
 openpyxl==3.1.5
 packaging==26.2
 pandas==3.0.3
