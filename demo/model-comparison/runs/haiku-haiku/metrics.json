@@ -1,0 +1,70 @@
+{
+  "config": "haiku-haiku",
+  "author_model": "claude-haiku-4-5-20251001",
+  "judge_model": "claude-haiku-4-5-20251001",
+  "source": {
+    "file": "zabapgit_standalone.txt",
+    "physical_lines": 152996,
+    "non_blank_lines": 126501,
+    "bytes": 5063858,
+    "abapgit_version": "1.133.0",
+    "downloaded": "2026-07-02"
+  },
+  "l1": {
+    "agent_runs": [
+      {"role": "author", "model": "haiku", "attempt": 1, "tokens": 74753, "tool_uses": 21, "wall_seconds": 171, "started": "2026-07-02T21:43:45+02:00", "outcome": "validation_rejected (4 errors: 3 bugs without twin claim, empty output_mapping fields)"},
+      {"role": "author-fix", "model": "haiku", "attempt": 1, "tokens": null, "tokens_note": "resumed session, not separately metered (est. ~20k)", "wall_seconds": null, "outcome": "submitted (20 claims, 33 deps)"},
+      {"role": "deepcheck", "model": "haiku", "round": 1, "tokens": 61119, "tool_uses": 19, "wall_seconds": 135, "outcome": "REVERT (CL-012 count wrong: author said 31 COMMITs / no ROLLBACK; judge counted 30 + 1 ROLLBACK WORK at line 65618)"},
+      {"role": "author", "model": "haiku", "attempt": 2, "tokens": 67920, "tool_uses": 11, "wall_seconds": 162, "outcome": "submitted (corrected counts + extended IN-* evidence)"},
+      {"role": "deepcheck", "model": "haiku", "round": 2, "tokens": 69552, "tool_uses": 24, "wall_seconds": 177, "outcome": "BLOCKED (coverage 52/53: one judgeable item missing from the verdict; also mis-counted SELECT * as 63 vs 70)"},
+      {"role": "deepcheck", "model": "haiku", "round": 3, "tokens": 70773, "tool_uses": 27, "wall_seconds": 162, "outcome": "ACCEPT (53/53 coverage, all claims supported, 33/33 deps confirmed)"}
+    ],
+    "tokens_total_measured": 344117,
+    "gate": {
+      "verdict": "ACCEPT",
+      "claims_total": 20,
+      "supported": 20,
+      "partially_supported": 0,
+      "rejected": 0,
+      "deps_total": 33,
+      "deps_confirmed": 33
+    },
+    "applied": true,
+    "author_attempts": 2,
+    "author_validation_retries": 1,
+    "judge_reruns": 2,
+    "wall_clock_total_minutes": 26,
+    "notes": [
+      "The adversarial gate caught a real author error on round 1: a wrong COMMIT count and a missed ROLLBACK WORK statement.",
+      "Judge count variance across rounds: round 1 accepted 'SELECT * = 70', round 2 counted 63 (different grep pattern), round 3 re-verified 70. Count claims are the hardest class for haiku on a 153k-line file.",
+      "Round 2 BLOCKED for incomplete verdict coverage (52/53) - the fail-closed gate rejected it without spending an author retry."
+    ]
+  },
+  "l2": {
+    "agent_runs": [
+      {"role": "researcher", "model": "haiku", "tokens": 52280, "tool_uses": 19, "wall_seconds": 136, "outcome": "submitted (9 gaps: 6 auto-answered via raw-docs incl. PURPOSE+TRIGGER, 3 open)"},
+      {"role": "functional-author", "model": "haiku", "tokens": 53016, "tool_uses": 10, "wall_seconds": 104, "outcome": "artifacts written but BOTH failed yaml.safe_load (unquoted scalars containing ': ')"},
+      {"role": "functional-author-fix", "model": "haiku", "tokens": 40782, "tool_uses": 8, "wall_seconds": 69, "outcome": "YAML syntax fixed; functional OK, process still invalid (sections not a mapping, 2 claims citing wiki/ - root not citable)"},
+      {"role": "functional-author-fix", "model": "haiku", "tokens": 48055, "tool_uses": 13, "wall_seconds": 127, "outcome": "process restructured, PRC-004 downgraded to inferred, PRC-005 re-anchored; submitted"},
+      {"role": "functional-gate", "model": "haiku", "target": "functional", "tokens": 51187, "tool_uses": 8, "wall_seconds": 98, "outcome": "ACCEPT (18/18 coverage: 15 supported, 2 partial, 1 not_supported on the author's own [UNVERIFIABLE] claim)"},
+      {"role": "functional-gate", "model": "haiku", "target": "process", "round": 1, "tokens": 58763, "tool_uses": 8, "wall_seconds": 147, "outcome": "REVERT (PRC-002 PURPOSE not_supported high: citation covered only installation, not auth/git-ops/modes)"},
+      {"role": "functional-author-fix", "model": "haiku", "tokens": 42028, "tool_uses": 16, "wall_seconds": 82, "outcome": "PRC-002 re-anchored with 4 evidence entries; resubmitted"},
+      {"role": "functional-gate", "model": "haiku", "target": "process", "round": 2, "tokens": 53309, "tool_uses": 7, "wall_seconds": 105, "outcome": "ACCEPT (11/11 coverage)"}
+    ],
+    "tokens_total_measured": 399420,
+    "gaps": {"total": 9, "auto_answered": 6, "open_after_research": 3, "load_bearing_open": 2, "questionnaire_questions": 3},
+    "gate": {
+      "functional": {"verdict": "ACCEPT", "claims_total": 18, "supported": 15, "partially_supported": 2, "not_supported": 1},
+      "process": {"verdict": "ACCEPT_after_1_revert", "claims_total": 11}
+    },
+    "promoted": true,
+    "author_fix_passes": 3,
+    "gate_reruns": 1,
+    "notes": [
+      "PURPOSE and TRIGGER auto-closed as [VERIFIED: raw-docs] from the abapGit docs snapshots - the design that makes autonomous L2 possible without expert answers.",
+      "The haiku functional author needed 3 fix passes: broken YAML syntax (unquoted colons), wrong section structure, and non-citable wiki/ evidence roots - format discipline is haiku's weakest area.",
+      "The process gate round 1 caught a real citation-coverage error on a PURPOSE claim (fail-closed REVERT), fixed with 4-way evidence re-anchoring."
+    ]
+  },
+  "page": {"lines": 437, "token_estimate": 7710, "raw_token_estimate": 1227716, "saving_ratio_vs_raw": 0.9937, "compression_factor": 159.2}
+}

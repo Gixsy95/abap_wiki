@@ -1,0 +1,27 @@
+Table MARD - Storage Location Data for Material
+SYNTHETIC example (abap_wiki template) - data dictionary extract.
+
+Field        DataType    Len.   Key     Description
+-----------  ----------  -----  ------  --------------------------------------------
+MANDT        CLNT        3      X       Client
+MATNR        CHAR        18     X       Material number
+WERKS        CHAR        4      X       Plant
+LGORT        CHAR        4      X       Storage location
+LVORM        CHAR        1              Deletion flag at storage-location level
+LABST        QUAN        13             Unrestricted-use stock (valuated)
+UMLME        QUAN        13             Stock in transfer (storage location to storage location)
+INSME        QUAN        13             Stock in quality inspection
+EINME        QUAN        13             Total blocked goods-receipt stock
+SPEME        QUAN        13             Blocked stock
+RETME        QUAN        13             Blocked returns stock
+VMLAB        QUAN        13             Unrestricted-use stock of the previous period
+VMUML        QUAN        13             Stock in transfer of the previous period
+KZILL        QUAN        13             Stock in quality inspection (inventory adjustment)
+DLINL        DATS        8              Date of last inventory posting
+PLIFZ        DEC         3              Planned delivery time in days
+
+Functional notes:
+- The stock available for the reallocation calculation is LABST (valuated
+  unrestricted-use stock). The other stock types (UMLME, INSME, SPEME) are NOT available.
+- Logical key: MATNR + WERKS + LGORT. A material has one MARD row per storage location.
+- For the minimum stock see MARC-MINBE (plant level, not storage location).

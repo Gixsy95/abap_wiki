@@ -1,0 +1,58 @@
+name: Bug report
+description: Something in the engine, pipeline, or docs is broken
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. Never paste real SAP data, object names from your
+        system, hostnames, or credentials - reproduce with the bundled demo
+        dataset (`examples/demo-system/`) whenever possible.
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      placeholder: Windows 11 / Ubuntu 24.04 / macOS 15
+    validations:
+      required: true
+  - type: input
+    id: python
+    attributes:
+      label: Python version
+      placeholder: "3.12.10"
+    validations:
+      required: true
+  - type: dropdown
+    id: runner
+    attributes:
+      label: Agent runner (if the issue involves L1/L2)
+      options:
+        - none / not relevant (deterministic step)
+        - Claude Code
+        - Codex CLI
+        - other (specify in the description)
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: Exact commands, ideally against the demo dataset.
+      placeholder: |
+        1. scripts/bootstrap.ps1
+        2. scripts/demo.ps1
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected vs actual
+    validations:
+      required: true
+  - type: textarea
+    id: doctor
+    attributes:
+      label: doctor.py output
+      description: Paste the output of `core/src/tools/doctor.py` (run with your virtualenv active; redact anything sensitive).
+      render: text

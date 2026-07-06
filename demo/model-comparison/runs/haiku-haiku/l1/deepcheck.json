@@ -1,0 +1,611 @@
+{
+  "object_slug": "program-ZABAPGIT_STANDALONE",
+  "model": "sonnet",
+  "contract_version": "abap-deepcheck/1",
+  "verdicts": [
+    {
+      "claim_id": "CL-001",
+      "class": "behavior",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Line 2058 shows CONSTANTS version TYPE string VALUE 'v1.1.13' within the deferred interface definition section. The program header (lines 1-3) confirms it is the abapGit standalone program."
+    },
+    {
+      "claim_id": "CL-002",
+      "class": "behavior",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 29-235 contain 207 deferred declarations (all 207 lines are DEFERRED statements for both INTERFACE and CLASS objects). This exceeds the ~100+ claim, proving the presence of multiple deferred class/interface declarations."
+    },
+    {
+      "claim_id": "CL-003",
+      "class": "behavior",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 152827-152846 show IF sy-batch = abap_true with zcl_abapgit_background=>run(), ELSE with zcl_abapgit_ui_factory GUI routing. This confirms two distinct execution modes."
+    },
+    {
+      "claim_id": "CL-004",
+      "class": "control-flow",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 152967-152972 show INITIALIZATION with PERFORM adjust_toolbar and lcl_password_dialog=>on_screen_init(), START-OF-SELECTION with PERFORM run. FORM run (152802-152820) contains authorization check and PERFORM open_gui at line 152813."
+    },
+    {
+      "claim_id": "CL-005",
+      "class": "behavior",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 152802-152820: FORM run contains TRY block with authorization check (line 152808), zcl_abapgit_migrations=>run() (line 152812), and PERFORM open_gui (line 152813), followed by CATCH blocks for exception handling."
+    },
+    {
+      "claim_id": "CL-006",
+      "class": "behavior",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 152814-152817 show CATCH zcx_abapgit_exception with MESSAGE TYPE 'E' at line 152815 and CATCH zcx_abapgit_not_found with MESSAGE TYPE 'E' at line 152817."
+    },
+    {
+      "claim_id": "CL-007",
+      "class": "behavior",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 152822-152848: FORM open_gui routes to batch via zcl_abapgit_background=>run() (line 152828) or interactive GUI via zcl_abapgit_ui_factory=>get_gui()->go_home() (line 152843), then CALL SELECTION-SCREEN 1001 (line 152844). Lines 152376-152378 confirm screen 1001 is a dummy screen."
+    },
+    {
+      "claim_id": "CL-008",
+      "class": "behavior",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 152850-152876: FORM output excludes CRET and SPOS (APPEND statements at lines 152857-152858) and applies status via RS_SET_SELSCREEN_STATUS CALL FUNCTION at lines 152860-152864 with p_exclude table."
+    },
+    {
+      "claim_id": "CL-009",
+      "class": "behavior",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 152878-152902: FORM exit checks IF sy-dynnr <> 1001 RETURN (lines 152885-152886), handles CASE sy-ucomm WHEN 'CBAC' OR 'CCAN' (line 152891) with back(iv_graceful=abap_true) conditional free(), and catches zcx_abapgit_exception with MESSAGE TYPE 'S' DISPLAY LIKE 'E' (line 152899)."
+    },
+    {
+      "claim_id": "CL-010",
+      "class": "behavior",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 152904-152965: FORM adjust_toolbar calls RPY_DYNPRO_READ (lines 152912-152926) to read header, toggles no_toolbar flag based on is_variant_maintenance() result (lines 152933-152934), checks if change needed (line 152936), then calls RPY_DYNPRO_INSERT (lines 152942-152960) to rewrite. Errors are deliberately ignored (lines 152927-152928, 152961-152963)."
+    },
+    {
+      "claim_id": "CL-011",
+      "class": "count",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Grep verification: 70 occurrences of 'SELECT *' found in the entire program (lines 1-152996). Zero occurrences of 'PACKAGE SIZE' found. Count is exact."
+    },
+    {
+      "claim_id": "CL-012",
+      "class": "count",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Grep verification: 30 total occurrences of 'COMMIT WORK' (all variations). Of these, 20 contain 'AND WAIT' (COMMIT WORK AND WAIT) and 10 are plain 'COMMIT WORK'. Line 65618 confirmed to contain 'ROLLBACK WORK' and grep shows exactly 1 ROLLBACK WORK in the program."
+    },
+    {
+      "claim_id": "CL-013",
+      "class": "behavior",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 152814-152817: CATCH zcx_abapgit_exception INTO lx_exception with MESSAGE lx_exception TYPE 'E' (line 152815), and CATCH zcx_abapgit_not_found INTO lx_not_found with MESSAGE lx_not_found TYPE 'E' (line 152817)."
+    },
+    {
+      "claim_id": "CL-014",
+      "class": "behavior",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 152808-152810: IF zcl_abapgit_auth=>is_allowed(...) = abap_false, then zcx_abapgit_exception=>raise() is called unconditionally (line 152809). No fallback or bypass shown."
+    },
+    {
+      "claim_id": "CL-015",
+      "class": "bug-candidate",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 152832-152838: GET PARAMETER ID 'DBT' FIELD lv_mode (line 152832, hardcoded literal 'DBT'), CASE lv_mode WHEN 'ZABAPGIT' (line 152834, hardcoded literal 'ZABAPGIT'). No constant definition and no logging visible in the cited range."
+    },
+    {
+      "claim_id": "CL-017",
+      "class": "bug-candidate",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 73200-73203: METHOD list contains 'SELECT * FROM (c_tabname) INTO TABLE rt_content' with no WHERE clause visible. The entire table is read on every call."
+    },
+    {
+      "claim_id": "IN-001",
+      "class": "data-flow",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Line 152393 defines PARAMETERS p_url TYPE string. Line 152453 shows p_url = iv_repo_url assignment in popup METHOD. Line 152495 shows p_url screen field manipulation in on_screen_output. Flow from parameter to method argument is confirmed."
+    },
+    {
+      "claim_id": "IN-002",
+      "class": "data-flow",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Line 152398 defines PARAMETERS p_user TYPE string. Line 152454 shows p_user = cv_user in popup METHOD. Line 152521 shows IF p_user IS NOT INITIAL read in on_screen_output. Flow from parameter to method argument and back is confirmed."
+    },
+    {
+      "claim_id": "IN-003",
+      "class": "data-flow",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Line 152402 defines PARAMETERS p_pass TYPE c. Line 152452 shows CLEAR p_pass in popup METHOD. Line 152471 shows cv_pass = p_pass assignment. Line 152476 shows CLEAR p_pass to reset. Flow is confirmed."
+    },
+    {
+      "claim_id": "IN-004",
+      "class": "data-flow",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Line 152407 defines PARAMETERS p_cmnt TYPE c. Line 152457 shows p_cmnt = 'Press F1 for Help' static text assignment. Lines 152501-152504 show p_cmnt screen field modification in on_screen_output. Flow is confirmed."
+    }
+  ],
+  "dependency_verdicts": [
+    {
+      "dep_id": "DEP-001",
+      "name": "zcl_abapgit_auth",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 152808: IF zcl_abapgit_auth=>is_allowed(...) is an active method call, not a comment or string. Type is class (method invocation). Namespace is custom (z prefix)."
+    },
+    {
+      "dep_id": "DEP-002",
+      "name": "zcl_abapgit_migrations",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 152812: zcl_abapgit_migrations=>run() is an active static method call. Type is class. Namespace is custom."
+    },
+    {
+      "dep_id": "DEP-003",
+      "name": "zcl_abapgit_background",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 152828: zcl_abapgit_background=>run() is an active static method call within the batch mode IF branch. Type is class. Namespace is custom."
+    },
+    {
+      "dep_id": "DEP-004",
+      "name": "zcl_abapgit_ui_factory",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 152843: zcl_abapgit_ui_factory=>get_gui()->go_home() is an active chained method call. Line 152892 shows ->back() and line 152893 shows ->free() also use the same factory. Type is class. Namespace is custom."
+    },
+    {
+      "dep_id": "DEP-005",
+      "name": "zcl_abapgit_html",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 152840: zcl_abapgit_html=>set_debug_mode() is an active static method call. Type is class. Namespace is custom."
+    },
+    {
+      "dep_id": "DEP-006",
+      "name": "zcl_abapgit_factory",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 152933: zcl_abapgit_factory=>get_environment()->is_variant_maintenance() is an active chained static method call. Type is class. Namespace is custom."
+    },
+    {
+      "dep_id": "DEP-007",
+      "name": "zcx_abapgit_exception",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 152814: CATCH zcx_abapgit_exception INTO lx_exception is an active exception handler. Type is exception class. Namespace is custom."
+    },
+    {
+      "dep_id": "DEP-008",
+      "name": "zcx_abapgit_not_found",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 152816: CATCH zcx_abapgit_not_found INTO lx_not_found is an active exception handler. Type is exception class. Namespace is custom."
+    },
+    {
+      "dep_id": "DEP-009",
+      "name": "zif_abapgit_auth",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 152808: zif_abapgit_auth=>c_authorization-startup accesses interface constant. Type is interface. Namespace is custom."
+    },
+    {
+      "dep_id": "DEP-010",
+      "name": "zif_abapgit_definitions",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 152835 and 152837: zif_abapgit_definitions=>c_action-go_db and -go_home access interface constants. Type is interface. Namespace is custom."
+    },
+    {
+      "dep_id": "DEP-011",
+      "name": "cvers",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 70778: SELECT * FROM cvers INTO TABLE rt_cvers ORDER BY PRIMARY KEY is an active SELECT statement reading the standard table cvers. Type is table. Namespace is standard (no prefix)."
+    },
+    {
+      "dep_id": "DEP-012",
+      "name": "dokil",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 79459: SELECT * FROM dokil INTO TABLE lt_dokil is an active SELECT statement. Type is table. Namespace is standard."
+    },
+    {
+      "dep_id": "DEP-013",
+      "name": "objsl",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 75630: SELECT * FROM objsl INTO CORRESPONDING FIELDS OF TABLE is an active SELECT statement. Type is table. Namespace is standard."
+    },
+    {
+      "dep_id": "DEP-014",
+      "name": "objm",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 75645: SELECT * FROM objm INTO TABLE mt_object_method is an active SELECT statement. Type is table. Namespace is standard."
+    },
+    {
+      "dep_id": "DEP-015",
+      "name": "DOCU_GET",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 911: CALL FUNCTION 'DOCU_GET' is an active function module call. Type is function-module. Namespace is standard (SAP)."
+    },
+    {
+      "dep_id": "DEP-016",
+      "name": "CONVERT_ITF_TO_STREAM_TEXT",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 1012: CALL FUNCTION 'CONVERT_ITF_TO_STREAM_TEXT' is an active function module call. Type is function-module. Namespace is standard."
+    },
+    {
+      "dep_id": "DEP-017",
+      "name": "SYSTEM_CALLSTACK",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 1104: CALL FUNCTION 'SYSTEM_CALLSTACK' is an active function module call. Type is function-module. Namespace is standard."
+    },
+    {
+      "dep_id": "DEP-018",
+      "name": "LVC_FILTER_APPLY",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 38721: CALL FUNCTION 'LVC_FILTER_APPLY' is an active function module call for ALV filtering. Type is function-module. Namespace is standard."
+    },
+    {
+      "dep_id": "DEP-019",
+      "name": "POPUP_TO_DECIDE_LIST",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 38785: CALL FUNCTION 'POPUP_TO_DECIDE_LIST' is an active function module call. Type is function-module. Namespace is standard."
+    },
+    {
+      "dep_id": "DEP-020",
+      "name": "RS_CUA_STATUS_CHECK",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 38950: CALL FUNCTION 'RS_CUA_STATUS_CHECK' is an active function module call. Type is function-module. Namespace is standard."
+    },
+    {
+      "dep_id": "DEP-021",
+      "name": "F4IF_FIELD_VALUE_REQUEST",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 39228: CALL FUNCTION 'F4IF_FIELD_VALUE_REQUEST' is an active function module call for F4 help. Type is function-module. Namespace is standard."
+    },
+    {
+      "dep_id": "DEP-022",
+      "name": "TRINT_SELECT_REQUESTS",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 39426: CALL FUNCTION 'TRINT_SELECT_REQUESTS' is an active function module call. Type is function-module. Namespace is standard."
+    },
+    {
+      "dep_id": "DEP-023",
+      "name": "POPUP_TO_CONFIRM",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 39485: CALL FUNCTION 'POPUP_TO_CONFIRM' is an active function module call. Type is function-module. Namespace is standard."
+    },
+    {
+      "dep_id": "DEP-024",
+      "name": "TR_F4_REQUESTS",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 39649: CALL FUNCTION 'TR_F4_REQUESTS' is an active function module call. Type is function-module. Namespace is standard."
+    },
+    {
+      "dep_id": "DEP-025",
+      "name": "GUI_IS_AVAILABLE",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 40350: CALL FUNCTION 'GUI_IS_AVAILABLE' is an active function module call. Type is function-module. Namespace is standard."
+    },
+    {
+      "dep_id": "DEP-026",
+      "name": "ABAP4_CALL_TRANSACTION",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 41641: CALL FUNCTION 'ABAP4_CALL_TRANSACTION' is an active function module call. Type is function-module. Namespace is standard."
+    },
+    {
+      "dep_id": "DEP-027",
+      "name": "BAPI_USER_DISPLAY",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 42009: CALL FUNCTION 'BAPI_USER_DISPLAY' is an active function module call. Type is function-module. Namespace is standard."
+    },
+    {
+      "dep_id": "DEP-028",
+      "name": "SAPGUI_PROGRESS_INDICATOR",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 42415: CALL FUNCTION 'SAPGUI_PROGRESS_INDICATOR' is an active function module call. Type is function-module. Namespace is standard."
+    },
+    {
+      "dep_id": "DEP-029",
+      "name": "TR_OBJECT_TABLE",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 47575: CALL FUNCTION 'TR_OBJECT_TABLE' is an active function module call. Type is function-module. Namespace is standard."
+    },
+    {
+      "dep_id": "DEP-030",
+      "name": "HELP_START",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 57200: CALL FUNCTION 'HELP_START' is an active function module call. Type is function-module. Namespace is standard."
+    },
+    {
+      "dep_id": "DEP-031",
+      "name": "RS_SET_SELSCREEN_STATUS",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 152860: CALL FUNCTION 'RS_SET_SELSCREEN_STATUS' is an active function module call in FORM output. Type is function-module. Namespace is standard."
+    },
+    {
+      "dep_id": "DEP-032",
+      "name": "RPY_DYNPRO_READ",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 152912: CALL FUNCTION 'RPY_DYNPRO_READ' is an active function module call in FORM adjust_toolbar. Type is function-module. Namespace is standard."
+    },
+    {
+      "dep_id": "DEP-033",
+      "name": "RPY_DYNPRO_INSERT",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 152942: CALL FUNCTION 'RPY_DYNPRO_INSERT' is an active function module call in FORM adjust_toolbar. Type is function-module. Namespace is standard."
+    }
+  ]
+}

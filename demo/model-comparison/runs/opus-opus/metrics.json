@@ -1,0 +1,65 @@
+{
+  "config": "opus-opus",
+  "author_model": "claude-opus-4-8",
+  "judge_model": "claude-opus-4-8",
+  "source": {
+    "file": "zabapgit_standalone.txt",
+    "physical_lines": 152996,
+    "non_blank_lines": 126501,
+    "bytes": 5063858,
+    "abapgit_version": "1.133.0",
+    "downloaded": "2026-07-02"
+  },
+  "l1": {
+    "agent_runs": [
+      {"role": "author", "model": "opus", "attempt": 1, "tokens": 125112, "tool_uses": 28, "wall_seconds": 582, "started": "2026-07-02T23:30:43+02:00", "outcome": "validation_rejected (1 error: output_mapping no-output channel with empty fields)"},
+      {"role": "author-fix", "model": "opus", "attempt": 1, "tokens": 55494, "tool_uses": 2, "wall_seconds": 22, "outcome": "restructured output_mapping to []; submitted (19 claims, 14 deps)"},
+      {"role": "deepcheck", "model": "opus", "round": 1, "tokens": 85899, "tool_uses": 15, "wall_seconds": 398, "outcome": "ACCEPT (33/33 coverage: 18 supported, 1 partially_supported medium, 14/14 deps confirmed)"}
+    ],
+    "tokens_total_measured": 266505,
+    "gate": {
+      "verdict": "ACCEPT",
+      "claims_total": 19,
+      "supported": 18,
+      "partially_supported": 1,
+      "rejected": 0,
+      "deps_total": 14,
+      "deps_confirmed": 14
+    },
+    "applied": true,
+    "author_attempts": 1,
+    "author_validation_retries": 1,
+    "judge_reruns": 0,
+    "wall_clock_total_minutes": 25,
+    "notes": [
+      "First-round ACCEPT: no gate REVERT, no BLOCKED. Cheapest same-model config after haiku-haiku, with far less churn.",
+      "The opus author was the only one to identify the custom persistence table ZABAPGIT as a dependency, and correctly excluded all zcl_abapgit_*/zif_abapgit_* names as self-references (defined in the same file).",
+      "The opus judge verified beyond the cited evidence (e.g. confirmed FORM password_popup attribution by reading the surrounding code) instead of blindly rejecting out-of-range wording - fewer false-positive REVERTs than the sonnet judge on comparable claims.",
+      "The author avoided fragile whole-file exact counts, so no count-claim disputes arose (the class that caused REVERTs in both sonnet configs and haiku-haiku)."
+    ]
+  },
+  "l2": {
+    "agent_runs": [
+      {"role": "researcher", "model": "opus", "tokens": 112922, "tool_uses": 24, "wall_seconds": 700, "outcome": "submitted (11 gaps: 9 auto-answered, 2 open - correctly refused to auto-close owner-stated facts because owner input is not an auto-research source)"},
+      {"role": "owner-answer", "model": null, "tokens": 0, "outcome": "questionnaire (2 questions) -> owner's statement captured via capture-answer: 2 gaps answered (governance PURPOSE, scheduling TRIGGER)"},
+      {"role": "functional-author", "model": "opus", "tokens": 91768, "tool_uses": 16, "wall_seconds": 417, "outcome": "submitted first try (15 FUN + 7 PRC claims), self-validated"},
+      {"role": "functional-gate", "model": "opus", "target": "functional", "tokens": 71786, "tool_uses": 11, "wall_seconds": 229, "outcome": "ACCEPT (15/15 all supported, 1 at medium; zero contradictions)"},
+      {"role": "functional-gate", "model": "opus", "target": "process", "tokens": 64456, "tool_uses": 12, "wall_seconds": 174, "outcome": "ACCEPT (7/7: 6 supported, 1 rule-capped partial)"}
+    ],
+    "tokens_total_measured": 340932,
+    "gaps": {"total": 11, "auto_answered": 9, "expert_answered": 2, "open_after_research": 2, "load_bearing_open_final": 0, "questionnaire_questions": 2},
+    "gate": {
+      "functional": {"verdict": "ACCEPT", "claims_total": 15, "supported": 15, "partially_supported": 0, "not_supported": 0},
+      "process": {"verdict": "ACCEPT", "claims_total": 7}
+    },
+    "promoted": true,
+    "author_fix_passes": 0,
+    "gate_reruns": 0,
+    "notes": [
+      "The opus researcher showed the sharpest source-discipline of the benchmark: given the owner's statement upfront, it still kept those 2 gaps open because owner input is not one of the four auto-research sources - it staged them for the formal capture-answer instead of laundering them into raw-docs.",
+      "Zero load-bearing gaps open at the end; every phase first-try; the only medium-confidence item was a tight-entailment judgment call.",
+      "Methodology note: the owner's deployment statement was provided in the researcher prompt for the opus and fable configs (it had emerged during the sonnet configs' questionnaire loop)."
+    ]
+  },
+  "page": {"lines": 342, "token_estimate": 6916, "raw_token_estimate": 1227716, "saving_ratio_vs_raw": 0.9944, "compression_factor": 177.5}
+}

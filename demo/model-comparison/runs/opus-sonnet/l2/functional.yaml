@@ -1,0 +1,314 @@
+slice: abapgit-standalone-demo
+sap_name: ZABAPGIT_STANDALONE
+sap_type: program
+
+functional_sections:
+  functional_summary: >
+    ZABAPGIT_STANDALONE is the abapGit standalone distribution: the complete open-source
+    abapGit Git client for ABAP, flattened by abapmerge into a single report so it can be
+    installed and run from transaction SE38 without abapGit already being present.
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-standalone-install-and-trigger.md:14-22]
+    It is a cross-cutting developer tool (version control + transport-independent code
+    exchange), not a <COMPANY> FI/MM/SD/CO business process.
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-abapgit-purpose-and-actor.md:22-26]
+    In this system it is a synthetic demo/benchmark fixture that was never installed
+    productively and never executed.
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-deployment-context-owner.md:17-26]
+
+  business_purpose: |
+    abapGit is a Git client for ABAP written in ABAP. Its business value is to put ABAP
+    artifacts (classes, programs, DDIC, etc.) under version control and to keep the
+    repositories in plain text (unlike binary transport files), which enables code review
+    before changes are imported into a target system.
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-abapgit-purpose-and-actor.md:14-20]
+    This particular object is the "standalone" packaging of that tool: the whole abapGit
+    codebase merged into one report so abapGit can be bootstrap-installed as a single
+    object.
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-standalone-install-and-trigger.md:14-22]
+    It is a cross-cutting developer tool, not part of any <COMPANY> FI/MM/SD/CO business
+    process.
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-abapgit-purpose-and-actor.md:22-26]
+    In THIS system there is no business process behind it: per the slice owner the object
+    was never installed productively, was never executed, and its ZABAPGIT package and
+    TADIR row are a synthetic demo fixture created for a public benchmark of the wiki
+    pipeline.
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-deployment-context-owner.md:17-26]
+    This is consistent with the L1 code analysis, which proves the object has no internal
+    callers (used_by: []) and is not wired into any <COMPANY> flow.
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-l1-code-analysis-facts.md:21-24]
+
+  trigger_actors: |
+    The standalone report is launched interactively by a developer via transaction SE38;
+    the official documentation describes no scheduled-job trigger.
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-standalone-install-and-trigger.md:24-28]
+    A headless batch path also exists: when sy-batch = abap_true the report runs
+    zcl_abapgit_background=>run() (headless pull/push). The report shell itself contains no
+    self-scheduling logic, so this batch path is only reached when the report is already
+    running in a background work process.
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-l1-code-analysis-facts.md:14-19]
+    In this system, however, no background or scheduled job launches it and it is never
+    triggered (per the slice owner).
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-deployment-context-owner.md:17-26]
+    Its actors are ABAP developers with system access, not business/end users.
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-abapgit-purpose-and-actor.md:22-26]
+    Operating abapGit requires SAP developer authorization (typically S_DEVELOP); this is
+    standard SAP knowledge, not proven by the cited sources. [INFERRED]
+
+  business_rules: |
+    This object has no <COMPANY> magic numbers, constants or hardcoded business IFs to
+    interpret: it is third-party open-source code with no <COMPANY> business logic.
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-l1-code-analysis-facts.md:26-32]
+    The only "rules" worth decoding are packaging facts. "Standalone" denotes the
+    user-facing, single-object distribution that contains all the needed abapGit code and
+    is run via SE38; the separate developer version is targeted at contributors, runs via
+    transaction ZABAPGIT and requires the standalone version installed first.
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-standalone-install-and-trigger.md:14-22]
+    The self-reported constant c_abap_version = 1.133.0 is abapGit's own version marker,
+    shown on its About page (the bundle is produced by abapmerge 0.16.8); it is a
+    packaging/version fact, not a <COMPANY> business rule.
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-standalone-install-and-trigger.md:35-37]
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-l1-code-analysis-facts.md:26-29]
+
+  standard_integration: |
+    In online mode abapGit synchronizes the SAP system against a remote Git repository via
+    transaction ZABAPGIT: create/clone a repo, add and commit objects, push changes and
+    pull remote updates - the transport-independent object exchange that abapGit provides.
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-online-offline-usage-integration.md:14-21]
+    In offline mode (transaction ZABAPGIT -> New Offline -> project + SAP package -> Create
+    Offline Repo) it manages ABAP projects with no internet connection and no SSL
+    certificates, importing and exporting the objects as ZIP archives - the air-gapped /
+    network-restricted alternative that is the "offline installation and usage" theme of
+    this slice.
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-online-offline-usage-integration.md:23-31]
+    Its genuine external touchpoints are all standard-SAP repository/dictionary/transport
+    objects - tables TADIR, E070/E071, REPOSRC and TRDIR plus the dynpro function modules -
+    and never custom Z tables.
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-l1-code-analysis-facts.md:26-32]
+    Prerequisites for use are SAP BASIS 702 or higher, best with SAP GUI for Windows, and
+    SSL configured for the online features; abapGit should live in a dedicated local $
+    package.
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-standalone-install-and-trigger.md:30-33]
+
+  data_lifecycle: |
+    The program populates no <COMPANY> business Z table. It serializes repository /
+    dictionary objects to plain-text Git files (online) or to ZIP archives (offline).
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-online-offline-usage-integration.md:33-37]
+    On the read side it accesses standard SAP repository/dictionary/transport tables
+    (TADIR, E070/E071, REPOSRC, TRDIR); abapGit's own repository metadata lives in its
+    internal persistence classes, so there is no <COMPANY> data retention to document here.
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-l1-code-analysis-facts.md:26-32]
+
+  functional_open_points: |
+    There are no open (unanswered) gaps: all eight functional gaps for this object were
+    auto-answered from the official abapGit documentation snapshot and the L1 code analysis,
+    and corroborated by the slice owner.
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-deployment-context-owner.md:17-26]
+    Two residual points are not source-proven and are flagged as such: (1) the S_DEVELOP
+    developer-authorization requirement is standard SAP knowledge [INFERRED]; (2) the L1
+    "business open questions" (which repositories, branching/PR policy, who is authorised,
+    the upstream patch process) are organisational matters that are moot in this workspace
+    because the object is a never-deployed demo fixture, and MCP re-verification against a
+    live system was unavailable in this benchmark. [INFERRED]
+
+  functional_sources: |
+    - slices/abapgit-standalone-demo/research/2026-07-03-abapgit-purpose-and-actor.md
+      (raw-docs: official abapGit documentation - "What is abapGit", purpose and actor).
+    - slices/abapgit-standalone-demo/research/2026-07-03-standalone-install-and-trigger.md
+      (raw-docs: standalone vs developer packaging, SE38 launch, prerequisites).
+    - slices/abapgit-standalone-demo/research/2026-07-03-online-offline-usage-integration.md
+      (raw-docs: online and offline repository workflow, data lifecycle).
+    - slices/abapgit-standalone-demo/research/2026-07-03-l1-code-analysis-facts.md
+      (wiki L1 code analysis of the same page: execution modes, no callers, standard-SAP touchpoints).
+    - slices/abapgit-standalone-demo/research/2026-07-03-deployment-context-owner.md
+      (owner statement: this system's deployment reality - never installed, never executed, no scheduled job).
+
+claims:
+  - claim_id: FUN-001
+    class: PURPOSE
+    status: verified
+    section: functional_summary
+    sentence: >-
+      ZABAPGIT_STANDALONE is the abapGit standalone distribution - the whole abapGit Git
+      client for ABAP merged into one report, installable and run from transaction SE38
+      without abapGit already present.
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-standalone-install-and-trigger.md", line_start: 14, line_end: 22 }
+
+  - claim_id: FUN-002
+    class: PURPOSE
+    status: verified
+    section: business_purpose
+    sentence: >-
+      abapGit is a Git client for ABAP that puts ABAP artifacts under version control and
+      keeps repositories in plain text, enabling code review before changes are imported.
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-abapgit-purpose-and-actor.md", line_start: 14, line_end: 20 }
+
+  - claim_id: FUN-003
+    class: PURPOSE
+    status: verified
+    section: business_purpose
+    sentence: >-
+      It is a cross-cutting developer tool, not part of any <COMPANY> FI/MM/SD/CO business
+      process; its users are ABAP developers, not business/end users.
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-abapgit-purpose-and-actor.md", line_start: 22, line_end: 26 }
+
+  - claim_id: FUN-004
+    class: PURPOSE
+    status: verified
+    section: business_purpose
+    sentence: >-
+      In this system the object is a never-executed synthetic demo/benchmark fixture (never
+      installed productively; ZABAPGIT package and TADIR row are a synthetic fixture) per
+      the slice owner, consistent with the code-proved absence of internal callers
+      (used_by: []).
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-deployment-context-owner.md", line_start: 17, line_end: 26 }
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-l1-code-analysis-facts.md", line_start: 21, line_end: 24 }
+
+  - claim_id: FUN-005
+    class: TRIGGER
+    status: verified
+    section: trigger_actors
+    sentence: >-
+      The standalone report is launched interactively by a developer via transaction SE38;
+      the official documentation describes no scheduled-job trigger.
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-standalone-install-and-trigger.md", line_start: 24, line_end: 28 }
+
+  - claim_id: FUN-006
+    class: TRIGGER
+    status: verified
+    section: trigger_actors
+    sentence: >-
+      A headless batch path exists: when sy-batch = abap_true the report runs
+      zcl_abapgit_background=>run(); the report shell has no self-scheduling logic, so this
+      path is only reached when the report itself already runs in a background work process.
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-l1-code-analysis-facts.md", line_start: 14, line_end: 19 }
+
+  - claim_id: FUN-007
+    class: TRIGGER
+    status: verified
+    section: trigger_actors
+    sentence: >-
+      In this system no background or scheduled job launches the program and it is never
+      triggered, per the slice owner.
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-deployment-context-owner.md", line_start: 17, line_end: 26 }
+
+  - claim_id: FUN-008
+    class: ACTOR
+    status: verified
+    section: trigger_actors
+    sentence: >-
+      The actors are ABAP developers with system access, not business/end users.
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-abapgit-purpose-and-actor.md", line_start: 22, line_end: 26 }
+
+  - claim_id: FUN-009
+    class: ACTOR
+    status: inferred
+    section: trigger_actors
+    sentence: >-
+      Operating abapGit requires SAP developer authorization (typically S_DEVELOP), which
+      is standard SAP knowledge rather than a fact proven by the cited sources.
+    evidence: []
+
+  - claim_id: FUN-010
+    class: FIELD-SEMANTICS
+    status: verified
+    section: business_rules
+    sentence: >-
+      "Standalone" denotes the user-facing single-object distribution containing all the
+      abapGit code and run via SE38; the separate developer version is for contributors,
+      runs via transaction ZABAPGIT and requires the standalone installed first.
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-standalone-install-and-trigger.md", line_start: 14, line_end: 22 }
+
+  - claim_id: FUN-011
+    class: BUSINESS-RULE
+    status: verified
+    section: business_rules
+    sentence: >-
+      The constant c_abap_version = 1.133.0 is abapGit's own version marker shown on its
+      About page (bundle produced by abapmerge 0.16.8) - a packaging/version fact, not a
+      <COMPANY> business rule.
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-standalone-install-and-trigger.md", line_start: 35, line_end: 37 }
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-l1-code-analysis-facts.md", line_start: 26, line_end: 29 }
+
+  - claim_id: FUN-012
+    class: BUSINESS-RULE
+    status: verified
+    section: business_rules
+    sentence: >-
+      The program contains no <COMPANY> business logic and therefore no <COMPANY> magic
+      numbers or hardcoded business IFs to interpret.
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-l1-code-analysis-facts.md", line_start: 26, line_end: 32 }
+
+  - claim_id: FUN-013
+    class: CONFIG
+    status: verified
+    section: standard_integration
+    sentence: >-
+      Prerequisites are SAP BASIS 702 or higher, best used with SAP GUI for Windows, and
+      SSL configured for online features; abapGit should live in a dedicated local $ package.
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-standalone-install-and-trigger.md", line_start: 30, line_end: 33 }
+
+  - claim_id: FUN-014
+    class: INTEGRATION
+    status: verified
+    section: standard_integration
+    sentence: >-
+      In online mode abapGit synchronizes the SAP system against a remote Git repository via
+      transaction ZABAPGIT (clone/commit/push/pull), providing transport-independent object
+      exchange.
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-online-offline-usage-integration.md", line_start: 14, line_end: 21 }
+
+  - claim_id: FUN-015
+    class: INTEGRATION
+    status: verified
+    section: standard_integration
+    sentence: >-
+      In offline mode (ZABAPGIT -> New Offline / ZIP) it manages ABAP projects with no
+      internet and no SSL certificate - the air-gapped / network-restricted alternative that
+      is the theme of this slice; objects are imported and exported as ZIP.
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-online-offline-usage-integration.md", line_start: 23, line_end: 31 }
+
+  - claim_id: FUN-016
+    class: INTEGRATION
+    status: verified
+    section: standard_integration
+    sentence: >-
+      Its genuine external touchpoints are all standard-SAP repository/dictionary/transport
+      objects - tables TADIR, E070/E071, REPOSRC, TRDIR and dynpro function modules - not
+      custom Z tables.
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-l1-code-analysis-facts.md", line_start: 26, line_end: 32 }
+
+  - claim_id: FUN-017
+    class: DATA-LIFECYCLE
+    status: verified
+    section: data_lifecycle
+    sentence: >-
+      It populates no <COMPANY> business Z table; it serializes repository/dictionary
+      objects to plain-text Git files (online) or ZIP archives (offline).
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-online-offline-usage-integration.md", line_start: 33, line_end: 37 }
+
+  - claim_id: FUN-018
+    class: DATA-LIFECYCLE
+    status: verified
+    section: data_lifecycle
+    sentence: >-
+      It reads standard SAP repository/dictionary/transport tables (TADIR, E070/E071,
+      REPOSRC, TRDIR); abapGit's own repository metadata lives in its internal persistence
+      classes, so there is no <COMPANY> data retention.
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-l1-code-analysis-facts.md", line_start: 26, line_end: 32 }

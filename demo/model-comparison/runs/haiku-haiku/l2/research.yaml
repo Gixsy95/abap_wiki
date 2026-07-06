@@ -1,0 +1,138 @@
+slice: abapgit-standalone-demo
+gaps:
+  - local_id: g1
+    class: PURPOSE
+    load_bearing: true
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: "What business process does the standalone abapGit distribution serve? Which use case in the company?"
+    hypothesis: "Provides Git-based version control for ABAP code with plain-text repositories and code review capabilities, as an alternative to standard SAP transport system."
+    confidence: high
+    status: auto-answered
+    resolution:
+      evidence: e1
+      note: "Official abapGit docs: Git client for ABAP enabling mass code import/export with plain-text repos and code review before import (raw-docs source)"
+
+  - local_id: g2
+    class: TRIGGER
+    load_bearing: true
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: "Who/how launches ZABAPGIT_STANDALONE (transaction, job, variant, frequency)?"
+    hypothesis: "Launched by developers via transaction SE38 (standard program editor), or via background job when sy-batch = abap_true. Entry point: START-OF-SELECTION → FORM run (authorization) → FORM open_gui (interactive or batch routing)."
+    confidence: high
+    status: auto-answered
+    resolution:
+      evidence: e1
+      note: "Official abapGit docs confirm: 'Run it via transaction SE38' (raw-docs). L1 code confirms: START-OF-SELECTION entry point with batch/interactive routing in FORM open_gui (lines 152827-152843)"
+
+  - local_id: g3
+    class: ACTOR
+    load_bearing: false
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: "Who uses this program (which roles, offices, teams)?"
+    hypothesis: "ABAP developers and DevOps engineers with system access who need to version-control and import/export ABAP code using Git instead of SAP transport system."
+    confidence: high
+    status: auto-answered
+    resolution:
+      evidence: e2
+      note: "Official abapGit docs: 'developers with system access to manage ABAP artifacts', 'targeted at users' (raw-docs source)"
+
+  - local_id: g4
+    class: FIELD-SEMANTICS
+    load_bearing: true
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: "What do the input parameters (p_url, p_user, p_pass, p_cmnt) represent and drive in the business logic?"
+    hypothesis: "Git repository credentials: p_url = remote Git repository URL (HTTPS/SSH), p_user = Git username, p_pass = password/token for authentication, p_cmnt = instruction text in credential dialog. These drive the Git clone/pull/push authentication flow."
+    confidence: high
+    status: auto-answered
+    resolution:
+      evidence: e3
+      note: "Official abapGit docs show these are collected for Git repository connections and authentication (raw-docs/03-first-online-project.md). L1 input mapping confirms parameters passed to lcl_password_dialog for Git credential collection (lines 152393-152521)"
+
+  - local_id: g5
+    class: BUSINESS-RULE
+    load_bearing: true
+    entities: [program-ZABAPGIT_STANDALONE, class-ZCL_ABAPGIT_AUTH, interface-ZIF_ABAPGIT_AUTH]
+    description: "What SAP authorization objects/roles back the startup authorization check? Standard (S_*) or custom (Z_*)? What roles need assignment?"
+    hypothesis: "Authorization check via zcl_abapgit_auth=>is_allowed(zif_abapgit_auth=>c_authorization-startup) enforces startup permission. Details of the authorization object and role assignment unknown."
+    confidence: medium
+    status: open
+    resolution: null
+
+  - local_id: g6
+    class: BUSINESS-RULE
+    load_bearing: true
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: "Under what circumstances is the emergency mode (Parameter ID 'DBT'='ZABAPGIT') used? Is it documented? Who has access?"
+    hypothesis: "Emergency database-utility mode provides bypassing of normal authorization for database inspection/repair. Usage unclear; no logging or audit trail (BUG-002)."
+    confidence: low
+    status: open
+    resolution: null
+
+  - local_id: g7
+    class: INTEGRATION
+    load_bearing: false
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: "How does abapGit integrate with or relate to the standard SAP transport system (TP/STMS)?"
+    hypothesis: "abapGit operates as an independent alternative to SAP transport system. Objects are managed through Git version control and imported via plain-text repositories, NOT through SAP transport requests. Provides offline mode (ZIP import/export) for air-gapped systems."
+    confidence: high
+    status: auto-answered
+    resolution:
+      evidence: e3
+      note: "Official abapGit docs: 'repositories remain in plain text format - unlike traditional transport files', and offline mode for 'systems without internet access' or 'air-gapped' environments (raw-docs source)"
+
+  - local_id: g8
+    class: DATA-LIFECYCLE
+    load_bearing: false
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: "Who populates the abapGit persistence table? What volume? Retention policy? Growth over time?"
+    hypothesis: "Persistence table populated by zcl_abapgit_persist_* classes as users create/modify repositories and objects. L1 flags BUG-001 (unfiltered SELECT * FROM c_tabname at line 73201) but volume unknown."
+    confidence: low
+    status: open
+    resolution: null
+
+  - local_id: g9
+    class: CONFIG
+    load_bearing: false
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: "What customizing/configuration is required? How is the standalone build maintained and upgraded?"
+    hypothesis: "No customizing required. Installation: download source from GitHub, create program in SE38, upload source, activate. Upgrade: re-download from GitHub and re-activate. Deployment in local package (e.g. $ABAPGIT). No transport or Parameter IDs beyond debug mode 'DBT'."
+    confidence: high
+    status: auto-answered
+    resolution:
+      evidence: e4
+      note: "Official abapGit docs specify installation and upgrade steps (download, SE38 create/upload/activate), package recommendation, no customizing (raw-docs/02-install-standalone.md)"
+
+evidence:
+  - local_id: e1
+    file: "slices/abapgit-standalone-demo/research/2026-07-03-purpose-and-trigger.md"
+    source: raw-docs
+    system: N/A
+    query: "raw/docs/01-what-is-abapgit.md, raw/docs/02-install-standalone.md, raw/docs/03-first-online-project.md"
+    date: "2026-07-03"
+    gaps: [g1, g2]
+
+  - local_id: e2
+    file: "slices/abapgit-standalone-demo/research/2026-07-03-actor-and-users.md"
+    source: raw-docs
+    system: N/A
+    query: "raw/docs/01-what-is-abapgit.md, raw/docs/02-install-standalone.md"
+    date: "2026-07-03"
+    gaps: [g3]
+
+  - local_id: e3
+    file: "slices/abapgit-standalone-demo/research/2026-07-03-field-semantics-and-integration.md"
+    source: raw-docs
+    system: N/A
+    query: "raw/docs/01-what-is-abapgit.md, raw/docs/03-first-online-project.md, raw/docs/04-offline-projects.md"
+    date: "2026-07-03"
+    gaps: [g4, g7]
+
+  - local_id: e4
+    file: "slices/abapgit-standalone-demo/research/2026-07-03-maintenance-and-config.md"
+    source: raw-docs
+    system: N/A
+    query: "raw/docs/02-install-standalone.md"
+    date: "2026-07-03"
+    gaps: [g9]
+
+summary_line: "Research: 9 gaps (6 load-bearing, 3 non-load-bearing); 6 auto-answered via raw-docs (4 load-bearing, 2 non-load-bearing), 3 residual open (2 load-bearing, 1 non-load-bearing)."

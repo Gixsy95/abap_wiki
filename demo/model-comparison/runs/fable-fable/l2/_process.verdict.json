@@ -1,0 +1,75 @@
+{
+  "object_slug": "_process",
+  "slice": "abapgit-standalone-demo",
+  "target": "slices/abapgit-standalone-demo/functional/_process.yaml",
+  "model": "claude-fable-5",
+  "contract_version": "abap-functional-gate/1",
+  "verdicts": [
+    {
+      "claim_id": "PRC-001",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "what-is-abapgit.md:26-29 states verbatim 'version control and cross-system distribution of ABAP development objects in plain text (reviewable before import)' and 'serves the development / change-management process, not an FI/MM/SD business process'; lines 15-23 back each element with quoted doc lines. Consistent with member FUN-001 and the L1 executive summary."
+    },
+    {
+      "claim_id": "PRC-002",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "standalone-trigger-se38.md:16-24 quotes 'It is executed via transaction SE38' / 'Run it via transaction SE38' and concludes 'the standalone version has no transaction code of its own'. The underlying raw/docs/02-install-standalone.md confirms line 48's 'either method' refers to the two developer-version install methods, so the conclusion is sound. No contradiction with L1 (open question 6 was raw-unverifiable, resolved by docs); consistent with member FUN-003."
+    },
+    {
+      "claim_id": "PRC-003",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "owner-deployment-context.md:16-35 (verbatim owner statement + consequences 1-4) states each conjunct: downloaded from the official site on 2026-07-02 as demo/benchmark input, not productively installed, never executed, no jobs schedule it, no users operate it (line 35). Consistent with members FUN-002/FUN-005/FUN-007."
+    },
+    {
+      "claim_id": "PRC-004",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "repo-workflows.md:15-25 states each step of the online workflow: 'Clone the repository into abapGit', Add ('The object will be committed to the repository'), commit link pushes changes, pull link pulls remote changes. Consistent with L1 (CL_HTTP_CLIENT git HTTP(S) transport)."
+    },
+    {
+      "claim_id": "PRC-005",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "repo-workflows.md:29-37 states 'manage ABAP projects without internet connectivity or SSL certificates', use case 'air-gapped or isolated SAP landscapes', objects moved by 'ZIP file uploads' and ZIP exports. Fully stated by the cited lines."
+    },
+    {
+      "claim_id": "PRC-006",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "repo-workflows.md:42-45 states 'the persistence is populated by abapGit itself ... not by an external feed'; owner-deployment-context.md:42-43 names it: 'the ZABAPGIT persistence has never been populated in this context (no repos, no settings, no background config)'. Consistent with L1 (all DML on ZABAPGIT is the program's own dynamic Open SQL) and with members FUN-015/FUN-016."
+    },
+    {
+      "claim_id": "PRC-007",
+      "verdict": "partially_supported",
+      "confidence": "medium",
+      "rationale": "standalone-trigger-se38.md:40-42 literally states 'SAP BASIS version 702 or higher required', 'Works best with SAP GUI for Windows', 'SSL setup needed for online features'. The parenthetical '(STRUST)' appears nowhere in the cited lines (nor in raw/docs/02-install-standalone.md): it is an unmarked standard-knowledge gloss inside a 'verified' claim. Core proven, one detail exceeds the citation."
+    },
+    {
+      "claim_id": "PRC-008",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "owner-deployment-context.md:36-41 (consequence 5) names the four includes and states they 'are not part of it, so no local exit/policy is installed'. Not a contradiction with L1, which marked their existence [UNVERIFIABLE] raw-only; the owner statement resolves it. Consistent with member FUN-013 and the L1 'Program structure' INCLUDE IF FOUND list."
+    },
+    {
+      "claim_id": "PRC-009",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Raw 152827-152828 proves the sy-batch branch to zcl_abapgit_background=>run( ). Raw 151583-151633 proves the rest: WRITE 'Another instance of the program is already running' + RETURN when the enqueue fails (151583-151584), per-repo processing of the configured background methods from the persisted list (151587-151629, CREATE OBJECT TYPE (<ls_list>-method)), classic list log via write_log, 'Nothing configured' when empty (151631-151632). owner-deployment-context.md:30-31 proves no job schedules it here. Matches L1 CL-002/CL-025/CL-026 and member FUN-004/FUN-005."
+    },
+    {
+      "claim_id": "PRC-010",
+      "verdict": "partially_supported",
+      "confidence": "medium",
+      "rationale": "The transaction half is proven: standalone-trigger-se38.md:26-36 states transaction ZABAPGIT belongs to the developer version only, and owner-deployment-context.md:36-38 states the ZABAPGIT package fixture contains only the standalone program row (so the developer version is not installed). The categorical enumeration 'No standard business transaction, BAPI, IDoc or module customizing is part of the flow' is not literally stated by what-is-abapgit.md:26-29, which says only 'development / change-management process, not an FI/MM/SD business process'; it is also stronger than the L1 census, which is explicitly a curated, non-exhaustive selection of the ~150k-line framework. Consistent with the 16 membership touchpoints (none is a BAPI/IDoc/business transaction), so no contradiction - but the negative is an inference, not a proven statement, inside a 'verified' claim."
+    }
+  ],
+  "contradictions": [],
+  "check_c_notes": {
+    "object_chain_vs_membership": "Consistent: anchor program-ZABAPGIT_STANDALONE (hop 0, rich_target) + 5 members (table-ZABAPGIT and the 4 exit includes, hop 1 role member) match membership.md exactly; the 16 hop-1 context objects named in standard_touchpoints match the membership list one-to-one (22 objects total).",
+    "flow_vs_member_sections": "end_to_end_flow, process_variants and process_summary are consistent with the member functional.yaml (FUN-001..FUN-018) and with the L1 page: SE38 trigger, startup auth hook + migrations, screen-1001 HTML GUI, sy-batch background branch, DBT='ZABAPGIT' emergency mode, ZABAPGIT persistence written by the tool, dormant-in-this-workspace framing. The CALL_V1_PING/BANK_OBJ_WORKL_RELEASE_LOCKS dummy update-task note is correctly marked [INFERRED], mirroring member FUN-010.",
+    "open_points": "process_open_points (13 gaps auto-answered, 3 residual [INFERRED] topics) mirrors the member functional_open_points; no expert answers exist (inputs/expert-answers/ empty), consistent with process_sources."
+  }
+}

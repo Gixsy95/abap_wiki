@@ -1,0 +1,83 @@
+{
+  "object_slug": "program-ZABAPGIT_STANDALONE",
+  "model": "claude-haiku-4-5-20251001",
+  "contract_version": "abap-functional-gate/1",
+  "verdicts": [
+    {
+      "claim_id": "FUN-001",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Claim states abapGit is an in-system Git client for ABAP development objects, used as alternative/complement to binary SAP transports enabling plain-text diff/code-review workflows; the standalone flavour is its self-contained, single-report bootstrap artifact. Evidence 1 (e1-abapgit-purpose.md:17-24) explicitly confirms: 'abapGit is a git client for ABAP... enables developers to perform mass operations... allows developers... to manage ABAP artifacts through version control... repositories remain in plain text format... allowing for code review before importing.' Evidence 2 (e2-standalone-install-trigger.md:19-21) confirms: 'Standalone version: targeted at users. It consists of one (huge) program which contains all the needed code.' L1 page is fully consistent, confirming 'vendored open-source abapGit project' and 'standalone variant exists specifically so the whole tool can run from a single transportable program without first installing the full abapGit package.'"
+    },
+    {
+      "claim_id": "FUN-002",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Claim states that in this workspace, ZABAPGIT_STANDALONE was downloaded on 2026-07-02 purely as a public demo/benchmark fixture for the abap_wiki ingest pipeline, not as internal IT/DevOps adoption; it is not part of any business process and is not productively installed. Evidence (expert-answers/2026-07-03-owner-demo-context.md:17) directly confirms: 'the owner downloaded the abapGit standalone program from the official site (docs.abapgit.org) on 2026-07-02 to demonstrate and benchmark the abap_wiki L0/L1/L2 ingest pipeline... It is not part of any business process and is not productively installed in any system.' L1 page states 'ZABAPGIT_STANDALONE is not custom ACME business logic' which is consistent."
+    },
+    {
+      "claim_id": "FUN-003",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Claim states the standalone flavour of abapGit is executed via manual/direct SE38 (Execute Program), not through a dedicated custom transaction code and not as a scheduled job by default. Evidence (e2-standalone-install-trigger.md:19-21) directly states: 'Standalone version: targeted at users... It is executed via transaction SE38.' L1 page confirms 'It is presumably started directly (SE38/SA38, or a dedicated transaction created by the Basis team outside this raw export)' which aligns with the claim."
+    },
+    {
+      "claim_id": "FUN-004",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Claim states no transaction descriptor or other program in this workspace references ZABAPGIT_STANDALONE, corroborating that its trigger is manual/direct. Evidence (e3-l1-page-actor-integration.md:17-22) quotes directly from the L1 code analysis: 'None found: no transaction descriptor or other program in this workspace's raw dump references ZABAPGIT_STANDALONE, and devclass ZABAPGIT contains only this one object.' L1 page explicitly confirms in section 'Known caller': 'No known caller in this workspace: no transaction or other Z program references ZABAPGIT_STANDALONE, and it is the only object present under devclass ZABAPGIT.'"
+    },
+    {
+      "claim_id": "FUN-005",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Claim states that in this benchmark workspace the background/batch path (SY-BATCH delegating to ZCL_ABAPGIT_BACKGROUND=>RUN) is not used: no job is scheduled and the program is never actually executed; in a real installation, the documented trigger is interactive SE38 launch. Evidence (expert-answers/2026-07-03-owner-demo-context.md:21) states: 'The background/batch execution path is not used in this context: no job is scheduled and the program is never executed here (it is a source snapshot used as pipeline input, not an installation). In a real installation the documented trigger applies: interactive launch via SE38 for the standalone version.' L1 page confirms the background/batch path exists in code ('Two execution modes: interactive dialog... and background/batch (SY-BATCH = abap_true delegates to ZCL_ABAPGIT_BACKGROUND=>RUN)'), consistent with the claim that the path exists but is not activated in this workspace."
+    },
+    {
+      "claim_id": "FUN-006",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Claim states actors are ABAP developers holding S_DEVELOP authorization (the tool's own startup gate), with S_OA2C_ADM suggesting some users also configure OAuth-based Git remote authentication. Evidence (e3-l1-page-actor-integration.md:23-25) directly quotes the L1 code analysis: 'AUTHORITY-CHECK OBJECT S_DEVELOP (lines 86251, 93575) and S_OA2C_ADM (line 98928), plus the tool-wide startup gate ZCL_ABAPGIT_AUTH=>IS_ALLOWED.' L1 page section 8.7 confirms both authorization objects and the startup gate."
+    },
+    {
+      "claim_id": "FUN-007",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Claim states only the standalone flavour of abapGit is installed in this landscape: no transaction ZABAPGIT and no separate ZCL_ABAPGIT_* Z-class objects exist; devclass ZABAPGIT contains only this program plus 4 never-implemented customer-exit include stubs. Evidence 1 (e2-standalone-install-trigger.md:44-53) analyzes the workspace and states: 'Since this workspace's slice membership shows devclass ZABAPGIT containing only ZABAPGIT_STANDALONE (plus 4 empty customer-exit include stubs) and no transaction-ZABAPGIT object nor any standalone ZCL_ABAPGIT_* Z classes, the evidence supports that only the standalone flavour is installed.' Evidence 2 (e3-l1-page-actor-integration.md:52-58) confirms: 'no transaction-ZABAPGIT object and no standalone ZCL_ABAPGIT_* Z-class objects exist anywhere in the workspace' and lists the 4 customer-exit include stubs. L1 page confirms 'it is the only object present under devclass ZABAPGIT' and lists the 4 includes."
+    },
+    {
+      "claim_id": "FUN-008",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Claim states the program's package placement (devclass ZABAPGIT, Z namespace, transportable) deviates from the upstream recommendation of a local $ package; in this workspace that deviation is a synthetic demo-harness fixture, not a deliberate transport-governance decision. Evidence 1 (e4-package-anomaly.md:14-24) documents the verified deviation: upstream docs recommend 'use a local $ package (e.g. $ABAPGIT)' but the actual object is in 'devclass: ZABAPGIT, namespace: Z, custom: true - a named, Z-namespace, presumably transportable development package.' Evidence 2 (expert-answers/2026-07-03-owner-demo-context.md:25) clarifies the reason: 'The ZABAPGIT package and the single-row TADIR are synthetic, generated by the demo harness (demo/model-comparison/prepare.py) purely to exercise the pipeline's package layout... the deviation is an intentional demo fixture, not a transport-governance decision.' L1 page shows the actual devclass and namespace, consistent with the claimed deviation."
+    },
+    {
+      "claim_id": "FUN-009",
+      "verdict": "partially_supported",
+      "confidence": "high",
+      "rationale": "Claim is declared status not-verifiable: it states that whether the DBT emergency database-utility mode is a known/supported recovery path actually exercised or tested by this system's team is unconfirmed; asked to the owner on 2026-07-02, still open as of 2026-07-03. Per gating rule 6, not-verifiable claims do not require strong proof and are judged only for reasonableness. The claim is reasonable: the questionnaire file (2026-07-02-abapgit-standalone-demo-all.md) shows questions were sent to the owner asking about this and other topics, and the expert-answer file (2026-07-03-owner-demo-context.md) does not address gaps g008/g009/g010, confirming they remain open. The functional text correctly marks this section [UNVERIFIABLE]. The L1 page documents that the DBT mode exists ('Emergency database-utility mode... documented as a supported recovery path') but does not speak to whether this system's team exercises or tests it, so no contradiction exists."
+    },
+    {
+      "claim_id": "FUN-010",
+      "verdict": "partially_supported",
+      "confidence": "high",
+      "rationale": "Claim is declared status not-verifiable: it states that whether SAP Note 2159455 (the SY-TCODE workaround in DESERIALIZE_CUA, BUG-001) is still applicable to this system's current NetWeaver/kernel release, or can be retired, is unconfirmed; asked to the owner on 2026-07-02, still open as of 2026-07-03. Per gating rule 6, not-verifiable claims are judged only for reasonableness. The claim is reasonable: the questionnaire (2026-07-02-abapgit-standalone-demo-all.md) shows business-open-questions were prepared, and the expert-answer file shows gaps g008/g009/g010 remain unanswered/open. The functional text correctly marks this [UNVERIFIABLE]. L1 page identifies BUG-001 as a 'SMELL' 'tied to SAP Note 2159455' and recommends 'Track note status on target release; drop or scope the assignment once fixed upstream' but does not claim to have verified applicability to the current release, so no contradiction."
+    },
+    {
+      "claim_id": "FUN-011",
+      "verdict": "partially_supported",
+      "confidence": "high",
+      "rationale": "Claim is declared status not-verifiable: it states that how/where this abapGit installation would persist its own configuration (registered repositories, credentials/tokens, settings) across sessions is unconfirmed for this workspace; asked to the owner on 2026-07-02, still open as of 2026-07-03. Per gating rule 6, not-verifiable claims are judged only for reasonableness. The claim is reasonable: the questionnaire and expert-answer file structure show gaps g008/g009/g010 remain open, consistent with the claim that this question was asked and unanswered. The functional text correctly marks this [UNVERIFIABLE]. L1 page states 'No custom Z persistence table appears among ZABAPGIT_STANDALONE's statically-detected dependencies' which is consistent with the claim that where persistence happens is not determinable from code analysis alone, so no contradiction."
+    }
+  ],
+  "contradictions": [],
+  "summary": {
+    "total_claims": 11,
+    "supported": 8,
+    "partially_supported": 3,
+    "not_supported": 0,
+    "high_contradictions": 0,
+    "all_contradictions": 0,
+    "gate_status": "PASS"
+  }
+}

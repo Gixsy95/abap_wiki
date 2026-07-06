@@ -1,0 +1,101 @@
+slice: abapgit-standalone-demo
+gaps:
+  - local_id: g1
+    class: PURPOSE
+    load_bearing: true
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: "Why does ZABAPGIT_STANDALONE exist and which process does it serve? Is there a <COMPANY> business process behind it or is it a generic tool?"
+    hypothesis: "It is the abapGit standalone distribution: an open-source Git client for ABAP that gives a development team version control and transport-independent code exchange (plain-text repos enabling code review). It is a cross-cutting developer tool, not a <COMPANY> FI/MM/SD/CO business process."
+    confidence: high
+    status: auto-answered
+    resolution: { evidence: e1, note: "Official abapGit docs: 'a git client for ABAP developed in ABAP' for importing/exporting code with version control (raw/docs/01-what-is-abapgit.md). No <COMPANY> business process is served; it is a developer tool." }
+  - local_id: g2
+    class: TRIGGER
+    load_bearing: true
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: "Who/how launches ZABAPGIT_STANDALONE (interactive transaction, background job, frequency, variant)?"
+    hypothesis: "Launched interactively by a developer via transaction SE38 (standalone report). A headless batch path also exists (sy-batch -> zcl_abapgit_background=>run). No scheduled job triggers it; in this system it is never launched (demo fixture, owner-confirmed)."
+    confidence: high
+    status: auto-answered
+    resolution: { evidence: e2, note: "Docs: the standalone 'is executed via transaction SE38' (raw/docs/02). The L1 code (evidence e4) confirms an additional sy-batch background path but no self-scheduling. Owner deployment context (slices/abapgit-standalone-demo/research/2026-07-03-deployment-context-owner.md) confirms no job schedules it and it is never run here." }
+  - local_id: g3
+    class: ACTOR
+    load_bearing: false
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: "Who uses abapGit and with which role/authorization?"
+    hypothesis: "ABAP developers with system access (needing developer authorization, S_DEVELOP), not business end users. In this system nobody operates it (never executed - owner)."
+    confidence: high
+    status: auto-answered
+    resolution: { evidence: e1, note: "Docs: abapGit lets 'developers with system access' manage ABAP artifacts (raw/docs/01). Audience is ABAP developers, a cross-cutting role, not a business office." }
+  - local_id: g4
+    class: INTEGRATION
+    load_bearing: false
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: "How does abapGit relate to standard SAP transactions/transports and external Git?"
+    hypothesis: "It synchronizes SAP objects against a remote Git repository (online: clone/commit/pull via transaction ZABAPGIT) or ZIP archives (offline), providing transport-independent object exchange; it reads standard SAP repository/transport tables (TADIR, E070/E071, REPOSRC, TRDIR) and uses dynpro FMs."
+    confidence: high
+    status: auto-answered
+    resolution: { evidence: e3, note: "Docs: online clone/commit/pull workflow and offline ZIP repos (raw/docs/03, 04); plain-text repos are the transport-independent alternative to transport files (raw/docs/01). Standard-only DB touchpoints per the L1 analysis (evidence e4)." }
+  - local_id: g5
+    class: FIELD-SEMANTICS
+    load_bearing: true
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: "What does the 'standalone' packaging (vs developer version) and the self-reported version constant (c_abap_version = 1.133.0) mean?"
+    hypothesis: "'Standalone' = a single huge report containing all abapGit code, targeted at users and run via SE38, installable without abapGit present. The developer version is for contributors, runs via transaction ZABAPGIT, needs the standalone installed first. c_abap_version is abapGit's own version shown in its About page - a packaging/version marker, not a business rule."
+    confidence: high
+    status: auto-answered
+    resolution: { evidence: e2, note: "Docs: standalone is 'one (huge) program which contains all the needed code', executed via SE38; developer version via transaction ZABAPGIT requires standalone first (raw/docs/02). Version constant is a self-reported build marker (L1 CL-001)." }
+  - local_id: g6
+    class: CONFIG
+    load_bearing: false
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: "Which prerequisites/customizing condition its use (release, SSL, GUI, package, offline mode)?"
+    hypothesis: "Requires SAP BASIS 702+, works best with SAP GUI for Windows, needs SSL for online features, and should live in a dedicated local $ package. Offline mode (New Offline / ZIP) is the alternative for air-gapped or no-SSL / strict-security landscapes."
+    confidence: high
+    status: auto-answered
+    resolution: { evidence: e2, note: "Docs prerequisites: BASIS 702+, SAP GUI for Windows, SSL for online, local $ package (raw/docs/02); offline repos for no-internet/no-SSL landscapes (raw/docs/04, evidence e3)." }
+  - local_id: g7
+    class: DATA-LIFECYCLE
+    load_bearing: false
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: "Does the program populate any <COMPANY> Z table? What data does it read/write, and what is the retention?"
+    hypothesis: "It populates no <COMPANY> business Z table. It serializes repository objects to plain-text Git files (online) or ZIP (offline) and reads standard SAP repository/dictionary/transport tables (TADIR, E070/E071, REPOSRC, TRDIR); abapGit's own repo metadata lives in its internal persistence classes."
+    confidence: high
+    status: auto-answered
+    resolution: { evidence: e4, note: "L1 analysis: no <COMPANY> business logic; external touchpoints are standard repository/dictionary tables, not custom Z tables (wiki page). Serialization to files/ZIP per docs (evidence e3)." }
+  - local_id: g8
+    class: PURPOSE
+    load_bearing: true
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: "Is ZABAPGIT_STANDALONE part of a <COMPANY> business process and is it actually deployed/operated (called or scheduled) in this system?"
+    hypothesis: "No. It is a self-contained third-party tool with no callers (used_by: []) and no <COMPANY> business logic. In this system it is a synthetic demo/benchmark fixture: never productively installed, never executed, and not scheduled by any job (owner-confirmed)."
+    confidence: high
+    status: auto-answered
+    resolution: { evidence: e4, note: "L1 code analysis proves the load-bearing part: no callers ('Where used' = no known references, used_by: []) and no <COMPANY> business logic (third-party MIT tool, CL-019). The operational reality (never run, no scheduled job, synthetic fixture from demo/model-comparison/prepare.py) is owner-confirmed in slices/abapgit-standalone-demo/research/2026-07-03-deployment-context-owner.md; MCP was unavailable to re-verify job scheduling independently." }
+evidence:
+  - local_id: e1
+    file: "slices/abapgit-standalone-demo/research/2026-07-03-abapgit-purpose-and-actor.md"
+    source: raw-docs
+    query: "raw/docs/01-what-is-abapgit.md - purpose, features, actor (docs.abapgit.org, fetched 2026-07-02)"
+    date: "2026-07-03"
+    gaps: [g1, g3]
+  - local_id: e2
+    file: "slices/abapgit-standalone-demo/research/2026-07-03-standalone-install-and-trigger.md"
+    source: raw-docs
+    query: "raw/docs/02-install-standalone.md - standalone vs developer, SE38 launch, prerequisites (fetched 2026-07-02)"
+    date: "2026-07-03"
+    gaps: [g2, g5, g6]
+  - local_id: e3
+    file: "slices/abapgit-standalone-demo/research/2026-07-03-online-offline-usage-integration.md"
+    source: raw-docs
+    query: "raw/docs/03-first-online-project.md + 04-offline-projects.md - online clone/commit/pull, offline ZIP repos (fetched 2026-07-02)"
+    date: "2026-07-03"
+    gaps: [g4, g6, g7]
+  - local_id: e4
+    file: "slices/abapgit-standalone-demo/research/2026-07-03-l1-code-analysis-facts.md"
+    source: wiki
+    query: "wiki/ZABAPGIT/program-ZABAPGIT_STANDALONE.md - modes, no callers (used_by []), no business logic, standard-only touchpoints"
+    date: "2026-07-03"
+    gaps: [g2, g4, g7, g8]
+
+summary_line: "Research: 8 gaps (4 load-bearing), 8 auto-answered via raw-docs+wiki with owner-confirmed deployment context, 0 residual for questionnaire."

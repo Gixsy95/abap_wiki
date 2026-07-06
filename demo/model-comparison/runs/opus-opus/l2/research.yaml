@@ -1,0 +1,150 @@
+slice: abapgit-standalone-demo
+
+gaps:
+  - local_id: g1
+    class: PURPOSE
+    load_bearing: true
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: "Which business need does ZABAPGIT_STANDALONE serve - what is abapGit and why would this object exist at all?"
+    hypothesis: "It is the standalone (single-file) packaging of abapGit, a Git client for ABAP: it version-controls ABAP objects and imports/exports code between ABAP systems as plain-text files, enabling pre-import code review. It is a developer/DevOps tool, not a business transaction. [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-purpose-abapgit.md:26-32]"
+    confidence: high
+    status: auto-answered
+    resolution: { evidence: e1, note: "raw/docs/01: 'a git client for ABAP developed in ABAP', import/export between ABAP systems, plain-text version control for code review." }
+
+  - local_id: g2
+    class: PURPOSE
+    load_bearing: true
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: "In THIS landscape, is ZABAPGIT_STANDALONE a governed production tool, and who owns keeping the bundled version (1.133.0) current?"
+    hypothesis: "Owner-stated: it is a non-productive DEMO FIXTURE - the standalone distribution downloaded on 2026-07-02 as input to a public benchmark of this wiki pipeline; not productively installed, no version-currency governance. Stays open (owner-input is not an auto-research source per rule 6) for one-click confirmation via capture-answer. [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-owner-deployment-context.md:33-35]"
+    confidence: high
+    status: open
+
+  - local_id: g3
+    class: TRIGGER
+    load_bearing: true
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: "How/by what is the standalone edition launched (transaction, job, interactive)?"
+    hypothesis: "Launched as a report via transaction SE38; once running it dispatches on sy-batch - foreground drives the interactive HTML GUI (screen 1001), background hands off to zcl_abapgit_background=>run. No external SUBMIT in the shell. [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-standalone-run-se38.md:33-43]"
+    confidence: high
+    status: auto-answered
+    resolution: { evidence: e2, note: "raw/docs/02: standalone 'executed via transaction SE38'; L1 runtime dispatch confirms interactive vs background (see wiki evidence e5)." }
+
+  - local_id: g4
+    class: TRIGGER
+    load_bearing: true
+    entities: [program-ZABAPGIT_STANDALONE, program-ZABAPGIT_BACKGROUND_USER_EXIT]
+    description: "Is a background sync job (zcl_abapgit_background=>run) actually scheduled in THIS system, and against which repositories?"
+    hypothesis: "Owner-stated: no - never executed and no jobs schedule it here; the background mode is a code capability, not a configured deployment. Normally provable via MCP on TBTCO/TBTCP, but MCP is unavailable in this benchmark, so it rests on owner input and stays open for capture-answer. [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-owner-deployment-context.md:36-39]"
+    confidence: high
+    status: open
+
+  - local_id: g5
+    class: ACTOR
+    load_bearing: false
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: "Who uses abapGit standalone, which role/office?"
+    hypothesis: "Developers with system access managing ABAP artifacts under version control ('targeted at users' of the tool); there is no end-business-user role. In this system nobody uses it (demo fixture). [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-purpose-abapgit.md:26-32]"
+    confidence: high
+    status: auto-answered
+    resolution: { evidence: e1, note: "raw/docs/01: 'developers with system access to manage ABAP artifacts'; raw/docs/02: standalone 'targeted at users'." }
+
+  - local_id: g6
+    class: BUSINESS-RULE
+    load_bearing: true
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: "What do the SPA/GPA DBT startup values mean ('ZABAPGIT' -> go_db, 'HREF' -> HTML debug), and are they business config?"
+    hypothesis: "They are abapGit-internal developer switches read at open_gui: DBT='ZABAPGIT' opens the emergency database-utility view (go_db), any other value opens the normal home (go_home), DBT='HREF' enables HTML debug. Not business configuration. [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-runtime-trigger-dbt.md:34-43]"
+    confidence: medium
+    status: auto-answered
+    resolution: { evidence: e5, note: "L1 open_gui/Modes sections document the DBT routing (go_db / go_home / HREF debug)." }
+
+  - local_id: g7
+    class: BUSINESS-RULE
+    load_bearing: true
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: "What is the governing maintenance rule for this artifact - can it be edited in place, or must it be refreshed upstream?"
+    hypothesis: "It is 'one (huge) program which contains all the needed code' (an abapmerge monolith); the rule is to maintain it upstream and refresh by re-download/re-merge, never hand-edit the merged body (local behaviour goes into the four *_exit user-exit includes). Matches L1 BUG-001. [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-standalone-run-se38.md:33-43]"
+    confidence: high
+    status: auto-answered
+    resolution: { evidence: e2, note: "raw/docs/02: standalone is 'one (huge) program which contains all the needed code'; consistent with L1 BUG-001 (maintain upstream, re-merge)." }
+
+  - local_id: g8
+    class: FIELD-SEMANTICS
+    load_bearing: false
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: "What is the semantics of the login-popup fields (screen 1002) and where are git credentials stored?"
+    hypothesis: "Screen 1002 collects per-operation git credentials: p_url (display-only repo URL), p_user (git user), p_pass (password/PAT, masked), p_cmnt (help note). Credentials are copied on confirm and CLEARed after use; the report shell keeps no on-server credential store. [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-persistence-credentials.md:35-42]"
+    confidence: high
+    status: auto-answered
+    resolution: { evidence: e6, note: "L1 selection-screen / input-mapping: fields of screen 1002, masked p_pass, credentials cleared after use." }
+
+  - local_id: g9
+    class: INTEGRATION
+    load_bearing: false
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: "How does the object integrate with the SAP repository/transport layer and with remote Git?"
+    hypothesis: "It serialises SAP repository objects and synchronises them with a remote Git host over HTTP(S) via clone -> add/commit(push) -> pull; an offline ZIP import/export mode covers air-gapped/SSL-restricted landscapes. This is the functional face of the L1 footprint (TADIR, E070/E071, REPOSRC, DD02L). [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-online-workflow.md:29-33]"
+    confidence: high
+    status: auto-answered
+    resolution: { evidence: e3, note: "raw/docs/03: online clone/commit/pull lifecycle; raw/docs/04 (e4) adds the offline ZIP mode." }
+
+  - local_id: g10
+    class: DATA-LIFECYCLE
+    load_bearing: false
+    entities: [program-ZABAPGIT_STANDALONE, table-ZABAPGIT]
+    description: "Who populates the ZABAPGIT table, what does it hold, and what is its volume/retention?"
+    hypothesis: "ZABAPGIT is abapGit's own persistence table (settings/repo configuration), written/read dynamically by abapGit itself (MODIFY/SELECT (c_tabname='ZABAPGIT')) on demand; no batch populator. In this system it is effectively empty (fixture never run). [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-persistence-credentials.md:35-42]"
+    confidence: high
+    status: auto-answered
+    resolution: { evidence: e6, note: "L1: dynamic MODIFY/SELECT on c_tabname='ZABAPGIT', abapGit's own persistence; no external populator." }
+
+  - local_id: g11
+    class: CONFIG
+    load_bearing: false
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: "What packaging/customizing does abapGit require (package layout, prerequisites)?"
+    hypothesis: "Recommended config: install into a dedicated local '$' package (e.g. $ABAPGIT) and use one dedicated SAP package per repository (not shared with unrelated objects); prerequisites are SAP BASIS 702+ and SSL setup for online features. [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-standalone-run-se38.md:33-43]"
+    confidence: high
+    status: auto-answered
+    resolution: { evidence: e2, note: "raw/docs/02: '$' package + BASIS 702 + SSL for online; raw/docs/04 (e4): one new package per repo." }
+
+evidence:
+  - local_id: e1
+    file: "slices/abapgit-standalone-demo/research/2026-07-03-purpose-abapgit.md"
+    source: raw-docs
+    query: "raw/docs/01-what-is-abapgit.md - abapGit definition, purpose, target user"
+    date: "2026-07-03"
+    gaps: [g1, g5]
+  - local_id: e2
+    file: "slices/abapgit-standalone-demo/research/2026-07-03-standalone-run-se38.md"
+    source: raw-docs
+    query: "raw/docs/02-install-standalone.md - standalone vs developer edition, how it is run (SE38), packaging, prerequisites"
+    date: "2026-07-03"
+    gaps: [g1, g3, g5, g7, g11]
+  - local_id: e3
+    file: "slices/abapgit-standalone-demo/research/2026-07-03-online-workflow.md"
+    source: raw-docs
+    query: "raw/docs/03-first-online-project.md - online repository lifecycle (clone/add/commit/pull)"
+    date: "2026-07-03"
+    gaps: [g9]
+  - local_id: e4
+    file: "slices/abapgit-standalone-demo/research/2026-07-03-offline-airgapped.md"
+    source: raw-docs
+    query: "raw/docs/04-offline-projects.md - offline (air-gapped) repositories and per-repo packaging"
+    date: "2026-07-03"
+    gaps: [g9, g11]
+  - local_id: e5
+    file: "slices/abapgit-standalone-demo/research/2026-07-03-runtime-trigger-dbt.md"
+    source: wiki
+    query: "wiki/ZABAPGIT/program-ZABAPGIT_STANDALONE.md - runtime dispatch (interactive vs background) and SPA/GPA DBT routing"
+    date: "2026-07-03"
+    gaps: [g3, g6]
+  - local_id: e6
+    file: "slices/abapgit-standalone-demo/research/2026-07-03-persistence-credentials.md"
+    source: wiki
+    query: "wiki/ZABAPGIT/program-ZABAPGIT_STANDALONE.md - ZABAPGIT persistence table and login-popup credential handling"
+    date: "2026-07-03"
+    gaps: [g8, g10]
+
+summary_line: "Research: 11 gaps (6 load-bearing), 9 auto-answered via raw-docs/wiki, 2 residual load-bearing (owner-stated deployment facts) staged for capture-answer."

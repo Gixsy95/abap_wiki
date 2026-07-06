@@ -1,0 +1,22 @@
+name: Feature request
+description: Propose an improvement to the engine, the process, or the docs
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What can't you do today, or what costs too much (time, tokens, trust)?
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: How should it work? Which invariants of CLAUDE.md/AGENTS.md does it touch?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered

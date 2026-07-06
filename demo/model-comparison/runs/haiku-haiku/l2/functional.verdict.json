@@ -1,0 +1,117 @@
+{
+  "object_slug": "program-ZABAPGIT_STANDALONE",
+  "model": "claude-haiku-4-5-20251001",
+  "contract_version": "abap-functional-gate/1",
+  "verdicts": [
+    {
+      "claim_id": "FUN-001",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "The cited research file (2026-07-03-purpose-and-trigger.md:26-29) explicitly states: 'The standalone ZABAPGIT_STANDALONE program serves as an offline, transportable Git client for SAP ABAP environments, enabling mass code import/export operations with plain-text repository storage and code review capabilities.' This exactly matches the claim sentence."
+    },
+    {
+      "claim_id": "FUN-002",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "The cited research file (2026-07-03-field-semantics-and-integration.md:44-56) explicitly states: 'abapGit (ZABAPGIT_STANDALONE) operates INDEPENDENTLY of the standard transport system. It manages ABAP objects through Git version control rather than through SAP transport requests... bypassing the traditional STMS/TR workflow entirely.' This directly proves the claim."
+    },
+    {
+      "claim_id": "FUN-003",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "The cited research file (2026-07-03-purpose-and-trigger.md:50-53) states: 'The program is launched by developers via transaction SE38 (standard ABAP program editor), or via background job when sy-batch = abap_true (batch scheduling).' This exactly matches the claim. L1 code analysis confirms at line 75."
+    },
+    {
+      "claim_id": "FUN-004",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "The cited research file (2026-07-03-purpose-and-trigger.md:50-53) states: 'Entry point: START-OF-SELECTION calls FORM run (authorization check) → FORM open_gui (which dispatches to interactive GUI or batch processing).' The file also notes (lines 46-48) that FORM open_gui 'routes to... CALL SELECTION-SCREEN 1001 for interactive mode, or zcl_abapgit_background=>run() for batch mode.' This matches the claim exactly."
+    },
+    {
+      "claim_id": "FUN-005",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "The cited research file (2026-07-03-actor-and-users.md:21-30) states: 'Typical user roles: ABAP developers, DevOps engineers, SAP development team members who need to version-control and import/export ABAP code.' This directly supports the claim about primary actors."
+    },
+    {
+      "claim_id": "FUN-006",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "The cited research file (2026-07-03-actor-and-users.md:21-30) states: 'The standalone version is specifically designed for end-users (as opposed to developer-contributors to the abapGit codebase itself)' and 'The L1 code analysis shows authorization is enforced via zcl_abapgit_auth=>is_allowed().' Both elements of the claim are supported. L1 code analysis confirms authorization at line 134."
+    },
+    {
+      "claim_id": "FUN-007",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "The cited research file (2026-07-03-field-semantics-and-integration.md:28-32) states: 'p_url: Git repository URL (HTTPS or SSH endpoint for the remote Git repository).' This directly proves the claim."
+    },
+    {
+      "claim_id": "FUN-008",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "The cited research file (2026-07-03-field-semantics-and-integration.md:28-32) states: 'p_user: Username for Git authentication (username on GitHub or other Git hosting).' This directly proves the claim."
+    },
+    {
+      "claim_id": "FUN-009",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "The cited research file (2026-07-03-field-semantics-and-integration.md:28-32) states: 'p_pass: Password or personal access token for Git authentication (secret credential).' This directly proves the claim."
+    },
+    {
+      "claim_id": "FUN-010",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "The cited research file (2026-07-03-field-semantics-and-integration.md:28-32) states: 'p_cmnt: Comment/instruction line in the credential popup dialog.' This supports the claim about the parameter carrying a comment/instruction line."
+    },
+    {
+      "claim_id": "FUN-011",
+      "verdict": "not_supported",
+      "confidence": "high",
+      "rationale": "Marked as not-verifiable with empty evidence list. The author explicitly notes in the functional.yaml (lines 40-43) that this is marked [ANOMALY] and [UNVERIFIABLE: asked to owner on 2026-07-02], which is appropriate for a not-verifiable status. The L1 code analysis documents BUG-002 as a 'SMELL' (hardcoded Parameter ID, no audit logging), consistent with the author's marking. No evidence is provided to verify the specific claim about 'database-utility access with no audit logging.'"
+    },
+    {
+      "claim_id": "FUN-012",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "The cited research file (2026-07-03-field-semantics-and-integration.md:44-56) states: 'abapGit (ZABAPGIT_STANDALONE) operates INDEPENDENTLY of the standard transport system. It manages ABAP objects through Git version control rather than through SAP transport requests... bypassing the traditional STMS/TR workflow entirely.' This directly proves the claim."
+    },
+    {
+      "claim_id": "FUN-013",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "The cited research file (2026-07-03-field-semantics-and-integration.md:58-71) states: 'The standalone version of abapGit supports both: 1. Online repositories: Direct connections to remote Git repositories (requires SSL/HTTPS) 2. Offline repositories: Manage ABAP code locally within SAP without internet access (ZIP file import/export for code distribution).' This directly proves both online and offline support."
+    },
+    {
+      "claim_id": "FUN-014",
+      "verdict": "partially_supported",
+      "confidence": "medium",
+      "rationale": "Marked as inferred with no direct evidence. The research file (field-semantics-and-integration.md:38-39, 49-50) does mention that plain-text format enables code review: 'repositories remain in plain text format... allowing for code review before importing to target systems' and lists 'Code review before import (via GitHub pull requests or similar)' as a capability. The claim about plain-text advantages is reasonable and partially grounded in the evidence, though not a direct statement of the specific advantage claimed."
+    },
+    {
+      "claim_id": "FUN-015",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "The L1 code analysis (lines 104-105) explicitly confirms: 'The program produces no classic report output (no ALV, no spool list, no file at the report level)' and 'all user-facing output is HTML rendered by the embedded GUI classes.' The cited research file implicitly supports this through the L1 analysis section (lines 46-48) which references this."
+    },
+    {
+      "claim_id": "FUN-016",
+      "verdict": "partially_supported",
+      "confidence": "medium",
+      "rationale": "Marked as inferred with no direct evidence. However, the L1 code analysis (lines 64-67) mentions: 'Data persistence is managed by deferred classes zcl_abapgit_persist_* (bundled in this program)' and references BUG-001 about unfiltered SELECT on persistence table. The claim is reasonable based on the L1 analysis structure and the dependency list showing multiple zcl_abapgit_persist_* classes, though not explicitly verified from research evidence."
+    },
+    {
+      "claim_id": "FUN-017",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "The cited research file (2026-07-03-maintenance-and-config.md:24-29, 37-39) states: 'Installation and configuration model: 1. Deployment: Download the standalone ABAP source from GitHub... No transport process required... No customizing required: The official documentation does not mention any customizing tables, Parameter IDs (except the debug-mode 'DBT' mentioned in L1), or configuration transactions. The program is ready to use after activation.' This directly proves the claim."
+    },
+    {
+      "claim_id": "FUN-018",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "The cited research file (2026-07-03-maintenance-and-config.md:33-44) states: 'Update/upgrade process: To upgrade from v1.1.13 to a newer version, download the new source from GitHub and re-upload/re-activate the program. This is a manual process, not automatic... The standalone version is a snapshot distribution (v1.1.13, compiled 2026-07-01), not a live-updating package.' This directly proves the claim."
+    }
+  ],
+  "contradictions": [],
+  "summary": "All 18 claims have been evaluated. 15 claims are supported (high confidence), 2 are partially supported (medium confidence) as inferred claims with reasonable but not explicit evidence, and 1 is not_supported as marked unverifiable by the author with no evidence provided. Zero contradictions found between the functional synthesis and the L1 code analysis. The BUG-002 about hardcoded Parameter ID is explicitly marked as [ANOMALY] by the author, consistent with gate rules. Coverage: 100% (18/18 claims)."
+}

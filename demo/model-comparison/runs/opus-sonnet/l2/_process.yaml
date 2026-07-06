@@ -1,0 +1,190 @@
+slice: abapgit-standalone-demo
+
+process_sections:
+  process_summary: |
+    This slice documents the offline installation and usage of abapGit - the open-source
+    Git client for ABAP - packaged as the single standalone report ZABAPGIT_STANDALONE.
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-standalone-install-and-trigger.md:14-22]
+    It is a developer-tooling "process" (version control + transport-independent code
+    exchange), not a <COMPANY> FI/MM/SD/CO business process, and its only rich_target member
+    is the standalone report itself.
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-abapgit-purpose-and-actor.md:22-26]
+    In this system the process is not actually operated: the report is a never-executed
+    demo/benchmark fixture, per the slice owner.
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-deployment-context-owner.md:17-26]
+
+  end_to_end_flow: |
+    1. Install: the standalone report ZABAPGIT_STANDALONE is created (SE38/SE80/ADT),
+       uploaded, activated and run via transaction SE38 - abapGit needs no prior
+       installation because the standalone bundle is self-contained.
+       [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-standalone-install-and-trigger.md:24-28]
+    2a. Online usage: launch transaction ZABAPGIT, clone a remote Git repository, add and
+        commit objects, push changes, and pull remote updates before further changes -
+        synchronizing the SAP system against the remote Git repo.
+        [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-online-offline-usage-integration.md:14-21]
+    2b. Offline usage (the theme of this slice): ZABAPGIT -> New Offline -> enter project
+        name and SAP package -> Create Offline Repo; objects are imported via ZIP upload and
+        exported as ZIP - for landscapes with no internet and no SSL certificate.
+        [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-online-offline-usage-integration.md:23-31]
+    3. Output: in both paths abapGit serializes repository/dictionary objects to plain-text
+       Git files (online) or ZIP archives (offline); it populates no <COMPANY> Z table.
+       [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-online-offline-usage-integration.md:33-37]
+
+  object_chain: |
+    The chain is dominated by the single entry-point report, with optional site hooks and a
+    set of standard-SAP touchpoints; there are no <COMPANY> business objects downstream.
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-l1-code-analysis-facts.md:26-32]
+    In flow order (consistent with membership.md):
+    1. [[program-ZABAPGIT_STANDALONE]] - hop 0, the entry-point report and only rich_target.
+       [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-l1-code-analysis-facts.md:21-24]
+    2. Optional user-exit includes (hop 1, member role), supplied by a site to plug in
+       custom auth/exits/background/GUI logic: [[program-ZABAPGIT_AUTHORIZATIONS_EXIT]],
+       [[program-ZABAPGIT_USER_EXIT]], [[program-ZABAPGIT_BACKGROUND_USER_EXIT]],
+       [[program-ZABAPGIT_GUI_PAGES_USEREXIT]]. These are optional INCLUDE arcs, not part of
+       any executed <COMPANY> flow here. [INFERRED]
+    3. Standard-SAP context touchpoints (hop 1, context role): tables [[table-E070]],
+       [[table-E071]], [[table-REPOSRC]], [[table-TADIR]], [[table-TRDIR]]; function modules
+       [[function-module-RPY_DYNPRO_INSERT]], [[function-module-RPY_DYNPRO_READ]],
+       [[function-module-RS_SET_SELSCREEN_STATUS]]; classes
+       [[class-CL_ADT_GUI_INTEGRATION_CONTEXT]], [[class-CL_HTTP_UTILITY]]; programs
+       [[program-RSDBRUNT]], [[program-SCPR3]]; and structure [[structure-SSCRFIELDS]].
+       [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-l1-code-analysis-facts.md:26-32]
+
+  standard_touchpoints: |
+    The process integrates only with standard SAP: transaction SE38 launches the standalone
+    report, and transaction ZABAPGIT drives the online (clone/commit/push/pull) and offline
+    (New Offline / ZIP) repository workflow.
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-online-offline-usage-integration.md:14-21]
+    On the database side the genuine touchpoints are standard repository/dictionary/transport
+    tables (TADIR, E070/E071, REPOSRC, TRDIR) plus the dynpro function modules - never custom
+    Z tables.
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-l1-code-analysis-facts.md:26-32]
+
+  process_variants: |
+    Two usage variants exist. Online repositories require internet access and SSL and
+    synchronize directly against a remote Git host; offline repositories are the
+    network-restricted / air-gapped alternative, exchanging objects as ZIP archives with no
+    internet and no SSL. Offline is the variant named by this slice.
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-online-offline-usage-integration.md:23-31]
+    A headless batch variant of the report (sy-batch -> zcl_abapgit_background=>run()) also
+    exists but is unscheduled in this system.
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-l1-code-analysis-facts.md:14-19]
+
+  process_open_points: |
+    The process is not actually run in this workspace: the single member object was never
+    installed productively and never executed, and no job schedules it (per the slice
+    owner), so the operational specifics (which repositories, branching/PR policy, who is
+    authorised) are moot here.
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-deployment-context-owner.md:17-26]
+    MCP re-verification against a live SAP system was unavailable in this benchmark. [INFERRED]
+
+  process_sources: |
+    - slices/abapgit-standalone-demo/research/2026-07-03-abapgit-purpose-and-actor.md
+      (raw-docs: official abapGit documentation - purpose and actor).
+    - slices/abapgit-standalone-demo/research/2026-07-03-standalone-install-and-trigger.md
+      (raw-docs: standalone packaging, SE38 install/launch, prerequisites).
+    - slices/abapgit-standalone-demo/research/2026-07-03-online-offline-usage-integration.md
+      (raw-docs: online and offline repository workflow, data lifecycle).
+    - slices/abapgit-standalone-demo/research/2026-07-03-l1-code-analysis-facts.md
+      (wiki L1 code analysis: execution modes, no callers, standard-SAP touchpoints).
+    - slices/abapgit-standalone-demo/research/2026-07-03-deployment-context-owner.md
+      (owner statement: never installed, never executed, no scheduled job in this system).
+
+claims:
+  - claim_id: PRC-001
+    class: PURPOSE
+    status: verified
+    section: process_summary
+    sentence: >-
+      The slice documents the offline installation and usage of the abapGit client, a
+      developer-tooling process (version control + transport-independent code exchange), not
+      a <COMPANY> FI/MM/SD/CO business process.
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-abapgit-purpose-and-actor.md", line_start: 22, line_end: 26 }
+
+  - claim_id: PRC-002
+    class: TRIGGER
+    status: verified
+    section: end_to_end_flow
+    sentence: >-
+      Installation consists of creating the report ZABAPGIT_STANDALONE (SE38/SE80/ADT),
+      uploading, activating and running it via transaction SE38, with no prior abapGit
+      installation required.
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-standalone-install-and-trigger.md", line_start: 24, line_end: 28 }
+
+  - claim_id: PRC-003
+    class: INTEGRATION
+    status: verified
+    section: end_to_end_flow
+    sentence: >-
+      Online usage runs through transaction ZABAPGIT: clone a remote Git repository, add and
+      commit objects, push changes and pull remote updates, synchronizing the SAP system
+      against the remote repo.
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-online-offline-usage-integration.md", line_start: 14, line_end: 21 }
+
+  - claim_id: PRC-004
+    class: INTEGRATION
+    status: verified
+    section: end_to_end_flow
+    sentence: >-
+      Offline usage runs through ZABAPGIT -> New Offline -> project + SAP package -> Create
+      Offline Repo, importing and exporting objects as ZIP archives for landscapes with no
+      internet and no SSL.
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-online-offline-usage-integration.md", line_start: 23, line_end: 31 }
+
+  - claim_id: PRC-005
+    class: INTEGRATION
+    status: verified
+    section: standard_touchpoints
+    sentence: >-
+      The process integrates only with standard SAP - transactions SE38 and ZABAPGIT plus
+      the standard repository/transport tables (TADIR, E070/E071, REPOSRC, TRDIR) and dynpro
+      function modules - and never with custom Z tables.
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-l1-code-analysis-facts.md", line_start: 26, line_end: 32 }
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-online-offline-usage-integration.md", line_start: 14, line_end: 21 }
+
+  - claim_id: PRC-006
+    class: DATA-LIFECYCLE
+    status: verified
+    section: end_to_end_flow
+    sentence: >-
+      The flow's output is serialized repository objects: plain-text Git files (online) or
+      ZIP archives (offline); it populates no <COMPANY> Z table.
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-online-offline-usage-integration.md", line_start: 33, line_end: 37 }
+
+  - claim_id: PRC-007
+    class: INTEGRATION
+    status: verified
+    section: object_chain
+    sentence: >-
+      The object chain is the single entry-point report plus standard-SAP repository/transport
+      touchpoints, with no <COMPANY> business objects downstream.
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-l1-code-analysis-facts.md", line_start: 26, line_end: 32 }
+
+  - claim_id: PRC-008
+    class: TRIGGER
+    status: verified
+    section: process_variants
+    sentence: >-
+      Besides the interactive online and offline variants, a headless batch variant exists
+      (sy-batch -> zcl_abapgit_background=>run()), but no job schedules it in this system.
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-l1-code-analysis-facts.md", line_start: 14, line_end: 19 }
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-deployment-context-owner.md", line_start: 17, line_end: 26 }
+
+  - claim_id: PRC-009
+    class: PURPOSE
+    status: verified
+    section: process_open_points
+    sentence: >-
+      In this system the process is not actually operated: the single member object was
+      never installed productively and never executed and no job schedules it, per the slice
+      owner.
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-deployment-context-owner.md", line_start: 17, line_end: 26 }

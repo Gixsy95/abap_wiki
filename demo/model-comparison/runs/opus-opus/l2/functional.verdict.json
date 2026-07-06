@@ -1,0 +1,98 @@
+{
+  "object_slug": "program-ZABAPGIT_STANDALONE",
+  "model": "claude-opus-4-8[1m]",
+  "contract_version": "abap-functional-gate/1",
+  "verdicts": [
+    {
+      "claim_id": "FUN-001",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "purpose-abapgit.md:16-24 states abapGit is 'a git client for ABAP developed in ABAP', imports/exports code between ABAP systems and keeps repositories in plain text 'allowing for code review before importing'. The serialise/deserialise wording is standard abapGit fact and is corroborated by the L1 page (line 78). No contradiction with the code."
+    },
+    {
+      "claim_id": "FUN-002",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "owner-demo-context.md:16 explicitly states ZABAPGIT_STANDALONE 'is not a governed production tool in this landscape: it exists only as the input of a public demo/benchmark of the abap_wiki ingest pipeline'. Directly proven by the cited expert answer; consistent with the L1 page (no where-used)."
+    },
+    {
+      "claim_id": "FUN-003",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "se38.md:17-19 quotes the docs ('is executed via transaction SE38') and 34-36 states 'the launch mechanism ... is transaction SE38 ... there is no dedicated business transaction code delivered with it'. Matches the L1 report shell (START-OF-SELECTION report)."
+    },
+    {
+      "claim_id": "FUN-004",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "runtime-trigger-dbt.md:21-24 and 35-38 state the sy-batch dispatch (foreground interactive HTML GUI vs background zcl_abapgit_background=>run for unattended pull/push). Dummy screen 1001 is confirmed by the L1 page (CL-003, lines 83-84). No contradiction."
+    },
+    {
+      "claim_id": "FUN-005",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "owner-demo-context.md:20 states 'the program is never executed here ... The zcl_abapgit_background=>run path remains an unused upstream capability in this context'. The cited expert answer proves the sentence; consistent with the L1 page whose caller is UNVERIFIABLE with no where-used (not a contradiction)."
+    },
+    {
+      "claim_id": "FUN-006",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "purpose-abapgit.md:21-24 ('developers with system access to manage ABAP artifacts through version control') and 31-32 ('the user is a developer with system access ... there is no end-business-user role') prove the actor sentence verbatim."
+    },
+    {
+      "claim_id": "FUN-007",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "runtime-trigger-dbt.md:25-29 and 39-43 state the DBT SPA/GPA switches (ZABAPGIT->go_db emergency DB-util, otherwise go_home, HREF->HTML debug) and that they are 'abapGit-internal developer switches, not business configuration'. Matches the L1 page (lines 90, 131-133)."
+    },
+    {
+      "claim_id": "FUN-008",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "se38.md:17-20 and 40-42 prove the abapmerge monolith ('one (huge) program which contains all the needed code') maintained upstream and refreshed by re-download/re-merge, not hand-edited. The 'four *_exit user-exit includes' clause is proven by the same-page L1 analysis (lines 185 and 255: the sanctioned place for local customisation). Consistent with L1 BUG-001; no contradiction."
+    },
+    {
+      "claim_id": "FUN-009",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "persistence-credentials.md:25-33 states the four screen-1002 fields (p_url display-only, p_user, p_pass masked, p_cmnt) and that credentials are 'collected on demand and not retained' - copied only on confirm and CLEARed after use. Matches the L1 Input mapping section (lines 99-106, 119-120); 'no on-server credential store' follows directly from 'not retained'."
+    },
+    {
+      "claim_id": "FUN-010",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "online-workflow.md:18-27 (clone / add-commit-push / pull steps from the docs) and 30-33 ('integrates the SAP repository with a remote Git host over HTTP(S) through a clone -> add/commit(push) -> pull synchronisation cycle') prove the sentence."
+    },
+    {
+      "claim_id": "FUN-011",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "offline-airgapped.md:17-28 (offline repos for systems without internet/SSL, air-gapped landscapes; import/export via ZIP) and 33-35 ('abapGit supports a ZIP-based offline mode ... import/export of repository contents as ZIP files') prove the sentence."
+    },
+    {
+      "claim_id": "FUN-012",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "online-workflow.md:30-33 literally states the synchronisation is 'the online counterpart of the L1-documented serialisation footprint (TADIR, E070/E071, REPOSRC, DD02L read/written by the object handlers)'. The L1 page explicitly declares its SELECT census representative/non-exhaustive and that handlers touch many more repository tables, so 'reading and writing' does not contradict the code."
+    },
+    {
+      "claim_id": "FUN-013",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "persistence-credentials.md:16-24 and 40-42 state ZABAPGIT is abapGit's own custom persistence table accessed dynamically via MODIFY/SELECT (c_tabname='ZABAPGIT'), 'written/read by abapGit itself', with 'no batch populator'. Matches the L1 page (CL-009, line 160/292)."
+    },
+    {
+      "claim_id": "FUN-014",
+      "verdict": "supported",
+      "confidence": "medium",
+      "rationale": "owner-demo-context.md:20 proves the premise 'the program is never executed here'. The conclusion 'the ZABAPGIT persistence table is effectively empty here' is a tight entailment given FUN-013 (the table is written only by abapGit at runtime), not a literal statement of the source, hence medium confidence. No contradiction with the code."
+    },
+    {
+      "claim_id": "FUN-015",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "se38.md:27-31 proves the local '$' package recommendation ($ABAPGIT), SAP BASIS 702+ and SSL for online features; offline-airgapped.md:29-30 proves 'Use a new SAP package for each abapGit repository'. All parts of the sentence are covered."
+    }
+  ],
+  "contradictions": []
+}

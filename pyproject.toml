@@ -1,0 +1,33 @@
+# Development-tool configuration. NOT a distributable package: no
+# [build-system]/[project] on purpose (abap_wiki is a template/application, not
+# a library to publish on PyPI). Only pytest and coverage config here, so that
+# `pytest` (with no arguments) is equivalent to `pytest core/src/test/unit_tests -q`.
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["core/src/test/unit_tests"]
+addopts = "-q"
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
+[tool.coverage.run]
+source = ["core/src/tools"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+
+# Ruff: linter + formatter. A conservative, high-signal ruleset chosen to keep
+# churn low on the existing codebase. Run: `ruff check .` and `ruff format .`.
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+extend-exclude = ["raw", ".venv", "output", "state"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["E501"]  # line length is handled by the formatter, not enforced as a lint error
+
+[tool.ruff.format]
+quote-style = "double"

@@ -1,0 +1,203 @@
+slice: abapgit-standalone-demo
+generated: "2026-07-03"
+gaps:
+  - local_id: g1
+    class: PURPOSE
+    load_bearing: true
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: "Why does ZABAPGIT_STANDALONE exist - which business/development process does the abapGit client serve?"
+    hypothesis: "It is the abapGit tool itself: git-based version control of ABAP artifacts (link packages to git repositories, import/export code between systems, plain-text code review). It serves the ABAP development / change-management process; there is no end-user business process behind it."
+    confidence: high
+    status: auto-answered
+    resolution:
+      evidence: e1
+      note: "Official docs snapshot: 'a git client for ABAP developed in ABAP', a tool for importing/exporting code between ABAP systems [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-purpose-what-is-abapgit.md:26-31]"
+  - local_id: g2
+    class: PURPOSE
+    load_bearing: true
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: "What role does ZABAPGIT_STANDALONE play in THIS installation - is it the productive abapGit client of the development system, or a non-productive artifact? (L1 open question 1)"
+    hypothesis: "Owner statement of 2026-07-02: it is the standalone distribution downloaded from the official site on 2026-07-02 as the input of a public demo/benchmark of the wiki pipeline; it is not productively installed, and the ZABAPGIT package/TADIR row is a synthetic demo fixture created by demo/model-comparison/prepare.py [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-02-owner-deployment-context.md:14-21]. Owner input cannot ground the auto-closure of a load-bearing gap (rule 6): kept open for formal confirmation via questionnaire + capture-answer."
+    confidence: high
+    status: open
+  - local_id: g3
+    class: TRIGGER
+    load_bearing: true
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: "Who/how launches ZABAPGIT_STANDALONE by design (transaction, scheduled job, RFC, IDoc)?"
+    hypothesis: "Started interactively by a developer via SE38 (standalone version design; no own transaction code - ZABAPGIT is the developer version's transaction). sy-batch background mode and SPA/GPA 'DBT' emergency mode are optional entry paths of the same report."
+    confidence: high
+    status: auto-answered
+    resolution:
+      evidence: e2
+      note: "Official install guide: the standalone version 'is executed via transaction SE38' [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-trigger-standalone-se38.md:30-35]"
+  - local_id: g4
+    class: TRIGGER
+    load_bearing: true
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: "Is the program actually executed or scheduled in this installation (SM37 jobs on the report, background technical user)? (L1 open question 5)"
+    hypothesis: "No: per the owner statement of 2026-07-02 it has never been executed here and no jobs schedule it [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-02-owner-deployment-context.md:18-19]. The direct proof (TBTCO/TBTCP query via MCP) is not available in this environment; kept open for formal confirmation via questionnaire + capture-answer."
+    confidence: high
+    status: open
+  - local_id: g5
+    class: ACTOR
+    load_bearing: false
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: "Who uses abapGit - which role/office?"
+    hypothesis: "ABAP developers with system access; the standalone version is 'targeted at users' of the tool (as opposed to abapGit contributors, who use the developer version). No business-department end user."
+    confidence: high
+    status: auto-answered
+    resolution:
+      evidence: e1
+      note: "Official docs: 'abapGit allows developers with system access to manage ABAP artifacts through version control' [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-purpose-what-is-abapgit.md:33-34]"
+  - local_id: g6
+    class: FIELD-SEMANTICS
+    load_bearing: true
+    entities: [table-ZABAPGIT, program-ZABAPGIT_STANDALONE]
+    description: "What is the functional meaning of the ZABAPGIT table fields TYPE / VALUE / DATA_STR and of the c_type_* entry categories?"
+    hypothesis: "TYPE = persistence entry category (SETTINGS / REPO / REPO_CS / REPO_DATA / BACKGROUND / PACKAGES / USER), VALUE = key of the entry within its type (e.g. repo key), DATA_STR = serialized XML/JSON blob (repo metadata, settings, checksums, user preferences)."
+    confidence: high
+    status: auto-answered
+    resolution:
+      evidence: e4
+      note: "Already documented in the gate-accepted L1 page, section 'Output mapping' [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-wiki-functional-semantics.md:32-34]"
+  - local_id: g7
+    class: BUSINESS-RULE
+    load_bearing: true
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: "What is the semantics of the hardcoded SPA/GPA check 'DBT' = 'ZABAPGIT' (magic value) - who uses it and when?"
+    hypothesis: "It is abapGit's documented emergency/recovery switch: setting the SPA/GPA parameter opens the persistence DB utility directly, bypassing the normal HTML GUI, so an administrator can repair abapGit's own persistence when the regular UI is unusable."
+    confidence: high
+    status: auto-answered
+    resolution:
+      evidence: e4
+      note: "L1 page, sections 'Modes' and 'Use cases' (documented recovery mode / emergency repair of abapGit's own persistence) [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-wiki-functional-semantics.md:36-40]"
+  - local_id: g8
+    class: BUSINESS-RULE
+    load_bearing: false
+    entities: [program-ZABAPGIT_STANDALONE, function-module-CALL_V1_PING, function-module-BANK_OBJ_WORKL_RELEASE_LOCKS]
+    description: "Why does zcl_abapgit_persistence_db=>lock call a dummy standard FM (CALL_V1_PING, fallback BANK_OBJ_WORKL_RELEASE_LOCKS) IN UPDATE TASK (BUG-002)? Do the hardcoded FM names carry business meaning?"
+    hypothesis: "The rule is 'hold the ZABAPGIT persistence lock exactly until the caller's next COMMIT WORK': registering a harmless update-task FM binds the enqueue lifetime to the database LUW without a COMMIT in library code. The FM names carry no business meaning (any side-effect-free update-enabled FM would do); upstream design decision."
+    confidence: high
+    status: auto-answered
+    resolution:
+      evidence: e7
+      note: "L1 page, 'Error handling': the dummy update-task call releases locks at the next commit of the calling logic (claim CL-007) [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-wiki-lock-update-task-rule.md:30-33]"
+  - local_id: g9
+    class: INTEGRATION
+    load_bearing: false
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: "How does abapGit relate to the standard transport system (CTS) - replacement or complement?"
+    hypothesis: "Complement: git repositories are a plain-text, review-friendly distribution channel 'unlike traditional transport files'; inside transportable packages the merged code still registers changes with CTS via RS_CORR_INSERT."
+    confidence: high
+    status: auto-answered
+    resolution:
+      evidence: e1
+      note: "Official docs on plain-text repos vs transport files + L1 dependency on RS_CORR_INSERT [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-purpose-what-is-abapgit.md:36-40]"
+  - local_id: g10
+    class: DATA-LIFECYCLE
+    load_bearing: false
+    entities: [table-ZABAPGIT, program-ZABAPGIT_STANDALONE]
+    description: "Who populates table ZABAPGIT, with which content, volumes and retention?"
+    hypothesis: "Populated exclusively by abapGit itself (auto-created by the first-run migration; the report is its only reader/writer via dynamic SQL on c_tabname). Content: repo metadata, settings, checksums, user preferences. No external feeder, no retention beyond abapGit's own DB utility. In this workspace the table was never populated (program never executed - owner statement, see g2/g4)."
+    confidence: high
+    status: auto-answered
+    resolution:
+      evidence: e4
+      note: "L1 page: persistence fully self-contained, table auto-created on first run [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-wiki-functional-semantics.md:42-47]"
+  - local_id: g11
+    class: CONFIG
+    load_bearing: false
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: "Which system configuration do the online git features require (SSL, GUI, release level)?"
+    hypothesis: "SSL setup (Basis/STRUST) is needed for online features; works best with SAP GUI for Windows; requires BASIS >= 702. Offline (ZIP) mode needs none of the connectivity setup. In this workspace no git connectivity was ever configured or used (never executed - owner statement, see g2/g4)."
+    confidence: high
+    status: auto-answered
+    resolution:
+      evidence: e2
+      note: "Official install guide prerequisites [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-trigger-standalone-se38.md:37-39]"
+  - local_id: g12
+    class: CONFIG
+    load_bearing: true
+    entities: [program-ZABAPGIT_AUTHORIZATIONS_EXIT, program-ZABAPGIT_USER_EXIT, program-ZABAPGIT_BACKGROUND_USER_EXIT, program-ZABAPGIT_GUI_PAGES_USEREXIT, program-ZABAPGIT_STANDALONE]
+    description: "Are the four user-exit includes (authorizations / user / background / GUI pages) implemented in this system? (L1 open questions 2-3)"
+    hypothesis: "No: in this workspace snapshot none of the four exists as a real object (dependency-derived L0 stubs with raw_source_status missing; the TADIR fixture contains only the standalone program row). No customer exit logic is active; with the authorization exit absent, startup is open to anyone who can execute the report."
+    confidence: high
+    status: auto-answered
+    resolution:
+      evidence: e5
+      note: "Workspace snapshot inventory: no TADIR rows, no sources, only dependency-derived stubs [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-workspace-fixture-inventory.md:28-35]"
+  - local_id: g13
+    class: CONFIG
+    load_bearing: false
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: "What is the update/upgrade policy for the standalone report - who re-imports new releases and how often? (L1 open question 6)"
+    hypothesis: "No policy exists: version 1.133.0 (merged upstream 2026-07-01) was downloaded on 2026-07-02 as a one-off input of a public demo/benchmark [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-version-identity.md:24-28] [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-02-owner-deployment-context.md:14-16]. With no productive use there is no cadence to define; site-process question left open (owner input, not questionnaire-relevant: non load-bearing)."
+    confidence: high
+    status: open
+  - local_id: g14
+    class: DATA-LIFECYCLE
+    load_bearing: false
+    entities: [table-ZABAPGIT]
+    description: "Was DB table ZABAPGIT transported as a repository object or runtime-created in $TMP? (L1 open question 4)"
+    hypothesis: "Neither, in this snapshot: the table does not exist as a delivered object (no TABL row in the TADIR fixture, no DDIC source); it would be auto-created by the migration only at the first run of the report, which never happened here (owner statement, see g4)."
+    confidence: high
+    status: auto-answered
+    resolution:
+      evidence: e5
+      note: "Workspace snapshot inventory: table ZABAPGIT exists only as a dependency-derived stub [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-workspace-fixture-inventory.md:37-41]"
+  - local_id: g15
+    class: INTEGRATION
+    load_bearing: false
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: "Which repository modes does the documented abapGit process rely on (online vs offline), and when is each appropriate?"
+    hypothesis: "Two modes: online git repositories over HTTP(S) (need connectivity + SSL; clone/commit/pull flow) and offline ZIP-based repositories for air-gapped or SSL-less environments (ZIP import/export, one package per repository). Matches L1 use cases 1-4 and the slice focus on offline usage."
+    confidence: high
+    status: auto-answered
+    resolution:
+      evidence: e3
+      note: "Official docs on first online project + offline projects [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-usage-online-offline-projects.md:37-41]"
+evidence:
+  - local_id: e1
+    file: "slices/abapgit-standalone-demo/research/2026-07-03-purpose-what-is-abapgit.md"
+    source: raw-docs
+    query: "read of raw/docs/01-what-is-abapgit.md (docs.abapgit.org snapshot, fetched 2026-07-02)"
+    date: "2026-07-03"
+    gaps: [g1, g5, g9]
+  - local_id: e2
+    file: "slices/abapgit-standalone-demo/research/2026-07-03-trigger-standalone-se38.md"
+    source: raw-docs
+    query: "read of raw/docs/02-install-standalone.md (docs.abapgit.org install guide snapshot, fetched 2026-07-02)"
+    date: "2026-07-03"
+    gaps: [g3, g11]
+  - local_id: e3
+    file: "slices/abapgit-standalone-demo/research/2026-07-03-usage-online-offline-projects.md"
+    source: raw-docs
+    query: "read of raw/docs/03-first-online-project.md and raw/docs/04-offline-projects.md (docs.abapgit.org snapshots, fetched 2026-07-02)"
+    date: "2026-07-03"
+    gaps: [g15]
+  - local_id: e4
+    file: "slices/abapgit-standalone-demo/research/2026-07-03-wiki-functional-semantics.md"
+    source: wiki
+    query: "read of wiki/ZABAPGIT/program-ZABAPGIT_STANDALONE.md (L1 page): sections Modes, Use cases, Output mapping, External dependencies"
+    date: "2026-07-03"
+    gaps: [g6, g7, g10]
+  - local_id: e5
+    file: "slices/abapgit-standalone-demo/research/2026-07-03-workspace-fixture-inventory.md"
+    source: wiki
+    query: "frontmatter of the five wiki/_TMP_/ stubs + raw/tadir/TADIR_ZABAPGIT.csv + listing of raw/system-library/"
+    date: "2026-07-03"
+    gaps: [g12, g14]
+  - local_id: e6
+    file: "slices/abapgit-standalone-demo/research/2026-07-03-version-identity.md"
+    source: wiki
+    query: "read of wiki/ZABAPGIT/program-ZABAPGIT_STANDALONE.md (Executive summary) cross-checked against active CONSTANTS in the raw source"
+    date: "2026-07-03"
+    gaps: [g13]
+  - local_id: e7
+    file: "slices/abapgit-standalone-demo/research/2026-07-03-wiki-lock-update-task-rule.md"
+    source: wiki
+    query: "read of wiki/ZABAPGIT/program-ZABAPGIT_STANDALONE.md: sections Error handling, Form analysis, Dependencies (BUG-002 / claim CL-007)"
+    date: "2026-07-03"
+    gaps: [g8]
+summary_line: "Research: 15 gaps (7 load-bearing), 12 auto-answered (6 raw-docs, 6 wiki), 3 open (2 load-bearing residual for questionnaire; owner deployment statement of 2026-07-02 recorded as pre-filled hypotheses)."

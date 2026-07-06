@@ -1,0 +1,116 @@
+{
+  "object_slug": "program-ZABAPGIT_STANDALONE",
+  "model": "claude-fable-5",
+  "contract_version": "abap-functional-gate/1",
+  "verdicts": [
+    {
+      "claim_id": "FUN-001",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "what-is-abapgit.md:15-29 states every substantive element: git client for ABAP, importing/exporting code between systems, plain-text repositories reviewable before import, actors with system access, and the explicit conclusion that it serves development/change-management and not an FI/MM/SD business process. The single descriptor 'community' is not in the cited lines but matches the L1 executive summary of the same page verbatim (no contradiction)."
+    },
+    {
+      "claim_id": "FUN-002",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "owner-deployment-context.md:16-29 (verbatim owner statement plus consequence 1) states all elements: official standalone distribution downloaded 2026-07-02, input of a public demo/benchmark of the wiki pipeline, not productively installed, and the ZABAPGIT package/TADIR row as a synthetic fixture created by demo/model-comparison/prepare.py."
+    },
+    {
+      "claim_id": "FUN-003",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "standalone-trigger-se38.md:14-24 states the official launch path is SE38 and that the standalone version has no transaction code of its own; lines 26-36 state that transaction ZABAPGIT belongs to the developer version only, with the standalone report as its prerequisite. Consistent with L1 open question 6 (transaction binding was UNVERIFIABLE raw-only; the docs snapshot resolves it)."
+    },
+    {
+      "claim_id": "FUN-004",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Raw source 152822-152848 (read directly) proves the sentence: IF sy-batch = abap_true -> zcl_abapgit_background=>run( ) (152827-152828), otherwise GET PARAMETER ID 'DBT' with WHEN 'ZABAPGIT' -> c_action-go_db (152832-152835) and the HTML GUI path via prepare_gui_startup/go_home/CALL SELECTION-SCREEN 1001 (152842-152844). The elaborations 'background methods per repository' and 'emergency database-utility page' are verified in the L1 analysis of the same page (CL-002/CL-025 and CL-003); judged on the code, not on the comment at 152831."
+    },
+    {
+      "claim_id": "FUN-005",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "owner-deployment-context.md:30-34 states verbatim: never executed here, no jobs schedule it, therefore no background configuration exists, no git credentials persisted, and 'BUG-003 exposure is theoretical here'. Consistent with the L1 bug catalog (BUG-003 is the clear-text background-credentials finding) and with used_by: [] on the page."
+    },
+    {
+      "claim_id": "FUN-006",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "what-is-abapgit.md:20-24 quotes the official docs: 'abapGit allows developers with system access to manage ABAP artifacts through version control' - exactly the sentence."
+    },
+    {
+      "claim_id": "FUN-007",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "owner-deployment-context.md:35 states 'Actors in this workspace: none - no users operate it'; the 'demo fixture' parenthetical is stated at lines 27-29 of the same owner statement."
+    },
+    {
+      "claim_id": "FUN-008",
+      "verdict": "partially_supported",
+      "confidence": "high",
+      "rationale": "Status inferred, correctly marked: the cited standard-knowledge file (itself [INFERRED], lines 40-47) states the upstream default-allow behaviour of zcl_abapgit_auth, and owner-context:36-41 confirms no authorization exit is installed here. The inference is reasonable and consistent with L1 (startup guarded by zcl_abapgit_auth=>is_allowed, CL-019), but the proof chain bottoms out in expert knowledge, not a primary source - capped at partially_supported per the inferred-claim rule."
+    },
+    {
+      "claim_id": "FUN-009",
+      "verdict": "partially_supported",
+      "confidence": "high",
+      "rationale": "Status inferred, correctly marked: the TYPE/VALUE/DATA_STR key-value model and the TYPE-value catalog come from the standard-knowledge file (lines 17-26, [INFERRED]); wiki-version-and-persistence.md:24-37 proves only the L1 access shape (dynamic DML on c_tabname='ZABAPGIT', single-record reads by type/value), with which the inference is fully consistent. Reasonable, no contradiction with L1; semantic catalog unproven pending a system check."
+    },
+    {
+      "claim_id": "FUN-010",
+      "verdict": "partially_supported",
+      "confidence": "high",
+      "rationale": "Status inferred, correctly marked: the rationale (_SCOPE=2 update-owner lock release at COMMIT WORK) is stated in the standard-knowledge file (lines 28-38, [INFERRED]) and is standard SAP enqueue behaviour. Strongly corroborated by L1: CL-016/BUG-004 and the dependency entries already verify CALL_V1_PING / BANK_OBJ_WORKL_RELEASE_LOCKS called dynamically IN UPDATE TASK as a dummy to auto-release the EZABAPGIT locks. The 'not a banking/V1 integration' reading is reasonable; capped at partially_supported per the inferred-claim rule."
+    },
+    {
+      "claim_id": "FUN-011",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Raw source 152832-152840 (read directly) proves both halves: GET PARAMETER ID 'DBT' with WHEN 'ZABAPGIT' selecting c_action-go_db instead of go_home, and zcl_abapgit_html=>set_debug_mode( boolc( lv_mode = 'HREF' ) ). The 'emergency database-utility page' naming for go_db is verified at L1 (CL-003, Modes section); judged on the code, not on the comment at 152831."
+    },
+    {
+      "claim_id": "FUN-012",
+      "verdict": "partially_supported",
+      "confidence": "high",
+      "rationale": "The cited window standalone-trigger-se38.md:26-36 proves the developer-version half (targeted at contributors, transaction ZABAPGIT, parallel processing, requires the standalone version first) but NOT the first clause 'the standalone version targets users and is run via SE38' - that statement is at lines 16-19 of the same file, outside the cited range. Factually consistent (same evidence file, FUN-003 cites it), but this claim's own citation does not cover the whole sentence."
+    },
+    {
+      "claim_id": "FUN-013",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "owner-deployment-context.md:36-41 names all four user-exit includes and states they are not part of the synthetic fixture, 'so no local exit/policy is installed'. In this workspace the fixture is the system, so the sentence is equivalent. Resolves L1 open question 2 ([UNVERIFIABLE] raw-only) without contradicting it."
+    },
+    {
+      "claim_id": "FUN-014",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "standalone-trigger-se38.md:38-48 ('Prerequisites / configuration') states BASIS 702 or higher, works best with SAP GUI for Windows, SSL setup needed for online features, and the local $ package recommendation; repo-workflows.md:27-40 states offline repositories exist for landscapes without internet/SSL (air-gapped) exchanging ZIP files, which also grounds the 'SSL only for online features' reading. Minor nuance: the $ package is a recommendation in the source, and the narrative section renders it correctly as 'recommended'."
+    },
+    {
+      "claim_id": "FUN-015",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "repo-workflows.md:42-45 states the conclusion verbatim: the persistence comes into existence only when a user creates online/offline repos and runs add/commit/pull - populated by abapGit itself, not by an external feed. Consistent with L1 (all DML on ZABAPGIT is performed by the program's own persistence layer, CL-008)."
+    },
+    {
+      "claim_id": "FUN-016",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "owner-deployment-context.md:42-43 states verbatim: never executed means the ZABAPGIT persistence has never been populated in this context (no repos, no settings, no background config)."
+    },
+    {
+      "claim_id": "FUN-017",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "owner-deployment-context.md:44-45 states verbatim: one-shot download from the official site on 2026-07-02 for the benchmark; no periodic upgrade/re-import policy exists."
+    },
+    {
+      "claim_id": "FUN-018",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "owner-deployment-context.md:46-48 states the source is the official distribution as downloaded with no local development in this workspace; wiki-version-and-persistence.md:15-22 states the L1-verified build stamp (abapGit 1.133.0, abapmerge 0.16.8, 2026-07-01, CL-018) and the one-day gap to the download date. Resolves L1 open question 1 via the owner statement without contradicting the L1 [UNVERIFIABLE] marker (no byte-level diff was claimed)."
+    }
+  ],
+  "contradictions": []
+}

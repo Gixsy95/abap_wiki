@@ -1,0 +1,245 @@
+slice: abapgit-standalone-demo
+gaps:
+  - local_id: g1
+    class: PURPOSE
+    load_bearing: true
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: >-
+      What is abapGit and what generic business/technical purpose does
+      ZABAPGIT_STANDALONE serve in this system, as a single-file distribution
+      of the tool?
+    hypothesis: >-
+      abapGit is an open-source, ABAP-native git client used to
+      version-control ABAP development objects (programs, classes, DDIC,
+      etc.) against a Git remote, keeping repositories in plain text (unlike
+      binary SAP transports) to enable code review before import.
+      ZABAPGIT_STANDALONE is the officially documented "standalone"
+      distribution -- a single huge report bundling the whole tool -- used
+      as the entry point for the capability without a prior multi-object
+      install.
+      [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-e1-abapgit-purpose.md:17-24]
+    confidence: high
+    status: auto-answered
+    resolution:
+      evidence: e1
+      note: "raw-docs 01-what-is-abapgit.md defines abapGit's generic purpose; matches the L1 page's own characterization of ZABAPGIT_STANDALONE as a vendored abapGit distribution."
+
+  - local_id: g2
+    class: PURPOSE
+    load_bearing: true
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: >-
+      Which internal business/IT initiative motivated installing abapGit
+      (ZABAPGIT_STANDALONE) in this specific system -- general custom-Z code
+      version control / change-management hygiene, a DevOps/CI-CD
+      initiative, or a one-off code-inventory/migration project (e.g. ahead
+      of an S/4HANA upgrade) -- and is it intended as ongoing tooling or a
+      one-time import?
+    hypothesis: >-
+      Most likely adopted as ongoing developer tooling to bring git-based
+      version control and code review to custom Z development, filling a
+      gap left by classic binary SAP transports. This is a generic pattern
+      for why organizations adopt abapGit, [INFERRED] only -- it could not
+      be confirmed against this specific workspace/company context from
+      wiki, raw-docs, or code.
+    confidence: low
+    status: open
+
+  - local_id: g3
+    class: TRIGGER
+    load_bearing: true
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: >-
+      How/by whom is ZABAPGIT_STANDALONE launched -- a dedicated
+      transaction, direct SE38/SA38 execution, or a scheduled background
+      job?
+    hypothesis: >-
+      Launched via direct execution of the report through transaction SE38
+      (Execute Program), exactly as documented by upstream abapGit for the
+      "standalone" distribution; no dedicated Z transaction code exists for
+      it in this workspace.
+      [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-e2-standalone-install-trigger.md:19-21]
+      [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-e3-l1-page-actor-integration.md:17-22]
+    confidence: high
+    status: auto-answered
+    resolution:
+      evidence: e2
+      note: "upstream docs state the standalone flavour 'is executed via transaction SE38'; corroborated by the L1 page's own 'no known caller / no transaction descriptor' finding (e3)."
+
+  - local_id: g4
+    class: TRIGGER
+    load_bearing: true
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: >-
+      Is the background/batch execution path (SY-BATCH branch delegating to
+      ZCL_ABAPGIT_BACKGROUND=>RUN) actually scheduled as a periodic
+      background job (SM36/SM37) in this system? If so, with what
+      frequency, variant, and against which repositories?
+    hypothesis: >-
+      The code supports an unattended background mode, commonly used by
+      abapGit installations to schedule periodic pulls of tracked
+      repositories, but no evidence (job table query, MCP) is available in
+      this benchmark workspace to confirm whether/how it is actually
+      scheduled here.
+    confidence: low
+    status: open
+
+  - local_id: g5
+    class: ACTOR
+    load_bearing: false
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: >-
+      Who are the actual users of this tool in this system -- ABAP
+      developers, Basis/DevOps, or a mix -- and is that scope intentional?
+    hypothesis: >-
+      ABAP developers holding S_DEVELOP authorization (the tool's own
+      AUTHORITY-CHECK gate), consistent with upstream abapGit positioning
+      the standalone build as the general entry point "targeted at users"
+      who want git-based version control of their own development objects;
+      S_OA2C_ADM (OAuth2 client administration) suggests some users may also
+      configure OAuth-based Git remote authentication.
+      [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-e3-l1-page-actor-integration.md:23-25]
+    confidence: medium
+    status: auto-answered
+    resolution:
+      evidence: e3
+      note: "L1 page's own Authorization section (S_DEVELOP/S_OA2C_ADM/ZCL_ABAPGIT_AUTH) plus upstream doc's 'targeted at users' framing of the standalone build."
+
+  - local_id: g6
+    class: INTEGRATION
+    load_bearing: false
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: >-
+      Is only the standalone flavour of abapGit installed in this
+      landscape, or does the full multi-object "developer version"
+      (transaction ZABAPGIT, separate ZCL_ABAPGIT_* Z classes) also exist?
+    hypothesis: >-
+      Only the standalone flavour (this single merged report) is installed;
+      no transaction ZABAPGIT nor any separate ZCL_ABAPGIT_* Z-class objects
+      exist anywhere in the workspace, and devclass ZABAPGIT contains only
+      this one program plus 4 never-implemented customer-exit include
+      stubs.
+      [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-e2-standalone-install-trigger.md:44-53]
+      [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-e3-l1-page-actor-integration.md:32-38]
+    confidence: high
+    status: auto-answered
+    resolution:
+      evidence: e2
+      note: "cross-check of upstream standalone-vs-developer-version documentation against the slice's own dependency/membership graph (only 1 object + 4 empty stubs in devclass ZABAPGIT)."
+
+  - local_id: g7
+    class: CONFIG
+    load_bearing: true
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: >-
+      Why was ZABAPGIT_STANDALONE placed in a named, Z-namespace,
+      presumably transportable package (devclass ZABAPGIT) instead of a
+      local $ package, as explicitly recommended by upstream abapGit
+      documentation ("use a local $ package, e.g. $ABAPGIT")? Was this a
+      deliberate governance choice (e.g. to transport the tool
+      DEV->QAS->PRD) or an install-time oversight?
+    hypothesis: >-
+      [ANOMALY] verified deviation from documented upstream best practice.
+      Plausibly a deliberate choice to keep the tool available across the
+      landscape via standard transport instead of a per-system manual
+      reinstall, but this is a governance/process judgment call that cannot
+      be inferred from code or documentation alone.
+      [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-e4-package-anomaly.md:14-24]
+    confidence: medium
+    status: open
+
+  - local_id: g8
+    class: BUSINESS-RULE
+    load_bearing: true
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: >-
+      Is the "emergency database-utility mode" (triggered when SAP memory
+      parameter ID 'DBT' = 'ZABAPGIT', routing straight to the
+      C_ACTION-GO_DB action) a known/supported recovery path to the team
+      responsible for this system, and has it ever actually been used or
+      tested here?
+    hypothesis: >-
+      Per the program's own source comment this references an
+      abapGit-documented "emergency mode" feature (docs.abapgit.org), used
+      to recover access to a broken/corrupted GUI installation by routing
+      directly to a lower-level database-utility screen; this workspace's
+      raw-docs snapshot does not include that specific upstream page, so the
+      claim is not independently verifiable here and remains [INFERRED] at
+      best. Whether it is known/tested by this system's actual team is
+      [UNVERIFIABLE] from wiki, raw-docs, or standard knowledge alone.
+    confidence: low
+    status: open
+
+  - local_id: g9
+    class: BUSINESS-RULE
+    load_bearing: true
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: >-
+      Is SAP Note 2159455 (the SY-TCODE = 'SE41' workaround in
+      ZCL_ABAPGIT_OBJECTS_PROGRAM->DESERIALIZE_CUA, flagged as BUG-001 in
+      the L1 page) still applicable on this system's current
+      NetWeaver/kernel release, or can the workaround be retired?
+    hypothesis: >-
+      Cannot be determined without checking the SAP Note's applicability
+      against this system's actual release/support-package level (via SAP
+      Support Portal or a Basis-side release check); no source is available
+      in this benchmark workspace (no MCP access) to verify.
+    confidence: low
+    status: open
+
+  - local_id: g10
+    class: DATA-LIFECYCLE
+    load_bearing: false
+    entities: [program-ZABAPGIT_STANDALONE]
+    description: >-
+      How/where does abapGit persist its own configuration across sessions
+      (registered repositories, credentials/tokens, tool settings), given
+      that no custom Z persistence table appears among
+      ZABAPGIT_STANDALONE's statically-detected dependencies (only standard
+      TADIR/E070/TDEVC/DD02L)?
+    hypothesis: >-
+      [INFERRED] Standard abapGit architecture (general product knowledge,
+      not proven by this workspace's own evidence) self-creates its own
+      supporting persistence Z-table(s) at first run via generated DDIC
+      objects, which would explain why no static Z-table dependency is
+      visible in the program's own literal SELECTs -- the table(s) would be
+      created dynamically rather than referenced by a hardcoded name in this
+      program. Confidence is only medium, so this is left open rather than
+      auto-closed as a non-load-bearing gap.
+    confidence: medium
+    status: open
+
+evidence:
+  - local_id: e1
+    file: "slices/abapgit-standalone-demo/research/2026-07-03-e1-abapgit-purpose.md"
+    source: raw-docs
+    system: null
+    query: "read raw/docs/01-what-is-abapgit.md (official abapGit doc snapshot, fetched 2026-07-02)"
+    date: "2026-07-03"
+    gaps: [g1]
+
+  - local_id: e2
+    file: "slices/abapgit-standalone-demo/research/2026-07-03-e2-standalone-install-trigger.md"
+    source: raw-docs
+    system: null
+    query: "read raw/docs/02-install-standalone.md (official abapGit doc snapshot, fetched 2026-07-02)"
+    date: "2026-07-03"
+    gaps: [g3, g6]
+
+  - local_id: e3
+    file: "slices/abapgit-standalone-demo/research/2026-07-03-e3-l1-page-actor-integration.md"
+    source: wiki
+    system: null
+    query: "read wiki/ZABAPGIT/program-ZABAPGIT_STANDALONE.md (L1 code analysis page, gate ACCEPT hash 15fe0137)"
+    date: "2026-07-03"
+    gaps: [g3, g5, g6]
+
+  - local_id: e4
+    file: "slices/abapgit-standalone-demo/research/2026-07-03-e4-package-anomaly.md"
+    source: raw-docs
+    system: null
+    query: "cross-check raw/docs/02-install-standalone.md package recommendation against wiki/ZABAPGIT/program-ZABAPGIT_STANDALONE.md frontmatter (devclass) and manifest.yaml"
+    date: "2026-07-03"
+    gaps: [g7]
+
+summary_line: "Research: 10 gaps (7 load-bearing), 4 auto-answered via raw-docs/wiki, 5 residual load-bearing for questionnaire (plus 1 non-load-bearing open)."

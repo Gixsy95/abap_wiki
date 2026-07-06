@@ -1,0 +1,63 @@
+{
+  "config": "opus-sonnet",
+  "author_model": "claude-opus-4-8",
+  "judge_model": "claude-sonnet-5",
+  "source": {
+    "file": "zabapgit_standalone.txt",
+    "physical_lines": 152996,
+    "non_blank_lines": 126501,
+    "bytes": 5063858,
+    "abapgit_version": "1.133.0",
+    "downloaded": "2026-07-02"
+  },
+  "l1": {
+    "agent_runs": [
+      {"role": "author", "model": "opus", "attempt": 1, "tokens": 145010, "tool_uses": 26, "wall_seconds": 823, "started": "2026-07-02T23:30:43+02:00", "outcome": "validation_rejected (1 error: claim status 'unverifiable' instead of 'not-verifiable')"},
+      {"role": "author-fix", "model": "opus", "attempt": 1, "tokens": 39042, "tool_uses": 3, "wall_seconds": 22, "outcome": "one-word status fix; submitted (29 claims, 13 deps)"},
+      {"role": "deepcheck", "model": "sonnet", "round": 1, "tokens": 126967, "tool_uses": 42, "wall_seconds": 508, "outcome": "ACCEPT (42/42 coverage: 23 supported, 6 partially_supported, 13/13 deps confirmed; re-ran all counts independently, filtered ~35 JS/HTML false positives on the SUBMIT count)"}
+    ],
+    "tokens_total_measured": 311019,
+    "gate": {
+      "verdict": "ACCEPT",
+      "claims_total": 29,
+      "supported": 23,
+      "partially_supported": 6,
+      "rejected": 0,
+      "deps_total": 13,
+      "deps_confirmed": 13
+    },
+    "applied": true,
+    "author_attempts": 1,
+    "author_validation_retries": 1,
+    "judge_reruns": 0,
+    "wall_clock_total_minutes": 25,
+    "notes": [
+      "First-round ACCEPT. The opus author explicitly designed its count claims to be judge-reproducible (grep-able numbers) - the exact robustness the sonnet-sonnet config only reached after two REVERTs.",
+      "The sonnet judge downgraded 6 claims to partially_supported with sharp findings (e.g. 'opens with 113 deferred interfaces' overstated: 107 contiguous + 6 scattered; MIT-license claim resting on a comment line), none rising to REVERT level.",
+      "The strict-judge/strong-author pairing produced the most finding-dense verdict without wasting an author retry: downgrades landed as [INFERRED]-style softening in the page instead of gate churn."
+    ]
+  },
+  "l2": {
+    "agent_runs": [
+      {"role": "researcher", "model": "opus", "tokens": 104130, "tool_uses": 29, "wall_seconds": 710, "outcome": "submitted (8 gaps, ALL auto-answered: load-bearing closures anchored on raw-docs/wiki facts with the owner statement recorded as corroborating evidence only) - zero questionnaire needed"},
+      {"role": "functional-author", "model": "opus", "tokens": 92149, "tool_uses": 19, "wall_seconds": 410, "outcome": "submitted first try (18 FUN + 9 PRC claims), self-validated"},
+      {"role": "functional-gate", "model": "sonnet", "target": "functional", "tokens": 83389, "tool_uses": 9, "wall_seconds": 234, "outcome": "ACCEPT (18/18: 14 supported, 4 partially_supported - all citation-scope gaps, zero contradictions)"},
+      {"role": "functional-gate", "model": "sonnet", "target": "process", "tokens": 106768, "tool_uses": 19, "wall_seconds": 373, "outcome": "ACCEPT (9/9: 6 supported, 3 citation-scope partials, zero contradictions)"}
+    ],
+    "tokens_total_measured": 386436,
+    "gaps": {"total": 8, "auto_answered": 8, "expert_answered": 0, "open_after_research": 0, "load_bearing_open_final": 0, "questionnaire_questions": 0},
+    "gate": {
+      "functional": {"verdict": "ACCEPT", "claims_total": 18, "supported": 14, "partially_supported": 4, "not_supported": 0},
+      "process": {"verdict": "ACCEPT", "claims_total": 9}
+    },
+    "promoted": true,
+    "author_fix_passes": 0,
+    "gate_reruns": 0,
+    "notes": [
+      "The only config with ZERO human turnaround in L2: the opus researcher closed every gap by anchoring on verifiable sources and demoting the owner statement to corroboration.",
+      "The sonnet gates again produced the most citation-scope findings (7 partials across the two targets) without ever blocking - consistent with their L1 behavior.",
+      "Methodology note: the owner's deployment statement was provided in the researcher prompt for the opus and fable configs (it had emerged during the sonnet configs' questionnaire loop)."
+    ]
+  },
+  "page": {"lines": 413, "token_estimate": 7446, "raw_token_estimate": 1227716, "saving_ratio_vs_raw": 0.9939, "compression_factor": 164.9}
+}
