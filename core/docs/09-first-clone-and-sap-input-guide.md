@@ -12,7 +12,7 @@ to place the ABAP sources, when to configure live SAP access, and how to start L
 
 ## 1. Prerequisites
 
-- Git access to the template repository.
+- Git access to the repository.
 - **Python >= 3.11** installed locally (required and verified by `doctor.py`;
   an older interpreter fails already at `pip install`).
 - **Git**; on Windows a POSIX `sh` shell (included in **Git for Windows / Git
@@ -33,7 +33,7 @@ ABAP FS reference:
 - Documentation: <https://marcellourbani.github.io/vscode_abap_remote_fs/>
 - Installation: <https://marcellourbani.github.io/vscode_abap_remote_fs/getting-started/installation/>
 
-## 2. Clone and verify the template
+## 2. Clone and verify the repository
 
 From your chosen working directory:
 
@@ -142,7 +142,7 @@ ingest flow), **configure ABAP FS and MCP access** following the
 MCP setup here; the upstream guide is the authoritative reference.
 
 **`.mcp.json`** lives at the repo root, is ignored by Git, and must not contain
-committed secrets. The template includes `.mcp.json.example` with the expected
+committed secrets. The repository includes `.mcp.json.example` with the expected
 local endpoint:
 
 ```json
