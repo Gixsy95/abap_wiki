@@ -1,0 +1,29 @@
+Table MARC - Plant Data for Material
+SYNTHETIC example (abap_wiki template) - data dictionary extract.
+
+Field        DataType    Len.   Key     Description
+-----------  ----------  -----  ------  --------------------------------------------
+MANDT        CLNT        3      X       Client
+MATNR        CHAR        18     X       Material number
+WERKS        CHAR        4      X       Plant
+PSTAT        CHAR        15             Maintenance status (maintained views)
+LVORM        CHAR        1              Deletion flag at plant level
+DISMM        CHAR        2              MRP type (planning characteristic)
+DISPO        CHAR        3              MRP controller
+MINBE        DEC         13             Reorder point / minimum stock
+BSTRF        DEC         13             Fixed lot size
+BSTMI        DEC         13             Minimum lot size
+BSTMA        DEC         13             Maximum lot size
+EISBE        DEC         13             Safety stock
+BESKZ        CHAR        1              Procurement type (E=in-house, F=external)
+SOBSL        CHAR        2              Special procurement key
+PLIFZ        DEC         3              Planned delivery time (days)
+WEBAZ        DEC         3              Goods receipt processing time (days)
+EKGRP        CHAR        3              Purchasing group
+
+Functional notes:
+- MINBE is the REORDER POINT used as "minimum stock" in the report: if the
+  unrestricted stock (MARD-LABST) falls below MINBE, the material is a candidate
+  for reallocation.
+- MINBE is at PLANT level (WERKS), not storage location: a single value per material/plant.
+- EISBE (safety stock) is a different concept and is NOT used in this report.

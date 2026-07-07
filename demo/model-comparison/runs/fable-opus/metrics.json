@@ -1,0 +1,65 @@
+{
+  "config": "fable-opus",
+  "author_model": "claude-fable-5",
+  "judge_model": "claude-opus-4-8",
+  "source": {
+    "file": "zabapgit_standalone.txt",
+    "physical_lines": 152996,
+    "non_blank_lines": 126501,
+    "bytes": 5063858,
+    "abapgit_version": "1.133.0",
+    "downloaded": "2026-07-02"
+  },
+  "l1": {
+    "agent_runs": [
+      {"role": "author", "model": "fable", "attempt": 1, "tokens": 131058, "tool_uses": 30, "wall_seconds": 757, "started": "2026-07-03T01:01:27+02:00", "outcome": "submitted first try - ZERO validation errors (33 claims incl. generated IN/OUT, 27 deps, 5 bug candidates)"},
+      {"role": "deepcheck", "model": "opus", "round": 1, "tokens": 117578, "tool_uses": 15, "wall_seconds": 608, "outcome": "ACCEPT (60/60 coverage: 31 supported, 1 partially_supported, 1 not_supported at MEDIUM confidence, 27/27 deps confirmed)"}
+    ],
+    "tokens_total_measured": 248636,
+    "gate": {
+      "verdict": "ACCEPT",
+      "claims_total": 33,
+      "supported": 31,
+      "partially_supported": 1,
+      "rejected": 1,
+      "deps_total": 27,
+      "deps_confirmed": 27
+    },
+    "applied": true,
+    "author_attempts": 1,
+    "author_validation_retries": 0,
+    "judge_reruns": 0,
+    "wall_clock_total_minutes": 26,
+    "notes": [
+      "Cheapest config overall (~249k tokens), first-round ACCEPT, zero validation retries.",
+      "The opus judge produced the two sharpest findings of the whole benchmark: (1) CL-007's 'EVERY write is serialized' disproved by showing add() INSERTs without lock() - a real overstatement; (2) CL-026's line count off by one because the last line has no trailing newline (wc -l vs physical lines) - flagged at medium confidence as a definitional ambiguity, so it downgraded without hard-blocking.",
+      "not_supported at medium confidence does not trigger the S-count hard block (only high-confidence wrong counts do) - the gate calculus worked exactly as designed: the page ships with the claim downgraded rather than the batch churning.",
+      "The fable author cited the largest verified dependency set (27) including dynamic-dispatch dependencies, with zero rejected."
+    ]
+  },
+  "l2": {
+    "agent_runs": [
+      {"role": "researcher", "model": "fable", "attempt": 1, "tokens": 0, "wall_seconds": 267, "outcome": "KILLED by session limit (resets 6am) - no artifacts written; clean retry after reset"},
+      {"role": "researcher", "model": "fable", "attempt": 2, "tokens": 133641, "tool_uses": 34, "wall_seconds": 809, "outcome": "submitted (15 gaps: 12 auto-answered, 3 staged open for the formal capture-answer despite having the owner statement - source discipline like opus)"},
+      {"role": "owner-answer", "model": null, "tokens": 0, "outcome": "questionnaire (3 questions) -> owner's statement captured via capture-answer: 3 gaps answered (PURPOSE, TRIGGER, upgrade CONFIG)"},
+      {"role": "functional-author", "model": "fable", "tokens": 133186, "tool_uses": 36, "wall_seconds": 622, "outcome": "submitted first try (16 FUN + 9 PRC claims), self-validated"},
+      {"role": "functional-gate", "model": "opus", "target": "functional", "tokens": 79646, "tool_uses": 15, "wall_seconds": 214, "outcome": "ACCEPT (16/16: 15 supported, 1 rule-capped partial; explicitly avoided a false-positive contradiction on the batch-mode claim)"},
+      {"role": "functional-gate", "model": "opus", "target": "process", "tokens": 83375, "tool_uses": 15, "wall_seconds": 195, "outcome": "ACCEPT (9/9 all supported high, zero contradictions)"}
+    ],
+    "tokens_total_measured": 429848,
+    "gaps": {"total": 15, "auto_answered": 12, "expert_answered": 3, "open_after_research": 3, "load_bearing_open_final": 0, "questionnaire_questions": 3},
+    "gate": {
+      "functional": {"verdict": "ACCEPT", "claims_total": 16, "supported": 15, "partially_supported": 1, "not_supported": 0},
+      "process": {"verdict": "ACCEPT", "claims_total": 9}
+    },
+    "promoted": true,
+    "author_fix_passes": 0,
+    "gate_reruns": 0,
+    "notes": [
+      "First researcher attempt was killed by a session limit - clean retry after reset, nothing lost (fail-closed artifact design).",
+      "The fable researcher chose the same source discipline as opus: it kept owner-dependent gaps open for the formal capture-answer rather than auto-closing them.",
+      "The only L2 config where the process gate returned 9/9 supported-high with zero downgrades."
+    ]
+  },
+  "page": {"lines": 531, "token_estimate": 9050, "raw_token_estimate": 1227716, "saving_ratio_vs_raw": 0.9926, "compression_factor": 135.7}
+}

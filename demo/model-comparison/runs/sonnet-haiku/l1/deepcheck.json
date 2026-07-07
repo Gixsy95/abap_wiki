@@ -1,0 +1,450 @@
+{
+  "object_slug": "program-ZABAPGIT_STANDALONE",
+  "model": "haiku",
+  "contract_version": "abap-deepcheck/1",
+  "verdicts": [
+    {
+      "claim_id": "CL-001",
+      "class": "behavior",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 1-27 show MIT license header with Copyright notice. Lines 152992-152996 show INTERFACE lif_abapmerge_marker with constants c_merge_timestamp and c_abapmerge_version matching claimed values: version 0.16.8, timestamp 2026-07-01T10:45:14.302Z."
+    },
+    {
+      "claim_id": "CL-002",
+      "class": "behavior",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 7261-7266 show INTERFACE zif_abapgit_version with CONSTANTS c_abap_version TYPE string VALUE '1.133.0' - exactly as claimed."
+    },
+    {
+      "claim_id": "CL-003",
+      "class": "count",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Verified with regex patterns: CLASS ... DEFINITION DEFERRED = 511; CLASS ... IMPLEMENTATION = 516; INTERFACE ... DEFERRED = 113; ENDINTERFACE = 114. All counts match the claim exactly."
+    },
+    {
+      "claim_id": "CL-004",
+      "class": "count",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Exact FORM matches: password_popup at 152559, run at 152802, open_gui at 152822, output at 152850, exit at 152878, adjust_toolbar at 152904. Exactly 6 FORM routines claimed and verified."
+    },
+    {
+      "claim_id": "CL-005",
+      "class": "control-flow",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 152966-152972 show INITIALIZATION with PERFORM adjust_toolbar USING '1001' and lcl_password_dialog=>on_screen_init( ), followed by START-OF-SELECTION with PERFORM run. Control flow matches claim exactly."
+    },
+    {
+      "claim_id": "CL-006",
+      "class": "control-flow",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 152822-152846 show FORM open_gui with: IF sy-batch = abap_true calls zcl_abapgit_background=>run(); ELSE: GET PARAMETER ID 'DBT' FIELD lv_mode, CASE on 'ZABAPGIT'/'OTHERS' branches, then zcl_abapgit_ui_factory=>get_gui()->go_home(lv_action) and CALL SELECTION-SCREEN 1001. All control flow branches match claim."
+    },
+    {
+      "claim_id": "CL-007",
+      "class": "behavior",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 152376-152378 show SELECTION-SCREEN BEGIN OF SCREEN 1001...END OF SCREEN 1001 with no parameters, only comment '* dummy for triggering screen on Java SAP GUI'. Empty screen confirmed."
+    },
+    {
+      "claim_id": "CL-008",
+      "class": "data-flow",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 152488-152510 show on_screen_output METHOD with LOOP AT SCREEN setting screen-input='0' for P_URL/P_CMNT. Lines 152527-152543 show on_screen_event METHOD with CASE iv_ucomm: WHEN 'OK' sets gv_confirm=abap_true and LEAVE TO SCREEN 0; WHEN OTHERS sets gv_confirm=abap_false and LEAVE TO SCREEN 0. All logic matches claim."
+    },
+    {
+      "claim_id": "CL-009",
+      "class": "control-flow",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 39822-39850 show ZCL_ABAPGIT_PASSWORD_DIALOG=>POPUP METHOD with TRY/CATCH of PERFORM password_popup IN PROGRAM (sy-cprog) USING iv_repo_url CHANGING cv_user cv_pass, catching cx_sy_dyn_call_illegal_form. Lines 152559-152573 show FORM password_popup calling lcl_password_dialog=>popup. Both components confirmed."
+    },
+    {
+      "claim_id": "CL-010",
+      "class": "behavior",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 152494-152510 show LOOP AT SCREEN: for P_PASS sets SCREEN-INVISIBLE='1' only; SCREEN-INPUT is NOT modified/set elsewhere in the P_PASS block, confirming field is masked (invisible but enterable) rather than hidden."
+    },
+    {
+      "claim_id": "CL-011",
+      "class": "control-flow",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 152904-152965 show FORM adjust_toolbar: calls RPY_DYNPRO_READ at line 152912 with progname=sy-cprog, dynnr=pv_dynnr; computes lv_no_toolbar from is_variant_maintenance(); calls RPY_DYNPRO_INSERT at line 152942 if header differs; error branches (sy-subrc checks at 152927 and 152961) return silently. All logic matches claim."
+    },
+    {
+      "claim_id": "CL-012",
+      "class": "bug-candidate",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Line 74699 shows sy-tcode = 'SE41' ##WRITE_OK with inline comment 'evil hack, workaround to handle fixes in note 2159455' immediately before CALL FUNCTION 'RS_CUA_INTERNAL_WRITE' at line 74700. Bug candidate evidence is exact."
+    },
+    {
+      "claim_id": "CL-013",
+      "class": "count",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Grep search for 'DEFINITION FOR TESTING' returns 0 matches across the entire 152,996-line file. No ABAP Unit test classes are present."
+    },
+    {
+      "claim_id": "CL-014",
+      "class": "count",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Pattern counts verified: '^SELECT ' = 386 lines; 'CALL FUNCTION ''' = 558 statements; 'SELECT *' = 70 lines; 'COMMIT WORK' = 30 occurrences. The two inspected COMMIT WORK at lines 40797 and 40838 are both inside CATCH blocks of TRY/CATCH (not in LOOP), confirming the partial claim about these two."
+    },
+    {
+      "claim_id": "CL-015",
+      "class": "behavior",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 92651-92655 show SELECT * FROM tadir with explicit WHERE clauses on pgmid='R3TR', object='SICF', obj_name LIKE lv_obj_name, plus pragmas ##TOO_MANY_ITAB_FIELDS and #EC CI_GENBUFF. Wildcard SELECT is filtered and ATC-acknowledged."
+    },
+    {
+      "claim_id": "CL-016",
+      "class": "behavior",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Line 86251 shows AUTHORITY-CHECK OBJECT 'S_DEVELOP' (with fields DEVCLASS, OBJTYPE, OBJNAME, P_GROUP, ACTVT). Line 93575 shows second S_DEVELOP check. Line 98928 shows AUTHORITY-CHECK OBJECT 'S_OA2C_ADM'. Lines 152807-152810 show ZCL_ABAPGIT_AUTH=>IS_ALLOWED( ...C_AUTHORIZATION-STARTUP ) check in FORM run before any GUI logic. Authorization gates are correctly placed."
+    },
+    {
+      "claim_id": "CL-017",
+      "class": "pattern",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Verified IV_TCODE literals at: line 81393 = 'SMW0', line 82786 = 'SD11', line 82210 = 'SE54', line 86616 = 'SE72', line 87502 = 'SMARTFORMS', line 92633 = 'SICF', plus others listed in prompt. Pattern of multiple tcode literals passed to jump helpers is confirmed."
+    },
+    {
+      "claim_id": "CL-018",
+      "class": "behavior",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 152574-152589 show 4 conditional exit includes with IF FOUND: zabapgit_authorizations_exit, zabapgit_user_exit, zabapgit_background_user_exit, zabapgit_gui_pages_userexit. All 4 are present in comments and INCLUDE statements as described."
+    },
+    {
+      "claim_id": "CL-019",
+      "class": "behavior",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Line 23336 shows DATA mo_html_viewer TYPE REF TO cl_gui_html_viewer. Lines 152850-152876 show FORM output refreshing HTML GUI via zcl_abapgit_ui_factory=>get_gui()->set_focus(). User-facing output is HTML-based GUI, not materialized data extract."
+    },
+    {
+      "claim_id": "IN-001",
+      "class": "data-flow",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 152469-152474 show input field P_USER flowing to CHANGING parameter cv_user of LCL_PASSWORD_DIALOG=>POPUP: IF gv_confirm = abap_true. cv_user = p_user. ELSE. CLEAR cv_user. Captured only on confirmation."
+    },
+    {
+      "claim_id": "IN-002",
+      "class": "data-flow",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 152469-152476 show input field P_PASS flowing to CHANGING parameter cv_pass: IF gv_confirm = abap_true. cv_pass = p_pass. ELSE. CLEAR cv_pass. Field is then cleared again at line 152476 unconditionally (CLEAR: p_url, p_user, p_pass)."
+    }
+  ],
+  "dependency_verdicts": [
+    {
+      "dep_id": "DEP-001",
+      "name": "TADIR",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 94126: SELECT SINGLE * FROM tadir INTO ls_tadir - active SQL statement reading standard DDIC table TADIR."
+    },
+    {
+      "dep_id": "DEP-002",
+      "name": "E070",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 84503: SELECT SINGLE as4user FROM e070 INTO rv_user WHERE trkorr = lv_transport - active SQL statement reading standard E070 table."
+    },
+    {
+      "dep_id": "DEP-003",
+      "name": "TDEVC",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 95196: SELECT SINGLE dlvunit FROM tdevc INTO ls_header-component WHERE devclass = iv_package - active SELECT reading TDEVC table."
+    },
+    {
+      "dep_id": "DEP-004",
+      "name": "DD02L",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 74072: SELECT SINGLE tabname FROM dd02l INTO lv_tabname - active SELECT from standard DDIC table DD02L."
+    },
+    {
+      "dep_id": "DEP-005",
+      "name": "RS_CORR_INSERT",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 77764: CALL FUNCTION 'RS_CORR_INSERT' - active function module call to standard FM for transport request insert."
+    },
+    {
+      "dep_id": "DEP-006",
+      "name": "DDIF_TABL_GET",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 122043: CALL FUNCTION 'DDIF_TABL_GET' - active standard function module call for DDIC table read."
+    },
+    {
+      "dep_id": "DEP-007",
+      "name": "DDIF_TABL_PUT",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 74029: CALL FUNCTION 'DDIF_TABL_PUT' - active standard function module call for DDIC table write."
+    },
+    {
+      "dep_id": "DEP-008",
+      "name": "ABAP4_CALL_TRANSACTION",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 41641: CALL FUNCTION 'ABAP4_CALL_TRANSACTION' - active standard FM call for dynamic transaction invocation."
+    },
+    {
+      "dep_id": "DEP-009",
+      "name": "TR_READ_REQUEST_WITH_TASKS",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 150065: CALL FUNCTION 'TR_READ_REQUEST_WITH_TASKS' - active standard FM for transport request header/tasks read."
+    },
+    {
+      "dep_id": "DEP-010",
+      "name": "SEO_INTERFACE_CREATE_COMPLETE",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 124973: CALL FUNCTION 'SEO_INTERFACE_CREATE_COMPLETE' - active standard FM for interface object creation."
+    },
+    {
+      "dep_id": "DEP-011",
+      "name": "WWWDATA_IMPORT",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 65323: CALL FUNCTION 'WWWDATA_IMPORT' - active standard FM for MIME/W3 repository import."
+    },
+    {
+      "dep_id": "DEP-012",
+      "name": "PRGN_AFTER_IMP_SUSO_SAP_ALL",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 85672: CALL FUNCTION 'PRGN_AFTER_IMP_SUSO_SAP_ALL' - active standard FM for authorization/profile after-import handling."
+    },
+    {
+      "dep_id": "DEP-013",
+      "name": "RPY_DYNPRO_READ",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 152912: CALL FUNCTION 'RPY_DYNPRO_READ' - active standard FM for dynpro header read."
+    },
+    {
+      "dep_id": "DEP-014",
+      "name": "RPY_DYNPRO_INSERT",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 152942: CALL FUNCTION 'RPY_DYNPRO_INSERT' - active standard FM for dynpro header write/rewrite."
+    },
+    {
+      "dep_id": "DEP-015",
+      "name": "RS_CUA_INTERNAL_WRITE",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 74700: CALL FUNCTION 'RS_CUA_INTERNAL_WRITE' - active standard FM for CUA (menu-painter) status write."
+    },
+    {
+      "dep_id": "DEP-016",
+      "name": "CL_HTTP_CLIENT",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 141224: cl_http_client=>create_by_url( - active call to standard HTTP client class method."
+    },
+    {
+      "dep_id": "DEP-017",
+      "name": "IF_HTTP_CLIENT",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 141216: DATA li_client TYPE REF TO if_http_client - active interface reference declaration."
+    },
+    {
+      "dep_id": "DEP-018",
+      "name": "CL_ABAP_ZIP",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 54948: lo_zip TYPE REF TO cl_abap_zip - active reference declaration to standard ZIP class."
+    },
+    {
+      "dep_id": "DEP-019",
+      "name": "CL_GUI_HTML_VIEWER",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 23336: DATA mo_html_viewer TYPE REF TO cl_gui_html_viewer - active reference declaration to standard HTML viewer class."
+    },
+    {
+      "dep_id": "DEP-020",
+      "name": "SE93",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 84017: tcode = 'SE93' - active transaction code literal passed to ABAP4_CALL_TRANSACTION function module."
+    },
+    {
+      "dep_id": "DEP-021",
+      "name": "SE91",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": {
+        "line_exists": true,
+        "is_active_statement": true,
+        "type_correct": true,
+        "namespace_correct": true
+      },
+      "correction": null,
+      "rationale": "Line 61132: tcode = 'SE91' - active transaction code literal passed to ABAP4_CALL_TRANSACTION function module."
+    }
+  ]
+}

@@ -1,0 +1,428 @@
+{
+  "object_slug": "program-ZABAPGIT_STANDALONE",
+  "model": "fable",
+  "contract_version": "abap-deepcheck/1",
+  "verdicts": [
+    {
+      "claim_id": "CL-001",
+      "class": "behavior",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 152971-152972: START-OF-SELECTION -> PERFORM run. Lines 152807-152817: auth check via zcl_abapgit_auth=>is_allowed(startup) with raise on abap_false, zcl_abapgit_migrations=>run( ), PERFORM open_gui, and both CATCH zcx_abapgit_exception / zcx_abapgit_not_found -> MESSAGE ... TYPE 'E'. Every element of the sentence is on the cited lines."
+    },
+    {
+      "claim_id": "CL-002",
+      "class": "control-flow",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 152827-152829: IF sy-batch = abap_true -> zcl_abapgit_background=>run( ), ELSE branch (GUI). Enclosing routine confirmed by re-read: FORM open_gui starts at 152822; the HTML-GUI path (go_home + CALL SELECTION-SCREEN 1001) is in the ELSE at 152830-152846. Direction of the branch matches the sentence."
+    },
+    {
+      "claim_id": "CL-003",
+      "class": "control-flow",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 152832-152844: GET PARAMETER ID 'DBT' FIELD lv_mode; CASE: WHEN 'ZABAPGIT' -> c_action-go_db, WHEN OTHERS -> c_action-go_home; set_debug_mode( boolc( lv_mode = 'HREF' ) ); CALL SELECTION-SCREEN 1001 hosts the GUI. The 'database-utility page / emergency mode' labels are corroborated by the doc-link comment at 152831 (database-util.html#emergency-mode) and the go_db constant name; the operative logic is fully code-proven."
+    },
+    {
+      "claim_id": "CL-004",
+      "class": "behavior",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 152855 (PERFORM set_pf_status IN PROGRAM rsdbrunt IF FOUND), 152857-152858 (APPEND 'CRET'/'SPOS' with 'Button Execute'/'Button Save'), 152860-152864 (RS_SET_SELSCREEN_STATUS p_exclude = lt_ucomm), 152868-152874 (set_focus only IF is_variant_maintenance( ) = abap_false). All asserted elements on the cited lines; branch direction correct."
+    },
+    {
+      "claim_id": "CL-005",
+      "class": "behavior",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Verified against source 152885-152896: IF sy-dynnr <> 1001 -> RETURN (early exit); CASE sy-ucomm WHEN 'CBAC' OR 'CCAN' -> IF gui->back( iv_graceful = abap_true ) = abap_true (comment: end of stack) -> free( ), ELSE LEAVE TO SCREEN 1001. Logic direction and both outcomes match the sentence exactly."
+    },
+    {
+      "claim_id": "CL-006",
+      "class": "behavior",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Within the cited range 152904-152965 (omitted middle re-read from source): RPY_DYNPRO_READ with progname = sy-cprog (152912-152914); lv_no_toolbar = boolc( is_variant_maintenance( ) = abap_false ) (152933-152934); IF ls_header-no_toolbar = lv_no_toolbar -> RETURN 'No change required' (152936-152938), so RPY_DYNPRO_INSERT (152942) runs only when the flag differs; silent RETURNs on both error paths (152927-152929, 152961-152963)."
+    },
+    {
+      "claim_id": "CL-007",
+      "class": "behavior",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "c_dynnr = '1002' confirmed at 152422 (re-read to settle the screen-number doubt). Lines 152461-152467: center( iv_width = 65 iv_height = 7 ) then CALL SELECTION-SCREEN c_dynnr STARTING/ENDING AT. Lines 152469-152474 (152473 in cited range, verified in source): copy-back cv_user/cv_pass only IF gv_confirm = abap_true, ELSE CLEAR both. Second block 152531-152534: WHEN 'OK' \" Enter -> gv_confirm = abap_true."
+    },
+    {
+      "claim_id": "CL-008",
+      "class": "data-flow",
+      "verdict": "partially_supported",
+      "confidence": "high",
+      "rationale": "Proven by cited lines: c_tabname VALUE 'ZABAPGIT' (20873) and dynamic SELECT FROM (c_tabname) in list/list_by_keys/list_by_type (73201-73217). NOT in the cited evidence: the asserted INSERT/MODIFY/UPDATE/DELETE (they exist in source at 73167/73253/73282/73177 inside zcl_abapgit_persistence_db, verified true, but uncited) and the scope claim that repos/settings/user/background config all route through this table. The sentence is shown only in part by its own evidence."
+    },
+    {
+      "claim_id": "CL-009",
+      "class": "data-flow",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 141224-141231: cl_http_client=>create_by_url with ssl_id = zcl_abapgit_exit=>get_instance( )->get_ssl_id( ), proxy_host/proxy_service from lo_proxy_configuration->get_proxy_url/get_proxy_port. Doubt on the proxy object identity settled by re-read: declaration at 141217 is DATA lo_proxy_configuration TYPE REF TO zcl_abapgit_proxy_config."
+    },
+    {
+      "claim_id": "CL-010",
+      "class": "count",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Counted mechanically: grep of source lines 152559-152965 for the SELECT keyword (excluding SELECTION-SCREEN tokens) returns zero matches. The range contains the six FORMs (152559, 152802, 152822, 152850, 152878, 152904) and lcl_startup; no SELECT statement exists there."
+    },
+    {
+      "claim_id": "CL-011",
+      "class": "count",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Counted over the whole file: exactly 6 FORM statements - password_popup 152559, run 152802, open_gui 152822, output 152850, exit 152878, adjust_toolbar 152904 (no indented FORMs elsewhere) - all within 152559-152965. Exactly 5 event blocks: INITIALIZATION 152967, START-OF-SELECTION 152971, AT SELECTION-SCREEN OUTPUT 152975, AT SELECTION-SCREEN ON EXIT-COMMAND 152983, AT SELECTION-SCREEN 152986. 6 and 5, as claimed."
+    },
+    {
+      "claim_id": "CL-012",
+      "class": "count",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Counted mechanically over the whole file: exactly 4 'INCLUDE ... IF FOUND' statements - zabapgit_authorizations_exit 152577, zabapgit_user_exit 152582, zabapgit_background_user_exit 152587, zabapgit_gui_pages_userexit 152589 - matching the four names in the sentence. No others exist."
+    },
+    {
+      "claim_id": "CL-013",
+      "class": "bug-candidate",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "The cited lines show the defect: RPY_DYNPRO_READ with progname = sy-cprog (152912-152914, own program), RPY_DYNPRO_INSERT at 152942 (verified in source within the cited range) rewriting the dynpro at runtime, and both error paths swallowed silently - IF sy-subrc IS NOT INITIAL -> RETURN 'Ignore errors, just exit' (152927-152929) and IF sy-subrc <> 2 AND sy-subrc <> 0 -> RETURN (152961-152963), with no message on any path."
+    },
+    {
+      "claim_id": "CL-014",
+      "class": "bug-candidate",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 152761-152795: TRY around dynamic CREATE DATA ('CL_ADT_GUI_INTEGRATION_CONTEXT=>TY_CONTEXT_INFO') and CALL METHOD (ls_item-obj_name)=>read_context, closed by CATCH cx_root ##NO_HANDLER with the 'fail silently' comment. Attribution settled by re-read: METHOD get_package_from_adt starts at 152744 inside CLASS lcl_startup IMPLEMENTATION (152619)."
+    },
+    {
+      "claim_id": "CL-015",
+      "class": "bug-candidate",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 151587 (lt_list = zcl_abapgit_persist_factory=>get_background( )->list( )) and 151600-151603 (zcl_abapgit_login_manager=>set_basic( iv_username = <ls_list>-username iv_password = <ls_list>-password )) show the persisted username/password passed as-is. Attribution settled by re-read: METHOD run at 151567 inside CLASS zcl_abapgit_background IMPLEMENTATION (151473)."
+    },
+    {
+      "claim_id": "CL-016",
+      "class": "bug-candidate",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Within the cited range 73190-73241: mv_update_function = 'CALL_V1_PING' (73192) with fallback 'BANK_OBJ_WORKL_RELEASE_LOCKS' when the FM does not exist (73193-73194); METHOD lock calls ENQUEUE_EZABAPGIT (73222, in-range, verified in source) and then CALL FUNCTION lv_dummy_update_function IN UPDATE TASK (73238-73239) under the comment 'trigger dummy update task to automatically release locks at commit'. Class attribution verified: zcl_abapgit_persistence_db IMPLEMENTATION at 73157."
+    },
+    {
+      "claim_id": "CL-017",
+      "class": "bug-candidate",
+      "verdict": "partially_supported",
+      "confidence": "high",
+      "rationale": "Proven by cited lines: global PARAMETERS p_user (152398) and p_pass (152402) - confirmed inside SELECTION-SCREEN BEGIN OF SCREEN 1002 (152389-152409, re-read); CLEAR p_pass before display (152452); CLEAR: p_url, p_user, p_pass after the popup (152476). NOT in either cited evidence block: the 'rendering it invisible (152506-152508)' mitigation - it is real in source (screen-invisible = '1' for P_PASS) but lies outside the lines cited for this claim."
+    },
+    {
+      "claim_id": "CL-018",
+      "class": "behavior",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Line 7264: CONSTANTS c_abap_version TYPE string VALUE '1.133.0' in INTERFACE zif_abapgit_version (7261). Lines 152992-152995: INTERFACE lif_abapmerge_marker with c_merge_timestamp `2026-07-01T10:45:14.302Z` and c_abapmerge_version `0.16.8` as active constants (not only the comment). All three facts on the cited lines."
+    },
+    {
+      "claim_id": "CL-019",
+      "class": "behavior",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 152808-152810: IF is_allowed( c_authorization-startup ) = abap_false -> zcx_abapgit_exception=>raise( 'No authorization to start abapGit' ) - refusal direction correct. Lines 152814-152817: both CATCH blocks issue MESSAGE ... TYPE 'E'. Enclosing FORM run confirmed at 152802 (re-read)."
+    },
+    {
+      "claim_id": "CL-020",
+      "class": "behavior",
+      "verdict": "partially_supported",
+      "confidence": "high",
+      "rationale": "Proven by cited lines 73219-73241: METHOD lock calls ENQUEUE_EZABAPGIT with raise_t100 on sy-subrc <> 0 (foreign_lock = 1) and triggers the dummy update-task call to release locks at commit. NOT in the cited evidence: that the write methods invoke lock( ) BEFORE MODIFY/UPDATE/DELETE - true in source (lock( ) at 73246-73247 before MODIFY 73253, at 73279-73280 before UPDATE 73282, and in delete before DELETE 73177) but those lines are uncited, so half the sentence lies beyond the evidence."
+    },
+    {
+      "claim_id": "CL-021",
+      "class": "behavior",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 152967-152969 verified verbatim in source: INITIALIZATION. PERFORM adjust_toolbar USING '1001'. lcl_password_dialog=>on_screen_init( )."
+    },
+    {
+      "claim_id": "CL-022",
+      "class": "data-flow",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 152986-152989: AT SELECTION-SCREEN routes sscrfields-ucomm to on_screen_event only IF sy-dynnr = lcl_password_dialog=>c_dynnr. The asserted value c_dynnr = '1002' settled by re-read of the constant declaration at 152422."
+    },
+    {
+      "claim_id": "CL-023",
+      "class": "count",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Counted mechanically: the token 'FOR TESTING' (case-sensitive, as written in code) occurs 0 times in the file; case-insensitive search finds only two comment lines ('\" For testing only' at 70820, '* temporary method for testing' at 122037), neither an ABAP FOR TESTING addition, so zero test classes holds. File length 152,996 lines confirmed by wc -l."
+    },
+    {
+      "claim_id": "CL-024",
+      "class": "behavior",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 151618-151620: li_repo->refresh( iv_drop_cache = abap_true iv_drop_log = abap_false ) - flags exactly as claimed (drop cache, keep log). Loop context settled by re-read: the call sits inside LOOP AT lt_list (151591-151629), executed per processed repo before the next iteration; the memory-usage purpose is corroborated by the adjacent comment at 151617."
+    },
+    {
+      "claim_id": "CL-025",
+      "class": "pattern",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 152827-152829 show the branch IF sy-batch = abap_true -> zcl_abapgit_background=>run( ) ELSE (interactive GUI), which is the code anchor of the batch-job pattern asserted."
+    },
+    {
+      "claim_id": "CL-026",
+      "class": "behavior",
+      "verdict": "partially_supported",
+      "confidence": "high",
+      "rationale": "Proven by cited lines: WRITE: / 'Background mode' header (151589), per-repo WRITE: / <ls_list>-method, lv_repo_name (151598), and the '{type}: {text}' formatting loop in METHOD write_log (57260-57266). NOT in the cited evidence: the linkage that write_log is invoked from the background loop (source line 151628, zcl_abapgit_log_viewer=>write_log( li_log ), verified true) and the class attribution zcl_abapgit_log_viewer (impl at 56844) - both uncited, so the connecting assertion lies beyond the cited lines."
+    },
+    {
+      "claim_id": "CL-027",
+      "class": "count",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Counted mechanically: wc -l returns 152,996 lines; exactly one REPORT statement (line 1: REPORT zabapgit_standalone LINE-SIZE 100); the file ends at 152996 with ENDINTERFACE of lif_abapmerge_marker, consistent with the abapmerge single-file build description."
+    },
+    {
+      "claim_id": "CL-028",
+      "class": "behavior",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 152376-152378: SELECTION-SCREEN BEGIN OF SCREEN 1001 immediately followed by END OF SCREEN 1001 with only the 'dummy for triggering screen' comment - empty screen. Lines 152842-152844: go_home( lv_action ) then CALL SELECTION-SCREEN 1001 '\" trigger screen'. Both halves of the sentence are on the cited lines."
+    },
+    {
+      "claim_id": "CL-029",
+      "class": "behavior",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Within the cited range 152488-152523 (omitted lines re-read from source): P_URL/P_CMNT screen-input = '0' (152495-152499); P_CMNT/SC_CMNT kept visible (152501-152504); P_PASS screen-invisible = '1' (152506-152508); APPEND 'PICK' then RS_SET_SELSCREEN_STATUS p_status = 'DETL' p_program = 'RSPFPAR' p_exclude = lt_ucomm (152512-152519); SET CURSOR FIELD 'P_PASS' when p_user IS NOT INITIAL (152521-152522). Every element verified."
+    },
+    {
+      "claim_id": "CL-030",
+      "class": "pattern",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 152290-152296: cl_salv_table=>factory( ... ) rendering it_dependencies data. Attribution settled by re-read: METHOD show_dependencies_popup (152278) inside CLASS zcl_abapgit_apack_helper IMPLEMENTATION (152071), surrounded by APACK manifest methods - the APACK dependency popup example is accurate."
+    },
+    {
+      "claim_id": "IN-001",
+      "class": "data-flow",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Cited lines 152469-152474 show the asserted flow: cv_user = p_user executed only IF gv_confirm = abap_true, ELSE CLEAR: cv_user, cv_pass. The referenced gating source (WHEN 'OK' -> gv_confirm = abap_true, 152532-152533) and post-popup CLEAR (152476) verified in source; the flow itself - the object of an input-mapping claim - is fully on the cited lines."
+    },
+    {
+      "claim_id": "IN-002",
+      "class": "data-flow",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Cited lines 152469-152476 show the asserted flow: cv_pass = p_pass only on gv_confirm = abap_true, CLEAR: cv_user, cv_pass otherwise, and CLEAR: p_url, p_user, p_pass after the popup (152476, in range). The supplementary mitigations referenced (invisible at 152506-152508, CLEAR p_pass at 152452) verified true in source; the flow judged here is fully on the cited lines."
+    },
+    {
+      "claim_id": "OUT-001",
+      "class": "data-flow",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Line 151589: WRITE: / 'Background mode' - a literal constant written to the list output, exactly the constant kind asserted."
+    },
+    {
+      "claim_id": "OUT-002",
+      "class": "data-flow",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Line 151598: WRITE: / <ls_list>-method, lv_repo_name - the asserted origin token <ls_list>-method is on the cited line; the value comes from the method-call-populated local table (non-DDIC operand at this layer), consistent with the computed kind; not a sy-* read nor a 1:1 DDIC move."
+    },
+    {
+      "claim_id": "OUT-003",
+      "class": "data-flow",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 151595-151598: li_repo resolved by key, lv_repo_name = li_repo->get_name( ) (production by method call from non-DDIC operands), then WRITE: / <ls_list>-method, lv_repo_name. Computed kind and origin fully shown on the cited lines."
+    },
+    {
+      "claim_id": "OUT-004",
+      "class": "data-flow",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 57260-57266 show the production: string templates |{ lr_message->type }: { lr_message->text } ...| assigned to lv_text and WRITE: / lv_text - computed from non-DDIC log-message operands, exactly the asserted format. The invocation reference (151628) is outside the cited range but verified true in source; per output-mapping rules the production shown on the cited lines is what is judged."
+    },
+    {
+      "claim_id": "OUT-005",
+      "class": "data-flow",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 151580-151585: CATCH zcx_abapgit_exception after enqueue( ) -> WRITE: / 'Another instance of the program is already running' followed by RETURN. Constant literal written in the CATCH branch, exactly as asserted."
+    },
+    {
+      "claim_id": "OUT-006",
+      "class": "data-flow",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Lines 151631-151633: IF lines( lt_list ) = 0 -> WRITE: / 'Nothing configured'. Constant literal under the asserted condition."
+    }
+  ],
+  "dependency_verdicts": [
+    {
+      "dep_id": "DEP-001",
+      "name": "RPY_DYNPRO_READ",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": { "line_exists": true, "is_active_statement": true, "type_correct": true, "namespace_correct": true },
+      "correction": null,
+      "rationale": "Line 152912: CALL FUNCTION 'RPY_DYNPRO_READ' - active statement in FORM adjust_toolbar, function-module type correct, SAP standard namespace."
+    },
+    {
+      "dep_id": "DEP-002",
+      "name": "RPY_DYNPRO_INSERT",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": { "line_exists": true, "is_active_statement": true, "type_correct": true, "namespace_correct": true },
+      "correction": null,
+      "rationale": "Line 152942: CALL FUNCTION 'RPY_DYNPRO_INSERT' - active statement in FORM adjust_toolbar, function-module, standard."
+    },
+    {
+      "dep_id": "DEP-003",
+      "name": "RS_SET_SELSCREEN_STATUS",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": { "line_exists": true, "is_active_statement": true, "type_correct": true, "namespace_correct": true },
+      "correction": null,
+      "rationale": "Line 152860: CALL FUNCTION 'RS_SET_SELSCREEN_STATUS' in FORM output; second active use verified at 152514 in on_screen_output. Function-module, standard."
+    },
+    {
+      "dep_id": "DEP-004",
+      "name": "ENQUEUE_EZABAPGIT",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": { "line_exists": true, "is_active_statement": true, "type_correct": true, "namespace_correct": true },
+      "correction": null,
+      "rationale": "Line 73222: CALL FUNCTION 'ENQUEUE_EZABAPGIT' - active statement in zcl_abapgit_persistence_db=>lock. Generated enqueue FM of the abapGit-shipped lock object EZABAPGIT (c_lock at 20874); custom classification correct - not an SAP-delivered FM."
+    },
+    {
+      "dep_id": "DEP-005",
+      "name": "CALL_V1_PING",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": { "line_exists": true, "is_active_statement": true, "type_correct": true, "namespace_correct": true },
+      "correction": null,
+      "rationale": "Line 73192: mv_update_function = 'CALL_V1_PING' - the literal assignment is visible and the dynamic CALL FUNCTION lv_dummy_update_function IN UPDATE TASK is at 73238 (verified), satisfying the variable-name carve-out. Function-module, SAP standard."
+    },
+    {
+      "dep_id": "DEP-006",
+      "name": "BANK_OBJ_WORKL_RELEASE_LOCKS",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": { "line_exists": true, "is_active_statement": true, "type_correct": true, "namespace_correct": true },
+      "correction": null,
+      "rationale": "Line 73194: fallback literal assignment to mv_update_function inside the function_exists check (73193), called dynamically IN UPDATE TASK at 73238. Literal assignment visible; function-module, SAP standard."
+    },
+    {
+      "dep_id": "DEP-007",
+      "name": "ZABAPGIT",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": { "line_exists": true, "is_active_statement": true, "type_correct": true, "namespace_correct": true },
+      "correction": null,
+      "rationale": "Line 20873: CONSTANTS c_tabname ... VALUE 'ZABAPGIT' in zcl_abapgit_persistence_db DEFINITION; dynamic DML verified in source: INSERT 73167, DELETE 73177, SELECT 73201/73207/73214/73261, MODIFY 73253, UPDATE 73282, all FROM/ON (c_tabname). Table type correct, Z* custom namespace correct."
+    },
+    {
+      "dep_id": "DEP-008",
+      "name": "TADIR",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": { "line_exists": true, "is_active_statement": true, "type_correct": true, "namespace_correct": true },
+      "correction": null,
+      "rationale": "Line 94126: SELECT SINGLE * FROM tadir INTO ls_tadir - active Open SQL read, table type correct, SAP standard."
+    },
+    {
+      "dep_id": "DEP-009",
+      "name": "TDEVC",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": { "line_exists": true, "is_active_statement": true, "type_correct": true, "namespace_correct": true },
+      "correction": null,
+      "rationale": "Line 107411: SELECT SINGLE dlvunit FROM tdevc INTO lv_dlvunit WHERE devclass = iv_package - active Open SQL read, table, standard."
+    },
+    {
+      "dep_id": "DEP-010",
+      "name": "CL_HTTP_CLIENT",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": { "line_exists": true, "is_active_statement": true, "type_correct": true, "namespace_correct": true },
+      "correction": null,
+      "rationale": "Line 141224: cl_http_client=>create_by_url( - static method call, class type correct, SAP standard."
+    },
+    {
+      "dep_id": "DEP-011",
+      "name": "CL_GUI_HTML_VIEWER",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": { "line_exists": true, "is_active_statement": true, "type_correct": true, "namespace_correct": true },
+      "correction": null,
+      "rationale": "Line 23336: DATA mo_html_viewer TYPE REF TO cl_gui_html_viewer - active TYPE REF TO declaration, class type correct, standard."
+    },
+    {
+      "dep_id": "DEP-012",
+      "name": "CL_GUI_CONTAINER",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": { "line_exists": true, "is_active_statement": true, "type_correct": true, "namespace_correct": true },
+      "correction": null,
+      "rationale": "Line 23332: io_container TYPE REF TO cl_gui_container DEFAULT cl_gui_container=>screen0 - active signature declaration plus static attribute access on the same line; class, standard."
+    },
+    {
+      "dep_id": "DEP-013",
+      "name": "CL_SALV_TABLE",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": { "line_exists": true, "is_active_statement": true, "type_correct": true, "namespace_correct": true },
+      "correction": null,
+      "rationale": "Line 152295: cl_salv_table=>factory( IMPORTING r_salv_table = lo_alv - active static call in zcl_abapgit_apack_helper=>show_dependencies_popup; class, standard."
+    },
+    {
+      "dep_id": "DEP-014",
+      "name": "CL_HTTP_UTILITY",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": { "line_exists": true, "is_active_statement": true, "type_correct": true, "namespace_correct": true },
+      "correction": null,
+      "rationale": "Line 152776: cl_http_utility=>string_to_fields( cl_http_utility=>unescape_url( ... ) ) - two active static calls in lcl_startup=>get_package_from_adt; class, standard."
+    },
+    {
+      "dep_id": "DEP-015",
+      "name": "RSDBRUNT",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": { "line_exists": true, "is_active_statement": true, "type_correct": true, "namespace_correct": true },
+      "correction": null,
+      "rationale": "Line 152855: PERFORM set_pf_status IN PROGRAM rsdbrunt IF FOUND - active external PERFORM, program type correct, SAP standard."
+    },
+    {
+      "dep_id": "DEP-016",
+      "name": "RSPFPAR",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": { "line_exists": true, "is_active_statement": true, "type_correct": true, "namespace_correct": true },
+      "correction": null,
+      "rationale": "Line 152517: p_program = 'RSPFPAR' as argument of CALL FUNCTION 'RS_SET_SELSCREEN_STATUS' with p_status = 'DETL' (152514-152516, verified) - the literal is consumed at runtime to borrow that program's GUI status, a real reference to program RSPFPAR, not a comment or stray literal. Program type and standard namespace correct."
+    },
+    {
+      "dep_id": "DEP-017",
+      "name": "SSCRFIELDS",
+      "verdict": "confirmed",
+      "confidence": "high",
+      "checks": { "line_exists": true, "is_active_statement": true, "type_correct": true, "namespace_correct": true },
+      "correction": null,
+      "rationale": "Line 152380: TABLES sscrfields - active declaration of the DDIC structure work area; read at 152988 (sscrfields-ucomm). Structure type correct, SAP standard."
+    }
+  ]
+}

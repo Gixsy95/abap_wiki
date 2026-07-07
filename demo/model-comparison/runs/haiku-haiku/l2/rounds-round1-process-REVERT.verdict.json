@@ -1,0 +1,85 @@
+{
+  "object_slug": "process-abapgit-standalone-demo",
+  "model": "haiku-4.5",
+  "contract_version": "abap-functional-gate/1",
+  "verdicts": [
+    {
+      "claim_id": "PRC-001",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Evidence from purpose-and-trigger.md lines 26-29 explicitly states: 'The standalone ZABAPGIT_STANDALONE program serves as an offline, transportable Git client for SAP ABAP environments...deployed as a single monolithic program.' This directly supports the claim that abapGit is a monolithic Git client enabling code repository management via Git instead of SAP transport."
+    },
+    {
+      "claim_id": "PRC-002",
+      "verdict": "not_supported",
+      "confidence": "high",
+      "rationale": "The cited evidence (maintenance-and-config.md lines 24-44) covers ONLY installation (deployment, package placement) and upgrade processes. The claim asserts the process covers 'installation, authentication, clone/pull/push operations, and both interactive and batch modes' but the evidence file does not address authentication, clone/pull/push operations, or interactive/batch modes-these are discussed elsewhere in the process doc (purpose-and-trigger.md, field-semantics-and-integration.md) but not in the cited section. The evidence is incomplete for the full sentence."
+    },
+    {
+      "claim_id": "PRC-003",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Evidence from purpose-and-trigger.md lines 50-53 states: 'The program is launched by developers via transaction SE38...Entry point: START-OF-SELECTION calls FORM run (authorization check) → FORM open_gui (which dispatches...)'. This matches the claimed execution flow. Verified against L1 code analysis lines 46-48 which confirms the INITIALIZATION → START-OF-SELECTION → FORM run → FORM open_gui sequence."
+    },
+    {
+      "claim_id": "PRC-004",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Claim is marked inferred (no external evidence required). The L1 code analysis (lines 129-138) explicitly confirms: 'Check user authorization via zcl_abapgit_auth=>is_allowed(zif_abapgit_auth=>c_authorization-startup)' (line 152808), 'If not authorized, raise exception' (line 152809), and 'Catch and display exceptions...as TYPE 'E' messages' (lines 152814-152817). The inferred claim is well-supported by the code."
+    },
+    {
+      "claim_id": "PRC-005",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Evidence from purpose-and-trigger.md lines 46-53 confirms the routing logic: 'FORM open_gui (batch/interactive routing) → CALL SELECTION-SCREEN 1001 for interactive mode, or zcl_abapgit_background=>run() for batch mode'. This directly matches the claim. Verified against L1 code analysis lines 146-159 (FORM open_gui) which shows the exact logic: sy-batch check → either zcl_abapgit_background=>run() or GUI launch."
+    },
+    {
+      "claim_id": "PRC-006",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Evidence from field-semantics-and-integration.md lines 28-32 explicitly defines the field semantics: 'p_url: Git repository URL', 'p_user: Username for Git authentication', 'p_pass: Password or personal access token', 'p_cmnt: Comment/instruction line'. This matches the claim exactly. Verified against L1 code analysis lines 152393-152495 showing parameter flow to lcl_password_dialog."
+    },
+    {
+      "claim_id": "PRC-007",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Evidence from field-semantics-and-integration.md lines 44-56 states: 'abapGit (ZABAPGIT_STANDALONE) operates INDEPENDENTLY of the standard transport system...manages ABAP objects through Git version control rather than through SAP transport requests...bypassing the traditional STMS/TR workflow entirely'. This directly supports the claim of independence from STMS. No contradiction with L1 code."
+    },
+    {
+      "claim_id": "PRC-008",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Evidence from field-semantics-and-integration.md lines 58-71 confirms: 'Offline repositories: Manage ABAP code locally within SAP without internet access (ZIP file import/export for code distribution)...provides flexibility for air-gapped or isolated SAP landscapes'. This directly supports the claim about offline/air-gapped systems using ZIP file import/export."
+    },
+    {
+      "claim_id": "PRC-009",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Evidence from maintenance-and-config.md lines 24-28 explicitly covers the installation steps: 'Download the standalone ABAP source from GitHub, create the program in SE38/ADT, upload the source file, and activate...local package `$ABAPGIT` is recommended'. This matches the claim exactly. Verified against L1 code frontmatter which shows raw_source_path and activation context."
+    },
+    {
+      "claim_id": "PRC-010",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Evidence from maintenance-and-config.md lines 33-44 explicitly states: 'To upgrade from v1.1.13 to a newer version, download the new source from GitHub and re-upload/re-activate the program. This is a manual process, not automatic'. This directly matches the claim about manual upgrade procedure. No contradiction with L1 code (code is a snapshot at v1.1.13 as stated in lines 79)."
+    },
+    {
+      "claim_id": "PRC-011",
+      "verdict": "supported",
+      "confidence": "medium",
+      "rationale": "Claim is marked not-verifiable (no external evidence required; reasonableness judgment applied). The L1 code analysis (lines 168-169) confirms: 'BUG-002: hardcoded Parameter ID 'DBT' and literal 'ZABAPGIT'...no audit logging of emergency mode'. The L1 code explicitly shows lines 152832-152838 implement the Parameter ID 'DBT' routing. For a not-verifiable claim, the code evidence is sufficient to mark as reasonable and supported."
+    }
+  ],
+  "contradictions": [],
+  "process_consistency": {
+    "object_chain_status": "consistent",
+    "object_chain_note": "The object_chain in the process document (Hop 0: 1 anchor, Hop 1: 10 classes/interfaces + 4 user exit programs + 19 function modules + 4 tables = 37 objects) matches exactly with membership.md (38 total objects including anchor). All dependencies listed in the process doc are present in the L1 frontmatter and membership.md.",
+    "end_to_end_flow_status": "consistent",
+    "end_to_end_flow_note": "The 8 sections of end_to_end_flow (installation, SE38 launch, authorization, routing, interactive mode, offline mode, back-navigation, upgrade) align with the L1 code analysis: FORM run (authorization), FORM open_gui (routing), FORM exit (back-navigation), FORM adjust_toolbar (not explicitly mentioned but present in L1). No contradictions found."
+  },
+  "coverage": {
+    "total_claims": 11,
+    "claims_verified": 11,
+    "coverage_percentage": 100
+  }
+}

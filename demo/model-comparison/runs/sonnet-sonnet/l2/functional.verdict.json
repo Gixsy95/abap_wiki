@@ -1,0 +1,104 @@
+{
+  "object_slug": "program-ZABAPGIT_STANDALONE",
+  "model": "claude-sonnet-5",
+  "contract_version": "abap-functional-gate/1",
+  "verdicts": [
+    {
+      "claim_id": "FUN-001",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "slices/abapgit-standalone-demo/inputs/expert-answers/2026-07-03-owner-demo-context.md:19 (gap g001) states verbatim that ZABAPGIT_STANDALONE exists in this knowledge base as the input of a public demo, downloaded from docs.abapgit.org on 2026-07-02 to demonstrate/benchmark the abap_wiki L0/L1/L2 ingest pipeline, and is not part of any business process. Matches the sentence fully. No contradiction with L1 (3.1 independently frames the object as vendored infrastructure tooling, not ACME business logic)."
+    },
+    {
+      "claim_id": "FUN-002",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "slices/abapgit-standalone-demo/research/2026-07-03-standalone-vs-developer-version.md:22-27 quotes the official docs verbatim: the standalone version 'targeted at users. It consists of one (huge) program which contains all the needed code'; the developer version 'targeted at developers contributing to the abapGit codebase,' run via transaction ZABAPGIT, and 'requires installing the standalone version first.' Matches the sentence fully. No contradiction with L1 (which does not assert or deny the existence of a separate developer-version transaction at ACME)."
+    },
+    {
+      "claim_id": "FUN-003",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Same research file, lines 57-65, states verbatim 'by design, ZABAPGIT_STANDALONE exists to bootstrap a system that does not yet have the full multi-object abapGit repository installed' -- a direct match of the sentence. Consistent with L1 3.1's own [INFERRED] statement that the object is 'the self-contained installer/runtime build of that tool: a system that does not yet have the multi-object abapGit repository installed can run this single program to bootstrap it.' No contradiction."
+    },
+    {
+      "claim_id": "FUN-004",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "slices/abapgit-standalone-demo/inputs/expert-answers/2026-07-03-owner-demo-context.md:23 (gap g005) states verbatim that no background/batch job is configured for zcl_abapgit_background=>run, the program is never executed here, and is used exclusively as a source-snapshot pipeline input. Matches the sentence fully. No contradiction with L1: the L1 page never claims the object was executed, and its own Business open question 4 independently flags whether any background job is configured as [UNVERIFIABLE] from source alone -- consistent with, not contradicted by, the owner's answer."
+    },
+    {
+      "claim_id": "FUN-005",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "slices/abapgit-standalone-demo/research/2026-07-03-standalone-vs-developer-version.md:23 and :35 (both within the cited 21-35 range) state the standalone version 'is executed via transaction SE38' and install step 5 is 'Run it via transaction SE38'; the fully enumerated 5-step install procedure (lines 29-34, also in range) only creates a report named ZABAPGIT_STANDALONE via SE38/SE80/ADT (step 2) and never creates a dedicated transaction code. Together this proves both halves of the sentence. Checked against L1 for contradiction: L1 3.4 ('Known caller') contains only a hedged, uncited, explicitly [UNVERIFIABLE] remark that the program is 'normally started directly via SE38/its own transaction code' -- generic unevidenced speculation by the L1 author, not a code-proven fact, so it does not rise to a contradiction of the research-sourced claim."
+    },
+    {
+      "claim_id": "FUN-006",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "slices/abapgit-standalone-demo/research/2026-07-03-standalone-vs-developer-version.md:43-55 (Interpretation section, fully within the cited range) states verbatim 'the officially recommended client is classic SAPGUI, not ADT/Eclipse ... though the code itself (per the L1 analysis, lcl_startup=>get_package_from_adt) also supports being opened from an ADT context when available, which the docs do not contradict (ADT is an optional integration point, not the primary documented launch path).' This directly supports both halves of the sentence, anchored to the doc's own prerequisite quote 'Works best with SAP GUI for Windows' (same file, line 18). No contradiction with L1, which independently documents the same get_package_from_adt entry point (3.3 use case 4)."
+    },
+    {
+      "claim_id": "FUN-007",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "slices/abapgit-standalone-demo/inputs/expert-answers/2026-07-03-owner-demo-context.md:27 (gap g003) states verbatim that there are no productive users or authorization roles for this object in this context, it is never executed, and the only consumer is the wiki pipeline reading the source file. Matches the sentence fully. No contradiction with L1 (3.4 'Known caller' is independently [UNVERIFIABLE] from the raw-only pass, consistent with -- not contradicted by -- the owner's demo-context clarification)."
+    },
+    {
+      "claim_id": "FUN-008",
+      "verdict": "partially_supported",
+      "confidence": "medium",
+      "rationale": "slices/abapgit-standalone-demo/research/2026-07-03-no-customer-exits-implemented.md:20-73 rigorously proves, via four independent corroborating checks (TADIR export scope, package index, L0 stub frontmatter of all four exit programs, whole-raw/ text search), that none of the four customer-exit includes are implemented in this workspace's snapshot -- fully supporting the first half of the sentence, and consistent with L1 8.7's own independent finding ('None of these four programs exist in this workspace's raw sources, so they compile away silently'). However, the second half of the sentence ('the object runs 100% stock vendored abapGit logic') generalizes beyond what this specific evidence establishes: the cited file addresses only the four known INCLUDE ... IF FOUND extension points, not the entirety of the ~153,000-line merged file. This broader framing is reasonable and consistent with L1 8.5's separate, uncited-here finding of zero BAdI/enhancement usage, but is not itself proven solely by the cited lines -- an evidentiary overreach beyond the cited evidence, not a contradiction of the code."
+    },
+    {
+      "claim_id": "FUN-009",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "slices/abapgit-standalone-demo/research/2026-07-03-package-deviation-from-recommended-practice.md:9-29 quotes the official docs verbatim ('use a local $ package (e.g. $ABAPGIT)') and cross-checks it against both the L1 page frontmatter (devclass: ZABAPGIT, namespace: Z, custom: true) and the raw TADIR export, both confirming the deviation. Matches the sentence fully. Directly corroborated by (not contradicted by) the object's own L1 frontmatter."
+    },
+    {
+      "claim_id": "FUN-010",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "slices/abapgit-standalone-demo/inputs/expert-answers/2026-07-03-owner-demo-context.md:31 (gap g007) states verbatim that the ZABAPGIT package and its single-row TADIR are synthetic fixtures generated by the demo harness (demo/model-comparison/prepare.py) purely to exercise the pipeline's package layout, and that the deviation is not a transport-governance decision. Matches the sentence fully. No contradiction with L1 (a fact about package placement cannot contradict a statement about the intent behind that placement)."
+    },
+    {
+      "claim_id": "FUN-011",
+      "verdict": "supported",
+      "confidence": "medium",
+      "rationale": "slices/abapgit-standalone-demo/research/2026-07-03-online-vs-offline-modes.md:9 (title, within the cited 9-26 range) frames both transport modes as 'generic, code-shipped capabilities'; lines 11-26 describe both workflows and explicitly tie them to L1-documented dependencies (IF_HTTP_CLIENT/CL_HTTP_CLIENT=>CREATE_BY_URL and CL_ABAP_ZIP), consistent with L1 8.3's independent listing of both as unconditional class dependencies. This supports the 'core, always-present capabilities' framing. Confidence capped at medium because the most explicit statement of the full sentence ('independent of which one ACME would use in a real install') sits in the Interpretation paragraph at lines 28-32, just outside the cited 9-26 range -- a citation-boundary imprecision, not a doubt about the underlying fact, and not a code contradiction."
+    },
+    {
+      "claim_id": "FUN-012",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "slices/abapgit-standalone-demo/inputs/expert-answers/2026-07-03-owner-demo-context.md:35 (gap g009) states verbatim that neither online nor offline mode is used in this context, the program is never run, and it serves exclusively as static ingest input. Matches the sentence fully. No contradiction with L1 (3.2 documents both modes existing in the code but never claims either was exercised in this workspace)."
+    },
+    {
+      "claim_id": "FUN-013",
+      "verdict": "partially_supported",
+      "confidence": "high",
+      "rationale": "Class FIELD-SEMANTICS, status inferred -- per gate rule 6 this class is capped at partially_supported regardless of reasonableness. slices/abapgit-standalone-demo/research/2026-07-03-ezabapgit-lock-object-standard-knowledge.md:14-26 (within the cited 9-29 range) explicitly and reasonably supports the sentence: ENQUEUE_/DEQUEUE_ function-module pairs are always auto-generated 1:1 from an SE11 lock object, and naming a tool's single-instance guard after itself is a universal SAP convention, not evidence of ACME customization. Consistent with L1's own dependency note on ENQUEUE_EZABAPGIT ('generated 1:1 from the Z-prefixed lock object ZABAPGIT ... classified custom despite the generated FM name not starting with Y/Z') and does not alter L1's independent finding that the guard functions as a single-instance lock for background processing. No contradiction."
+    },
+    {
+      "claim_id": "FUN-014",
+      "verdict": "partially_supported",
+      "confidence": "high",
+      "rationale": "Class DATA-LIFECYCLE, status inferred -- per gate rule 6 this class is capped at partially_supported regardless of reasonableness. slices/abapgit-standalone-demo/research/2026-07-03-credential-lifecycle-standard-knowledge.md:14-19 (within the cited 9-22 range) explicitly and reasonably supports the sentence: credentials entered on the login popup authenticate the current outbound HTTP(S) session only and are not written to a Z-table by the vendored code. Consistent with L1 8.1 (Tables), whose 10-row table list contains no credential-persistence table for ZABAPGIT_STANDALONE. No contradiction."
+    },
+    {
+      "claim_id": "FUN-015",
+      "verdict": "partially_supported",
+      "confidence": "high",
+      "rationale": "Class BUSINESS-RULE, status not-verifiable, evidence intentionally empty -- per gate rule 6 this class is capped at partially_supported regardless of reasonableness. The statement accurately reflects slices/abapgit-standalone-demo/gaps.yaml gap abapgit-standalone-demo-g006 (status: asked, class: BUSINESS-RULE, description matches verbatim) and maps 1:1 onto L1 finding BUG-001 (wiki/ZABAPGIT/program-ZABAPGIT_STANDALONE.md Bug candidates table, and 10.2/10.3: 'COMMIT WORK once per deleted object inside LOOP AT lt_tadir ... no batching and no explicit partial-completion handling') and L1 Business open question 5. No contradiction."
+    },
+    {
+      "claim_id": "FUN-016",
+      "verdict": "partially_supported",
+      "confidence": "high",
+      "rationale": "Class BUSINESS-RULE, status not-verifiable, evidence intentionally empty -- per gate rule 6 this class is capped at partially_supported regardless of reasonableness. The statement accurately reflects slices/abapgit-standalone-demo/gaps.yaml gap abapgit-standalone-demo-g011 (status: asked, class: BUSINESS-RULE, description matches verbatim) and matches L1 7.2's own open item ('what the emergency DB-utility mode (DBT = ZABAPGIT) actually exposes was not traced further in this pass') and L1 Business open question 3. No contradiction."
+    }
+  ],
+  "contradictions": []
+}

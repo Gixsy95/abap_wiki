@@ -1,0 +1,62 @@
+{
+  "object_slug": "process-abapgit-standalone-demo",
+  "model": "claude-opus-4-8[1m]",
+  "contract_version": "abap-functional-gate/1",
+  "verdicts": [
+    {
+      "claim_id": "PRC-001",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "raw/docs/01-what-is-abapgit.md:12-22 states abapGit imports/exports code between ABAP systems (13-14), lets developers manage ABAP artifacts through version control (19-20) and keeps repositories in plain text reviewable before import (20-22); the research conclusion 26-31 restates the same PURPOSE. The load-bearing purpose is verbatim-proven and matches the L1 'What it does' section (CL-001); 'installation' scope is trivially true and proven by the sibling install doc. No contradiction with the code."
+    },
+    {
+      "claim_id": "PRC-002",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "raw/docs/01-what-is-abapgit.md:19-20 proves 'developers with system access'; the cited research conclusion 2026-07-03-purpose-what-is-abapgit.md:33-34 explicitly states 'there is no business-department end user'. Consistent with the L1 characterization of the object as a developer tool. Supported."
+    },
+    {
+      "claim_id": "PRC-003",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "raw/docs/02-install-standalone.md:29-34 lists exactly the flow: create report ZABAPGIT_STANDALONE via SE38/SE80/ADT (30), upload the downloaded file (31-32), activate (33), run via SE38 (34). Matches the L1 selection-screen-report / SE38 launch pattern. Fully proven."
+    },
+    {
+      "claim_id": "PRC-004",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "owner-demo-context.md:17 states the snapshot is the input of a public demo/benchmark downloaded 2026-07-02; line 21 states verbatim 'never executed or scheduled in this installation: no SM37 jobs, no background processing'. The 'never executed' framing does not contradict the L1 page (which does not claim any run). Fully proven by the expert answer."
+    },
+    {
+      "claim_id": "PRC-005",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "research 2026-07-03-purpose-what-is-abapgit.md:36-40 states abapGit is a complementary review-friendly channel vs transport files and that inside transportable packages the merged code still registers changes via RS_CORR_INSERT. RS_CORR_INSERT is independently confirmed in the L1 'External dependencies' section ('Transport registration in deserializers'). No contradiction."
+    },
+    {
+      "claim_id": "PRC-006",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "research 2026-07-03-usage-online-offline-projects.md:37-41 states the two repository modes (online git over HTTP(S) requiring connectivity+SSL, and offline ZIP); raw/docs/04-offline-projects.md:20-23 enumerates the offline use cases (no internet, no SSL, air-gapped, strict network policies). Consistent with the L1 online/offline modes, HTTP client and ZIP export. Fully proven."
+    },
+    {
+      "claim_id": "PRC-007",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "research 2026-07-03-wiki-functional-semantics.md:42-47 states ZABAPGIT is auto-created by the first-run migration, is the report's only reader/writer via dynamic SQL and holds repo metadata/settings/checksums/user preferences; fixture-inventory 37-41 states it does not exist in this snapshot (never transported nor runtime-created because the report never ran). Both align with L1 CL-018 (auto-created) and CL-006 (dynamic c_tabname, sole persistence). No contradiction."
+    },
+    {
+      "claim_id": "PRC-008",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "fixture-inventory 28-32 states none of the four user-exit includes exists as a real object and, since the anchor integrates them via INCLUDE ... IF FOUND (L1 Extension points / CL-015), their absence is legal and no customer exit logic is active. Consistent with the L1 'Program structure' list of the four includes and CL-015. Fully proven."
+    },
+    {
+      "claim_id": "PRC-009",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "raw/docs/02-install-standalone.md:14-16 states verbatim the three prerequisites: SAP BASIS 702 or higher, works best with SAP GUI for Windows, SSL setup needed for online features. Consistent with the L1 metadata (BASIS 702 / HTTP client SSL). Fully proven."
+    }
+  ],
+  "contradictions": []
+}

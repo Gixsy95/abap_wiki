@@ -1,0 +1,75 @@
+{
+  "object_slug": "abapgit-standalone-demo-process",
+  "model": "claude-haiku-4-5-20251001",
+  "contract_version": "abap-functional-gate/1",
+  "verdicts": [
+    {
+      "claim_id": "PRC-001",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "The evidence at purpose-and-trigger.md lines 26-29 explicitly states the program is a 'monolithic program' deployed as a 'Git client for SAP ABAP environments, enabling mass code import/export operations' as an alternative to traditional transport system. Consistent with L1 analysis (line 98)."
+    },
+    {
+      "claim_id": "PRC-002",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "All four components of the claim are supported: (1) Installation-maintenance-and-config.md 24-28 covers download/create/upload/activate steps; (2) Authentication-field-semantics-and-integration.md 28-32 documents p_user and p_pass parameters; (3) Clone/pull/push-field-semantics-and-integration.md 44-56 covers 'Mass import/export operations'; (4) Interactive and batch modes-purpose-and-trigger.md 46-53 explicitly mentions batch scheduling and interactive GUI. Consistent with L1 analysis."
+    },
+    {
+      "claim_id": "PRC-003",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Evidence at purpose-and-trigger.md lines 50-53 directly states: 'The program is launched by developers via transaction SE38... Entry point: START-OF-SELECTION calls FORM run (authorization check) → FORM open_gui'. Matches the exact sentence. L1 analysis confirms at lines 75-76."
+    },
+    {
+      "claim_id": "PRC-004",
+      "verdict": "supported",
+      "confidence": "medium",
+      "rationale": "Status is 'inferred' with no evidence (correct for inferred claims). L1 code analysis at lines 133-137 confirms: authorization check via zcl_abapgit_auth=>is_allowed(zif_abapgit_auth=>c_authorization-startup), and 'Catch and display exceptions... as TYPE 'E' messages'. Claim is reasonable and supported by code analysis, though not explicitly cited in the research evidence."
+    },
+    {
+      "claim_id": "PRC-005",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Evidence at purpose-and-trigger.md lines 46-53 states batch mode calls 'zcl_abapgit_background=>run()' for 'batch scheduling' and mentions interactive GUI. L1 analysis confirms at lines 150-158: 'If batch: Call zcl_abapgit_background=>run()' and interactive path to 'zcl_abapgit_ui_factory=>get_gui()->go_home()'."
+    },
+    {
+      "claim_id": "PRC-006",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Evidence at field-semantics-and-integration.md lines 28-32 explicitly lists all four parameters: 'p_url: Git repository URL', 'p_user: Username for Git authentication', 'p_pass: Password or personal access token', 'p_cmnt: Comment/instruction line'. L1 analysis confirms input mapping at lines 118-126."
+    },
+    {
+      "claim_id": "PRC-007",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Evidence at field-semantics-and-integration.md lines 44-56 directly states: 'abapGit (ZABAPGIT_STANDALONE) operates INDEPENDENTLY of the standard transport system. It manages ABAP objects through Git version control rather than through SAP transport requests'. Exactly matches the claim. Consistent with research summary."
+    },
+    {
+      "claim_id": "PRC-008",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Evidence at field-semantics-and-integration.md lines 58-71 explicitly covers offline mode: 'Offline repositories enable developers to manage ABAP projects without internet connectivity... (ZIP file import/export for code distribution)'. Directly supports the claim about ZIP file usage for air-gapped systems."
+    },
+    {
+      "claim_id": "PRC-009",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Evidence at maintenance-and-config.md lines 24-28 covers the complete installation process: '1. Download the standalone ABAP source from GitHub, 2. create the program in SE38/ADT, 3. upload the source file, and 4. activate' with '(local package `$ABAPGIT` is recommended)'. Exact match to the sentence."
+    },
+    {
+      "claim_id": "PRC-010",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "Evidence at maintenance-and-config.md lines 33-44 explicitly states upgrade process: 'To upgrade from v1.1.13 to a newer version, download the new source from GitHub and re-upload/re-activate the program. This is a manual process, not automatic.' Directly supports the claim."
+    },
+    {
+      "claim_id": "PRC-011",
+      "verdict": "partially_supported",
+      "confidence": "medium",
+      "rationale": "Status is 'not-verifiable' with empty evidence (correct designation). The claim about Parameter ID 'DBT'='ZABAPGIT' is supported by L1 analysis (lines 154-155), but the assertion 'no audit logging' is not explicitly stated in the research documents. L1 analysis marks this as BUG-002: 'no audit logging of emergency mode', confirming lack of audit trail exists but is identified as a code smell, not a business feature."
+    }
+  ],
+  "contradictions": [],
+  "summary": "100% coverage: all 11 PRC-* claims verified. No high-severity contradictions. All PURPOSE/TRIGGER claims supported with high confidence. PRC-004 (inferred) and PRC-011 (not-verifiable) correctly assigned lower confidence per status. Process document is consistent with L1 code analysis across all major flows (SE38 launch, authorization, batch/interactive routing, credential dialog, screen 1001, back navigation, version/upgrade model, parameter IDs). No evidence of claims contradicting the code."
+}

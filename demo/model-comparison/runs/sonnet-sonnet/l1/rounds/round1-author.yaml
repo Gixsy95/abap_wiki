@@ -1,0 +1,850 @@
+sap_name: ZABAPGIT_STANDALONE
+sap_type: program
+devclass: ZABAPGIT
+raw_source_path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+raw_source_status: available
+
+patterns: [ALV-OO, BAPI-wrapper, batch-job]
+
+dependencies:
+  - name: TADIR
+    sap_type: table
+    namespace: standard
+    call_context: "SELECT * FROM tadir INTO CORRESPONDING FIELDS OF TABLE lt_tadir WHERE pgmid = 'R3TR' AND object = 'SICF' AND obj_name LIKE lv_obj_name (SICF object lookup by short hash)"
+    evidence_path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+    line: 92651
+  - name: DOKIL
+    sap_type: table
+    namespace: standard
+    call_context: "SELECT * FROM dokil INTO TABLE lt_dokil (documentation index read)"
+    evidence_path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+    line: 79459
+  - name: REPOSRC
+    sap_type: table
+    namespace: standard
+    call_context: "SELECT SINGLE progname FROM reposrc INTO lv_progname (source-code repository header read)"
+    evidence_path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+    line: 74899
+  - name: TDEVC
+    sap_type: table
+    namespace: standard
+    call_context: "SELECT SINGLE dlvunit FROM tdevc INTO ls_header-component WHERE devclass = iv_package (package/software-component lookup)"
+    evidence_path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+    line: 95196
+  - name: E070
+    sap_type: table
+    namespace: standard
+    call_context: "SELECT SINGLE as4user FROM e070 INTO rv_user WHERE trkorr = lv_transport (transport-request owner lookup)"
+    evidence_path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+    line: 84503
+  - name: DD02L
+    sap_type: table
+    namespace: standard
+    call_context: "SELECT SINGLE tabname FROM dd02l INTO lv_tabname (DDIC table-catalog existence check)"
+    evidence_path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+    line: 74072
+  - name: CVERS
+    sap_type: table
+    namespace: standard
+    call_context: "SELECT * FROM cvers INTO TABLE rt_cvers ORDER BY PRIMARY KEY (installed software-component versions, used for object-type availability checks)"
+    evidence_path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+    line: 70778
+  - name: TRNSPACE
+    sap_type: table
+    namespace: standard
+    call_context: "UPDATE trnspace SET editflag = abap_true WHERE namespace = ls_nspc-namespace (makes a namespace modifiable during namespace-object deserialize)"
+    evidence_path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+    line: 99373
+  - name: T000
+    sap_type: table
+    namespace: standard
+    call_context: "SELECT mandt FROM t000 INTO TABLE lt_dev_clients WHERE cccategory = lc_cc_category AND mandt <> sy-mandt (bounded list of development clients, git-author email fallback)"
+    evidence_path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+    line: 146155
+  - name: USR21
+    sap_type: table
+    namespace: standard
+    call_context: "SELECT SINGLE u~bname p~name_text a~smtp_addr ... FROM usr21 AS u INNER JOIN adrp AS p ... INNER JOIN adr6 AS a ... CLIENT SPECIFIED WHERE u~mandt = <lv_dev_client> (cross-client, bounded to dev clients only, resolves git commit author email)"
+    evidence_path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+    line: 146160
+  - name: RS_SET_SELSCREEN_STATUS
+    sap_type: function-module
+    namespace: standard
+    call_context: "CALL FUNCTION 'RS_SET_SELSCREEN_STATUS' EXPORTING p_status/p_program TABLES p_exclude (hides selection-screen pushbuttons on the password popup and the main host screen)"
+    evidence_path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+    line: 152514
+  - name: RPY_DYNPRO_READ
+    sap_type: function-module
+    namespace: standard
+    call_context: "CALL FUNCTION 'RPY_DYNPRO_READ' EXPORTING progname = sy-cprog dynnr = pv_dynnr (reads dynpro 1001 header to inspect the toolbar flag)"
+    evidence_path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+    line: 152912
+  - name: RPY_DYNPRO_INSERT
+    sap_type: function-module
+    namespace: standard
+    call_context: "CALL FUNCTION 'RPY_DYNPRO_INSERT' EXPORTING header ... suppress_exist_checks = abap_true (re-writes dynpro 1001's no_toolbar flag at runtime)"
+    evidence_path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+    line: 152942
+  - name: GUI_IS_AVAILABLE
+    sap_type: function-module
+    namespace: standard
+    call_context: "CALL FUNCTION 'GUI_IS_AVAILABLE' (SAPGUI presence check, frontend-services layer)"
+    evidence_path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+    line: 40350
+  - name: F4IF_FIELD_VALUE_REQUEST
+    sap_type: function-module
+    namespace: standard
+    call_context: "CALL FUNCTION 'F4IF_FIELD_VALUE_REQUEST' (classic value-help popup)"
+    evidence_path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+    line: 39228
+  - name: TR_TADIR_INTERFACE
+    sap_type: function-module
+    namespace: standard
+    call_context: "CALL FUNCTION 'TR_TADIR_INTERFACE' (TADIR/transport-object registration during object create/delete)"
+    evidence_path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+    line: 129948
+  - name: TR_ACTIVATE_NAMESPACE
+    sap_type: function-module
+    namespace: standard
+    call_context: "CALL FUNCTION 'TR_ACTIVATE_NAMESPACE' EXPORTING iv_namespace = ls_nspc-namespace (namespace object deserialize)"
+    evidence_path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+    line: 99363
+  - name: TR_CHECK_NAMESPACE
+    sap_type: function-module
+    namespace: standard
+    call_context: "CALL FUNCTION 'TR_CHECK_NAMESPACE' EXPORTING iv_namespace = lv_namespace (namespace existence/validity check)"
+    evidence_path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+    line: 99383
+  - name: TR_GET_REQUEST_TYPE
+    sap_type: function-module
+    namespace: standard
+    call_context: "CALL FUNCTION 'TR_GET_REQUEST_TYPE' (transport-request type/category lookup)"
+    evidence_path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+    line: 124273
+  - name: DB_COMMIT
+    sap_type: function-module
+    namespace: standard
+    call_context: "CALL FUNCTION 'DB_COMMIT'. (explicit database commit outside COMMIT WORK)"
+    evidence_path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+    line: 117732
+  - name: ENQUEUE_EZABAPGIT
+    sap_type: function-module
+    namespace: standard
+    call_context: "CALL FUNCTION 'ENQUEUE_EZABAPGIT' (auto-generated lock FM for a custom lock object EZABAPGIT; the lock-object definition itself is not present in this raw source)"
+    evidence_path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+    line: 73222
+  - name: DEQUEUE_EZABAPGIT
+    sap_type: function-module
+    namespace: standard
+    call_context: "CALL FUNCTION 'DEQUEUE_EZABAPGIT' (releases the lock taken via ENQUEUE_EZABAPGIT, e.g. single-instance guard for background processing)"
+    evidence_path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+    line: 151475
+  - name: BAPI_USER_GET_DETAIL
+    sap_type: function-module
+    namespace: standard
+    call_context: "CALL FUNCTION 'BAPI_USER_GET_DETAIL' (user master data read, used for git-author metadata resolution)"
+    evidence_path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+    line: 146124
+  - name: CL_SALV_TABLE
+    sap_type: class
+    namespace: standard
+    call_context: "cl_salv_table=>factory( ... ) (OO ALV factory, used for popup lists such as APACK dependencies / branch / tag lists)"
+    evidence_path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+    line: 38418
+  - name: CL_GUI_HTML_VIEWER
+    sap_type: class
+    namespace: standard
+    call_context: "DATA mo_html_viewer TYPE REF TO cl_gui_html_viewer (protected attribute of zcl_abapgit_html_viewer_gui; the control that renders abapGit's HTML UI inside SAPGUI)"
+    evidence_path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+    line: 23336
+  - name: CL_GUI_CONTAINER
+    sap_type: class
+    namespace: standard
+    call_context: "IMPORTING io_container TYPE REF TO cl_gui_container DEFAULT cl_gui_container=>screen0 (constructor of zcl_abapgit_html_viewer_gui)"
+    evidence_path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+    line: 23332
+  - name: CL_ABAP_ZIP
+    sap_type: class
+    namespace: standard
+    call_context: "DATA lo_zip TYPE REF TO cl_abap_zip (ZIP packaging/unpacking, used e.g. for repo export/offline transport)"
+    evidence_path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+    line: 54948
+  - name: IF_HTTP_CLIENT
+    sap_type: interface
+    namespace: standard
+    call_context: "cl_http_client=>create_by_url( ... ) returning an IF_HTTP_CLIENT reference (outbound HTTP(S) transport used for git remotes)"
+    evidence_path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+    line: 141224
+  - name: CX_STATIC_CHECK
+    sap_type: class
+    namespace: standard
+    call_context: "CLASS zcx_abapgit_exception DEFINITION INHERITING FROM cx_static_check (base class of abapGit's own exception hierarchy)"
+    evidence_path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+    line: 718
+  - name: IF_T100_MESSAGE
+    sap_type: interface
+    namespace: standard
+    call_context: "INTERFACES if_t100_message . inside CLASS zcx_abapgit_exception DEFINITION (standard T100-message contract for OO exceptions)"
+    evidence_path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+    line: 724
+  - name: CL_OO_CLASS
+    sap_type: class
+    namespace: standard
+    call_context: "DATA lo_class TYPE REF TO cl_oo_class. (class-metadata access, used by the CLAS object serializer)"
+    evidence_path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+    line: 47438
+  - name: CL_ABAP_TYPEDESCR
+    sap_type: class
+    namespace: standard
+    call_context: "cl_abap_typedescr=>describe_by_data( cs_container ) (RTTI, used for generic XML (de)serialization of arbitrary ABAP data)"
+    evidence_path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+    line: 30999
+  - name: SCPR3
+    sap_type: program
+    namespace: standard
+    call_context: "SUBMIT scpr3 AND RETURN. preceded by EXPORT scpr3_display_only/scpr3_bcset_id TO MEMORY ID 'SCPR3_PARAMETER' (jump into the BC-Set maintenance report for the SCP1 object handler's zif_abapgit_object~jump)"
+    evidence_path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+    line: 95845
+
+bug_candidates:
+  - id: BUG-001
+    severity: MINOR
+    type: PERFORMANCE
+    location: "package/repo bulk-delete path, LOOP AT lt_tadir ASSIGNING <ls_tadir> (around line 76560-76580)"
+    description: "COMMIT WORK. executes once per deleted object inside LOOP AT lt_tadir, i.e. one implicit database commit per object for a package delete-all-objects run. The inline comment ('make sure to save object deletions') shows this is a deliberate per-object durability choice, not an oversight, but it still means (a) commit overhead scales linearly with package size and (b) a mid-loop failure leaves the deletion partially applied with no way to roll back the objects already committed."
+    fix_proposed: "Batch the commits (e.g. every N objects) instead of once per object, or make the partial-completion behaviour explicit to the caller/log so a resumed/aborted bulk delete is diagnosable."
+  - id: BUG-002
+    severity: SMELL
+    type: SMELL
+    location: "abapmerge collision-resolution renames, 65 occurrences across the file, e.g. line 61693-61695 (kHGwlHbtMQYaNXTWgQdwmgPrpXDFKn, originally zcl_abapgit_gui_page_flow::lcl_filter)"
+    description: "The abapmerge build tool renames originally-local helper classes that collide by name (e.g. multiple unrelated 'lcl_filter'/'lcl_helper' classes from different source files) to random hash-like global identifiers when flattening ~470 previously-separate global classes into this one file. Functionally harmless (each rename is 1:1 and internally consistent), but it makes the merged standalone build much harder to read/debug/grep than the original multi-file abapGit repository."
+    fix_proposed: "Not actionable in the generated file itself (it is machine-generated); if a fork of this build is maintained, work against the original abapGit repository (github.com/abapGit/abapGit) and regenerate via abapmerge rather than hand-editing the standalone artifact."
+
+input_mapping:
+  - channel: selection-screen
+    evidence: { path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap", line_start: 152389, line_end: 152409 }
+    fields:
+      - input_field: P_USER
+        label: "User"
+        kind: parameter
+        target: "lcl_password_dialog=>popup CHANGING cv_user (copied back from p_user once sy-ucomm = 'OK')"
+        data_element: null
+        description: "Git remote username, entered on the modal password-popup screen 1002"
+        logic: "Editable (no SCREEN-INPUT override in on_screen_output); on confirm p_user is copied to cv_user (FORM/METHOD lcl_password_dialog->popup, 152469-152474)"
+        evidence: { path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap", line_start: 152448, line_end: 152478 }
+      - input_field: P_PASS
+        label: "Password or Token"
+        kind: parameter
+        target: "lcl_password_dialog=>popup CHANGING cv_pass (copied back from p_pass once sy-ucomm = 'OK')"
+        data_element: null
+        description: "Git remote password/PAT, entered on the modal password-popup screen 1002"
+        logic: "screen-invisible = '1' masks the entered characters (still an editable input field); on confirm p_pass is copied to cv_pass (lcl_password_dialog->popup, 152469-152474)"
+        evidence: { path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap", line_start: 152494, line_end: 152510 }
+
+output_mapping:
+  - channel: spool-list
+    internal_table: null
+    structure: null
+    evidence: { path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap", line_start: 151580, line_end: 151626 }
+    fields:
+      - output_field: "'Background mode' banner"
+        label: "Background mode"
+        source: null
+        data_element: null
+        description: "Fixed banner line written at the start of a background/batch run"
+        kind: constant
+        logic: "Hardcoded literal 'Background mode' written unconditionally via WRITE: / 'Background mode'. at the top of METHOD run, before the per-repository LOOP AT lt_list (no variable/DDIC source)."
+        evidence: { path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap", line_start: 151589, line_end: 151589 }
+      - output_field: "<ls_list>-method / lv_repo_name line"
+        label: "Repository action being processed"
+        source: null
+        data_element: null
+        description: "Per-repository progress line: background action class name and repo name"
+        kind: computed
+        logic: "lv_repo_name = li_repo->get_name( ) then WRITE: / <ls_list>-method, lv_repo_name (METHOD run, 151595-151598); values come from zcl_abapgit_persist_factory=>get_background( )->list( ) and the repo object, not from a DDIC field"
+        evidence: { path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap", line_start: 151595, line_end: 151598 }
+      - output_field: "not accessible warning"
+        label: "Background class not accessible"
+        source: null
+        data_element: null
+        description: "Warning logged (not WRITE) when the configured background-action class cannot be instantiated dynamically"
+        kind: computed
+        logic: "CATCH cx_sy_create_object_error -> li_log->add_warning( |{ <ls_list>-method } could not be executed, as it is not accessible (local/global class).| ) (METHOD run, 151612-151614)"
+        evidence: { path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap", line_start: 151612, line_end: 151614 }
+
+claims:
+  - claim_id: CL-001
+    class: count
+    status: verified
+    section: executive_summary
+    sentence: "Across the whole file, the pattern '^CLASS .* DEFINITION' (including forward DEFERRED declarations) matches 1029 times and non-deferred 'INTERFACE <name> .' declarations match 114 times: abapGit's own object model is flattened into local classes/interfaces inside this single program."
+    evidence:
+      - path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+        line_start: 1
+        line_end: 152996
+  - claim_id: CL-002
+    class: count
+    status: verified
+    section: executive_summary
+    sentence: "554 literal 'CALL FUNCTION ''<NAME>''' (static, non-dynamic) call sites exist in the source; this analysis samples a representative subset of them under Dependencies rather than cataloguing all 554 given the file's size."
+    evidence:
+      - path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+        line_start: 1
+        line_end: 152996
+  - claim_id: CL-003
+    class: count
+    status: verified
+    section: test_coverage
+    sentence: "The string 'DEFINITION FOR TESTING' does not occur anywhere in the file (0 matches): the standalone merged build ships with zero ABAP Unit test classes."
+    evidence:
+      - path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+        line_start: 1
+        line_end: 152996
+  - claim_id: CL-004
+    class: behavior
+    status: verified
+    section: executive_summary
+    sentence: "The bundled abapGit core version is 1.133.0, declared as the constant zif_abapgit_version=>c_abap_version."
+    evidence:
+      - path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+        line_start: 7261
+        line_end: 7264
+  - claim_id: CL-005
+    class: behavior
+    status: verified
+    section: executive_summary
+    sentence: "The file carries a trailing abapmerge build marker recording tool version 0.16.8 and merge timestamp 2026-07-01T10:45:14.302Z, i.e. this program is a machine-generated concatenation of the abapGit open-source repository produced by the abapmerge tool, not hand-written ACME business code."
+    evidence:
+      - path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+        line_start: 152991
+        line_end: 152996
+  - claim_id: CL-006
+    class: behavior
+    status: verified
+    section: functional_scope
+    sentence: "The MIT license header (copyright abapGit Contributors, project URL http://www.abapgit.org) at the top of the file directly documents that this object is a vendored open-source Git client for ABAP, distributed under the custom name ZABAPGIT_STANDALONE."
+    evidence:
+      - path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+        line_start: 1
+        line_end: 27
+  - claim_id: CL-007
+    class: control-flow
+    status: verified
+    section: form_analysis
+    sentence: "Execution starts at INITIALIZATION (adjusts the toolbar of dynpro 1001 and pre-fills the password-popup screen texts) then START-OF-SELECTION runs PERFORM run."
+    evidence:
+      - path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+        line_start: 152966
+        line_end: 152972
+  - claim_id: CL-008
+    class: control-flow
+    status: verified
+    section: form_analysis
+    sentence: "FORM run checks zcl_abapgit_auth=>is_allowed( ...-startup ) and raises zcx_abapgit_exception if not authorized, runs zcl_abapgit_migrations=>run( ), then PERFORM open_gui; both zcx_abapgit_exception and zcx_abapgit_not_found are caught around the whole block and surfaced via MESSAGE ... TYPE 'E'."
+    evidence:
+      - path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+        line_start: 152802
+        line_end: 152820
+  - claim_id: CL-009
+    class: control-flow
+    status: verified
+    section: form_analysis
+    sentence: "FORM open_gui branches on sy-batch: in batch/background execution it delegates entirely to zcl_abapgit_background=>run( ); in dialog mode it reads SPA/GPA parameter 'DBT' for an emergency DB-utility mode, calls lcl_startup=>prepare_gui_startup, opens the router home page via zcl_abapgit_ui_factory=>get_gui( )->go_home( lv_action ), and finally triggers dynpro 1001 with CALL SELECTION-SCREEN 1001 to host the HTML viewer."
+    evidence:
+      - path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+        line_start: 152822
+        line_end: 152848
+  - claim_id: CL-010
+    class: behavior
+    status: verified
+    section: functional_scope
+    sentence: "The interactive UI is not a classic list/ALV report screen: it is a full HTML application hosted inside SAPGUI via cl_gui_html_viewer/cl_gui_container, wrapped by the local class zcl_abapgit_html_viewer_gui; dynpro 1001 exists only as a dummy host/trigger screen for that control."
+    evidence:
+      - path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+        line_start: 23322
+        line_end: 23340
+  - claim_id: CL-011
+    class: control-flow
+    status: verified
+    section: form_analysis
+    sentence: "In background execution zcl_abapgit_background=>run first takes an enqueue lock (enqueue( ), aborting with a WRITE message if another instance already holds it), iterates the configured background-job list from zcl_abapgit_persist_factory=>get_background( )->list( ), dynamically instantiates the configured action class per repo (CREATE OBJECT li_background TYPE (<ls_list>-method)), and calls li_background->run( ) passing the online repo, a fresh log object and the job settings."
+    evidence:
+      - path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+        line_start: 151580
+        line_end: 151614
+  - claim_id: CL-012
+    class: pattern
+    status: verified
+    section: functional_scope
+    sentence: "The sy-batch branch in FORM open_gui together with zcl_abapgit_background=>run's job loop matches the 'batch-job' SAP pattern: unattended, background-schedulable execution of configured pull/push actions per repository."
+    evidence:
+      - path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+        line_start: 152827
+        line_end: 152828
+  - claim_id: CL-013
+    class: data-flow
+    status: verified
+    section: selection_screen
+    sentence: "On the password-popup screen 1002, fields P_URL and P_CMNT are forced to SCREEN-INPUT = '0' (read-only/display) and P_PASS is forced to SCREEN-INVISIBLE = '1' (masked); only P_USER and P_PASS are genuine collected inputs that flow back into lcl_password_dialog=>popup's CHANGING parameters cv_user/cv_pass once the user confirms (sy-ucomm = 'OK')."
+    evidence:
+      - path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+        line_start: 152488
+        line_end: 152510
+      - path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+        line_start: 152531
+        line_end: 152534
+  - claim_id: CL-014
+    class: bug-candidate
+    status: verified
+    bug_id: BUG-001
+    section: bug_candidates
+    sentence: "COMMIT WORK. executes once per deleted object inside LOOP AT lt_tadir ASSIGNING <ls_tadir> in the package/repo bulk-delete path; the adjacent comment 'make sure to save object deletions' shows the per-object commit is deliberate, but it still means commit overhead scales with package size and a mid-loop failure leaves the deletion only partially applied."
+    evidence:
+      - path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+        line_start: 76560
+        line_end: 76580
+  - claim_id: CL-015
+    class: bug-candidate
+    status: verified
+    bug_id: BUG-002
+    section: bug_candidates
+    sentence: "The abapmerge build renamed the local class originally known as zcl_abapgit_gui_page_flow::lcl_filter to the opaque global identifier kHGwlHbtMQYaNXTWgQdwmgPrpXDFKn (comment '* renamed: ...' immediately above the DEFINITION); a whole-file count of the '* renamed:' marker comment shows 65 such collision-driven renames, each reducing the readability of the merged standalone build versus the original multi-file abapGit repository."
+    evidence:
+      - path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+        line_start: 61693
+        line_end: 61715
+      - path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+        line_start: 1
+        line_end: 152996
+  - claim_id: CL-016
+    class: pattern
+    status: verified
+    section: external_dependencies
+    sentence: "Popup/report views such as the APACK-dependency list render through cl_salv_table=>factory( ... ), the object-oriented ALV pattern."
+    evidence:
+      - path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+        line_start: 38418
+        line_end: 38418
+  - claim_id: CL-017
+    class: pattern
+    status: verified
+    section: external_dependencies
+    sentence: "User-metadata resolution wraps the standard BAPI_USER_GET_DETAIL to read SAP user master data; the earlier CALL FUNCTION census additionally shows literal BAPI_IOBJ_*/BAPI_ODSO_* names for InfoObject/ODSO object-type serializers, matching the BAPI-wrapper pattern for parts of the object-serialization layer."
+    evidence:
+      - path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+        line_start: 146124
+        line_end: 146124
+  - claim_id: CL-018
+    class: data-flow
+    status: verified
+    section: performance
+    sentence: "The SICF-object-by-hash lookup uses SELECT * FROM tadir with an explicit WHERE pgmid = 'R3TR' AND object = 'SICF' AND obj_name LIKE lv_obj_name ORDER BY PRIMARY KEY: despite the SELECT * shape, this particular access is filtered, not an unbounded full-table scan."
+    evidence:
+      - path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+        line_start: 92651
+        line_end: 92655
+  - claim_id: CL-019
+    class: data-flow
+    status: verified
+    section: external_dependencies
+    sentence: "Namespace-object deserialize activates the namespace via FM TR_ACTIVATE_NAMESPACE and then directly issues UPDATE trnspace SET editflag = abap_true WHERE namespace = ls_nspc-namespace, a direct write to a cross-client customizing table outside the normal namespace-maintenance transaction."
+    evidence:
+      - path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+        line_start: 99363
+        line_end: 99374
+  - claim_id: CL-020
+    class: data-flow
+    status: verified
+    section: performance
+    sentence: "Git-author email resolution falls back to a cross-client lookup that is bounded to development clients only (SELECT mandt FROM t000 ... WHERE cccategory = lc_cc_category AND mandt <> sy-mandt), then per candidate client does a CLIENT SPECIFIED join on usr21/adrp/adr6 filtered by that one client and the target user name, exiting the LOOP on the first hit."
+    evidence:
+      - path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+        line_start: 146150
+        line_end: 146175
+  - claim_id: CL-021
+    class: behavior
+    status: verified
+    section: form_analysis
+    sentence: "Jumping into a BC-Set object (zif_abapgit_object~jump implementation used for the SCP1 handler) exports parameters to memory ID 'SCPR3_PARAMETER' via EXPORT ... TO MEMORY ID and then runs SUBMIT scpr3 AND RETURN to open the standard BC-Set maintenance report."
+    evidence:
+      - path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+        line_start: 95836
+        line_end: 95845
+  - claim_id: CL-022
+    class: behavior
+    status: verified
+    section: error_handling
+    sentence: "Errors are modeled through the local exception class zcx_abapgit_exception, which INHERITS FROM cx_static_check and implements INTERFACES if_t100_message; no dedicated classic ABAP message class belonging to this program is declared or referenced anywhere in the source."
+    evidence:
+      - path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+        line_start: 717
+        line_end: 724
+  - claim_id: CL-023
+    class: pattern
+    status: verified
+    section: next_steps
+    sentence: "Four optional customer-exit extension points are reserved via INCLUDE ... IF FOUND. for authorization (zabapgit_authorizations_exit), user (zabapgit_user_exit), background (zabapgit_background_user_exit) and GUI-page (zabapgit_gui_pages_userexit) hooks; none of these four include programs exist in this workspace's raw sources, so IF FOUND causes them to be silently skipped at generation/activation."
+    evidence:
+      - path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap"
+        line_start: 152574
+        line_end: 152589
+
+narrative_sections:
+  executive_summary: |
+    - `ZABAPGIT_STANDALONE` is the official single-file "standalone" distribution build of **abapGit** (open-source ABAP Git client, MIT-licensed, github.com/abapGit) [VERIFIED: CL-006], not bespoke ACME business logic - it only happens to live under a Z-namespace program name and the custom package `ZABAPGIT`.
+    - Architecture: one physical file of 152,996 lines produced by the `abapmerge` tool (build marker: abapmerge 0.16.8, merged 2026-07-01T10:45:14.302Z) [VERIFIED: CL-005], concatenating ~1029 `CLASS ... DEFINITION` statements and 114 non-deferred `INTERFACE` declarations - abapGit's ~470 real global classes plus their local helper classes, flattened into this single compilation unit [VERIFIED: CL-001]. Bundled abapGit core version: **1.133.0** [VERIFIED: CL-004].
+    - Two execution modes, selected by `sy-batch` in `FORM open_gui`: (1) interactive - hosts a full **HTML application** inside SAPGUI via `cl_gui_html_viewer`/`cl_gui_container` (`zcl_abapgit_html_viewer_gui`), triggered through a dummy dynpro 1001 [VERIFIED: CL-009] [VERIFIED: CL-010]; (2) background/batch - `zcl_abapgit_background=>run` processes a configured list of pull/push jobs unattended [VERIFIED: CL-011] [VERIFIED: CL-012]. This is architecturally very different from a classic selection-screen extraction report.
+    - The only genuine selection-screen input in this source is the modal login popup (dynpro 1002: user/password/URL/comment) used to authenticate against a git remote [VERIFIED: CL-013].
+    - No caller information is available: this workspace contains only the single `.prog.abap` file for package `ZABAPGIT` (no TADIR/transaction/other-package cross-references were provided in `raw/`), so "known caller" is [UNVERIFIABLE] from this raw-only pass.
+    - No ABAP Unit test classes exist in the merged build (0 `... DEFINITION FOR TESTING`) [VERIFIED: CL-003].
+    - Bug candidates found in this pass: **1 MINOR (PERFORMANCE)**, **1 SMELL** = 2 bugs. Given the file's size (~153k lines, ~470 embedded classes, 554 static `CALL FUNCTION` sites), this is a **representative, not exhaustive**, static-analysis pass - see "Next steps" for the scope limitation.
+
+  functional_scope: |
+    ### 3.1 What it does (business view)
+    abapGit is a Git client that runs inside an ABAP system: it serializes ABAP repository
+    objects (programs, classes, DDIC objects, etc.) to a Git-friendly file/XML representation
+    and synchronizes them with a remote Git repository (pull/push/stage/commit), giving ABAP
+    developers standard source-control workflows without an external transport layer
+    [VERIFIED: CL-006]. `ZABAPGIT_STANDALONE` is the self-contained installer/runtime build of
+    that tool: a system that does not yet have the multi-object abapGit repository installed can
+    run this single program to bootstrap it [INFERRED] from the `abapmerge` build banner and the
+    `lcl_startup=>prepare_gui_startup` / `zcl_abapgit_migrations=>run( )` bootstrap calls at
+    startup [VERIFIED: CL-008].
+
+    Functionally this analysis treats the object as **vendored infrastructure tooling**, not a
+    ACME business process; the "business scope" questions that matter here are about *how
+    ACME uses/governs* this tool (open question §17), not what business data it produces.
+
+    ### 3.2 Modes
+    - **Interactive (dialog) mode** (`sy-batch = abap_false`, default): hosts abapGit's HTML
+      application inside SAPGUI. `FORM open_gui` reads SPA/GPA parameter `DBT`; if it equals
+      `'ZABAPGIT'` it opens the "emergency DB-utility" action, otherwise the normal home page,
+      then calls `lcl_startup=>prepare_gui_startup` (resolves a starting repo from a repo-key /
+      package / ADT-context parameter) and `CALL SELECTION-SCREEN 1001` to host the viewer
+      [VERIFIED: CL-009].
+    - **Background/batch mode** (`sy-batch = abap_true`): delegates entirely to
+      `zcl_abapgit_background=>run`, which single-instance-guards itself with an enqueue lock and
+      then executes every configured background pull/push job [VERIFIED: CL-011] [VERIFIED: CL-012].
+
+    ### 3.3 Use cases
+    All [INFERRED] from the code structure, since no business/process documentation ships with
+    this raw file:
+    1. First-time bootstrap of abapGit on a system where the multi-object repository is not yet
+       installed (this standalone build is the classic "chicken-and-egg" installer).
+    2. Interactive day-to-day repository management (pull/push/stage/branch/tag) by an ABAP
+       developer through the hosted HTML UI.
+    3. Scheduled unattended synchronization of configured repositories via a background job
+       (`zcl_abapgit_background=>run`) [VERIFIED: CL-011].
+    4. Opening a specific repository directly from ADT (Eclipse) or from a package-name / repo-key
+       memory parameter set by another program before `SUBMIT`/`CALL TRANSACTION`
+       [VERIFIED: CL-009] - `lcl_startup=>get_package_from_adt` dynamically reads
+       `CL_ADT_GUI_INTEGRATION_CONTEXT` when available.
+
+    ### 3.4 Known caller
+    [UNVERIFIABLE] from this raw-only pass - the workspace provides only this one file for
+    package `ZABAPGIT`; no transaction descriptor, no other program's `SUBMIT ZABAPGIT_STANDALONE`,
+    and no TADIR export were supplied. In a real system this program is normally started directly
+    via SE38/its own transaction code, not `SUBMIT`-ed by other Z code.
+
+  selection_screen: |
+    ### 4.1 Radiobuttons
+    None. `SELECTION-SCREEN BEGIN OF SCREEN 1001` is an empty dummy screen used only to trigger
+    display of the hosted HTML control; it has no fields [VERIFIED: CL-010]. Screen `1002` (the
+    password popup) has no radiobuttons either - only text/password parameters.
+
+    ### 4.2 Select-options and parameters
+    | Name | Ref. table | Modifiers | Modif ID | Notes |
+    |------|------------|-----------|----------|-------|
+    | `p_url` | `string` | `LOWER CASE VISIBLE LENGTH 60` | - | repo URL, display-only on screen 1002 (forced `SCREEN-INPUT = '0'`) [VERIFIED: CL-013] |
+    | `p_user` | `string` | `LOWER CASE VISIBLE LENGTH 60` | - | git username, genuinely user-editable [VERIFIED: CL-013] |
+    | `p_pass` | `c LENGTH 255` | `LOWER CASE VISIBLE LENGTH 60` | - | git password/PAT, masked via `SCREEN-INVISIBLE = '1'` [VERIFIED: CL-013] |
+    | `p_cmnt` | `c LENGTH 255` | - | - | help/status comment line, display-only [VERIFIED: CL-013] |
+
+    All four are declared under `SELECTION-SCREEN BEGIN OF SCREEN 1002 TITLE sc_title`
+    [VERIFIED at raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:152389-152409].
+    There are no `SELECT-OPTIONS` anywhere in the file.
+
+    ### 4.3 Specific parameters
+    `p_user`/`p_pass` are only meaningful together, as the `CHANGING` pair of
+    `lcl_password_dialog=>popup`; the caller decides whether a login is even required (this
+    FORM/class is only invoked from elsewhere in the merged abapGit classes for git-remote
+    authentication, not shown as directly wired to `START-OF-SELECTION` in the excerpts read here)
+    [INFERRED] - the exact call sites that trigger the popup were not individually traced in this
+    raw-only pass ([UNVERIFIABLE] beyond the FORM `password_popup` wrapper at
+    raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:152559-152573).
+
+    ### 4.4 AT SELECTION-SCREEN OUTPUT
+    `lcl_password_dialog=>on_screen_output` disables `P_URL`/`P_CMNT` for input and intensifies
+    them, keeps `P_CMNT`/`SC_CMNT` visible, and masks `P_PASS`; it also excludes the `PICK` command
+    from the status via `RS_SET_SELSCREEN_STATUS` and sets the cursor to `P_PASS` when a user name
+    is already known [VERIFIED: CL-013] [VERIFIED: raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:152514-152523].
+    Separately, `AT SELECTION-SCREEN OUTPUT` on the main program dispatches to either
+    `lcl_password_dialog=>on_screen_output` or `PERFORM output` depending on `sy-dynnr`
+    [VERIFIED at raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:152975-152980].
+
+  form_analysis: |
+    Only 6 `FORM`s exist at the main-program level (the other ~5400 units of behaviour live in
+    the ~470 local classes' `METHOD`s, out of scope for an exhaustive per-method trace in this
+    pass): `password_popup`, `run`, `open_gui`, `output`, `exit`, `adjust_toolbar`
+    [VERIFIED at raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:152559-152904].
+
+    ### 7.1 RUN (lines 152802-152820)
+    - **Declared purpose**: single entry point wired to `START-OF-SELECTION`.
+    - **Algorithm**: 1) authorization check `zcl_abapgit_auth=>is_allowed(
+      zif_abapgit_auth=>c_authorization-startup )`, raising `zcx_abapgit_exception` if denied;
+      2) `zcl_abapgit_migrations=>run( )` (system upgrade/data-migration hook); 3) `PERFORM
+      open_gui` [VERIFIED: CL-008].
+    - **Error handling**: `zcx_abapgit_exception` and `zcx_abapgit_not_found` are both caught and
+      turned into `MESSAGE ... TYPE 'E'` (OO-exception message via `IF_T100_MESSAGE`)
+      [VERIFIED: CL-008] [VERIFIED: CL-022].
+    - **Red flags**: none identified in this FORM itself.
+
+    ### 7.2 OPEN_GUI (lines 152822-152848)
+    - **Declared purpose**: dispatch to background processing or bring up the interactive UI.
+    - **Algorithm**: branches on `sy-batch`; batch -> `zcl_abapgit_background=>run( )`; dialog ->
+      reads SPA/GPA parameter `DBT` to pick an "emergency DB-utility" vs. normal home action, sets
+      HTML debug mode from `lv_mode = 'HREF'`, calls `lcl_startup=>prepare_gui_startup`, opens the
+      router home page (`zcl_abapgit_ui_factory=>get_gui( )->go_home( lv_action )`), and triggers
+      dynpro 1001 [VERIFIED: CL-009].
+    - **External dependencies**: `zcl_abapgit_background`, `zcl_abapgit_html`, `lcl_startup`,
+      `zcl_abapgit_ui_factory` (all local classes in the same file - not external dependencies
+      per the no-self-dependency rule).
+    - **Open questions**: what the "emergency DB-utility" mode (`DBT = 'ZABAPGIT'`) actually
+      exposes was not traced further in this pass (§17, Q3).
+
+    ### 7.3 OUTPUT (lines 152850-152876)
+    - Reapplies the PF-status (`PERFORM set_pf_status IN PROGRAM rsdbrunt IF FOUND`), excludes the
+      `CRET`/`SPOS` commands via `RS_SET_SELSCREEN_STATUS`, and sets UI focus unless in variant
+      maintenance, converting any `zcx_abapgit_exception` into `MESSAGE ... TYPE 'S' DISPLAY LIKE
+      'E'`.
+
+    ### 7.4 EXIT (lines 152878-152902)
+    - Only acts for the main screen (`sy-dynnr = 1001`); on Back/Escape (`CBAC`/`CCAN`) it either
+      pops the internal navigation stack (`zcl_abapgit_ui_factory=>get_gui( )->back(
+      iv_graceful = abap_true )`) or, at the bottom of the stack, calls `->free( )` for a graceful
+      shutdown; otherwise re-displays screen 1001.
+
+    ### 7.5 ADJUST_TOOLBAR (lines 152904-152965)
+    - Reads dynpro 1001's header via `RPY_DYNPRO_READ`, computes whether the toolbar should be
+      hidden (hidden for the HTML screen, shown for variant maintenance via
+      `zcl_abapgit_factory=>get_environment( )->is_variant_maintenance( )`), and if the current
+      flag differs, rewrites the dynpro with `RPY_DYNPRO_INSERT`. Errors from either FM are
+      swallowed (`RETURN`) - acceptable here since this only affects a cosmetic toolbar, but it is
+      a silent-failure pattern worth noting.
+
+    ### 7.6 PASSWORD_POPUP (lines 152559-152573)
+    - Thin wrapper `FORM password_popup USING pv_repo_url CHANGING cv_user cv_pass` delegating to
+      `lcl_password_dialog=>popup`; marked `##CALLED` (pragma telling ATC it is used, even though
+      no call site to this specific FORM was found within the excerpts read in this pass -
+      [UNVERIFIABLE] whether any of the ~470 embedded classes actually calls this particular
+      `FORM` versus calling `lcl_password_dialog=>popup` directly).
+
+  external_dependencies: |
+    ### 8.1 Tables
+    | Table | Type | Usage |
+    |-------|------|-------|
+    | `TADIR` | DB (customizing/catalog) | filtered SICF-object-by-hash lookup [VERIFIED: CL-018] |
+    | `DOKIL` | DB (documentation index) | documentation-object read [VERIFIED at line 79459] |
+    | `REPOSRC` | DB (source repository) | program-source header reads [VERIFIED at line 74899] |
+    | `TDEVC` | DB customising | package/software-component lookups [VERIFIED at line 95196] |
+    | `E070` | DB (transport header) | transport-request owner lookup [VERIFIED at line 84503] |
+    | `DD02L` | DB (DDIC catalog) | table-existence checks [VERIFIED at line 74072] |
+    | `CVERS` | DB customising | installed software-component versions [VERIFIED at line 70778] |
+    | `TRNSPACE` | DB customising | direct `UPDATE ... editflag` during namespace deserialize [VERIFIED: CL-019] |
+    | `T000` | DB customising | bounded list of development clients [VERIFIED: CL-020] |
+    | `USR21`/`ADRP`/`ADR6` | DB (user/address master) | `CLIENT SPECIFIED` join to resolve a git-author's e-mail [VERIFIED: CL-020] |
+
+    This is a **representative sample**, not the full table footprint: the source contains 63
+    additional distinct `SELECT * FROM <table>` targets alone (per a whole-file grep census), on
+    top of `SELECT <fields> FROM` variants - see "Next steps" for the scope limitation.
+
+    ### 8.2 Function modules
+    | FM | Usage |
+    |----|-------|
+    | `RS_SET_SELSCREEN_STATUS` | hides pushbuttons on the password popup and main host screen [VERIFIED at line 152514] |
+    | `RPY_DYNPRO_READ` / `RPY_DYNPRO_INSERT` | reads/rewrites dynpro 1001's toolbar flag [VERIFIED: form_analysis §7.5] |
+    | `GUI_IS_AVAILABLE` | SAPGUI presence check [VERIFIED at line 40350] |
+    | `F4IF_FIELD_VALUE_REQUEST` | classic value-help popup [VERIFIED at line 39228] |
+    | `TR_TADIR_INTERFACE` | TADIR/transport-object registration [VERIFIED at line 129948] |
+    | `TR_ACTIVATE_NAMESPACE` / `TR_CHECK_NAMESPACE` | namespace object deserialize [VERIFIED: CL-019] |
+    | `TR_GET_REQUEST_TYPE` | transport-request type lookup [VERIFIED at line 124273] |
+    | `DB_COMMIT` | explicit DB commit outside `COMMIT WORK` [VERIFIED at line 117732] |
+    | `ENQUEUE_EZABAPGIT` / `DEQUEUE_EZABAPGIT` | single-instance lock guard (custom lock object `EZABAPGIT`, definition not present in this raw source) [VERIFIED at lines 73222, 151475] |
+    | `BAPI_USER_GET_DETAIL` | user-master read for git-author metadata [VERIFIED: CL-017] |
+
+    A whole-file census additionally shows 554 static `CALL FUNCTION '...'` call sites in total
+    (`grep -c "CALL FUNCTION '"`), spanning further BAPIs (`BAPI_IOBJ_*`, `BAPI_ODSO_*`), DDIC
+    maintenance FMs (`DDIF_*`), documentation FMs (`DOCU_*`), enqueue/dequeue pairs for several
+    other lock objects, and more - only individually read/cited FMs are listed above.
+
+    ### 8.3 Classes
+    | Class | Package | Methods used |
+    |-------|---------|--------------|
+    | `CL_SALV_TABLE` | standard (SALV) | `factory` [VERIFIED: CL-016] |
+    | `CL_GUI_HTML_VIEWER` / `CL_GUI_CONTAINER` | standard (Dynpro Controls) | hosts the HTML UI [VERIFIED: CL-010] |
+    | `CL_ABAP_ZIP` | standard | ZIP packaging for export/offline transport [VERIFIED at line 54948] |
+    | `IF_HTTP_CLIENT` (via `CL_HTTP_CLIENT=>CREATE_BY_URL`) | standard | outbound HTTP(S) to git remotes [VERIFIED at line 141224] |
+    | `CX_STATIC_CHECK` / `IF_T100_MESSAGE` | standard | base of `zcx_abapgit_exception` [VERIFIED: CL-022] |
+    | `CL_OO_CLASS` | standard | class-metadata access for the CLAS object serializer [VERIFIED at line 47438] |
+    | `CL_ABAP_TYPEDESCR` | standard | RTTI for generic XML (de)serialization [VERIFIED at line 30999] |
+
+    ### 8.4 SUBMIT
+    | Program | Mode | Notes |
+    |---------|------|-------|
+    | `SCPR3` | `AND RETURN`, static literal | BC-Set maintenance jump from the SCP1 object handler's `zif_abapgit_object~jump` [VERIFIED: CL-021] |
+    | `(sy-cprog)` / `(lv_prog)` / `(lv_report)` | dynamic | self-restart and generic "run another report" utilities; **not** listed as static dependencies per the "dynamic name" rule - the literal target is not resolvable at these lines [UNVERIFIABLE] |
+
+    ### 8.5 BAdI / Enhancements
+    None found (`GET BADI` / `CALL BADI` do not occur in the file). abapGit *reads and writes*
+    enhancement objects (ENHO/ENHS) as part of its object-serialization framework, but does not
+    itself implement a BAdI or classic enhancement.
+
+    ### 8.6 Message classes
+    None. All user-facing errors go through `zcx_abapgit_exception` (`IF_T100_MESSAGE` +
+    `CX_STATIC_CHECK`) with dynamic text, not a dedicated ABAP message class
+    [VERIFIED: CL-022].
+
+    ### 8.7 Customer-exit extension points
+    Four optional `INCLUDE ... IF FOUND.` hooks are reserved for site-specific extensions:
+    `zabapgit_authorizations_exit` (implements `ZIF_ABAPGIT_AUTH`), `zabapgit_user_exit`
+    (implements `ZIF_ABAPGIT_EXIT`), `zabapgit_background_user_exit` (implements
+    `ZIF_ABAPGIT_BACKGROUND`), `zabapgit_gui_pages_userexit` [VERIFIED: CL-023]. None of these
+    four programs exist in this workspace's raw sources, so they compile away silently - worth a
+    business question (§17) on whether ACME has (or should have) implemented any of them,
+    e.g. to restrict who may start abapGit.
+
+  performance: |
+    ### 10.1 SELECT census (representative sample only - see scope note below)
+    | Line | Context | Main tables | JOIN | FAE | INTO |
+    |------|---------|-------------|------|-----|------|
+    | 92651 | SICF object-by-hash lookup | TADIR | no | no | `CORRESPONDING FIELDS OF TABLE lt_tadir` |
+    | 99373 | namespace deserialize | TRNSPACE | no | no | `UPDATE` (write, not SELECT) |
+    | 146155-146157 | git-author email resolution (dev-client scan) | T000 | no | no | `TABLE lt_dev_clients` |
+    | 146160-146172 | git-author email resolution (per-client) | USR21 | yes (ADRP, ADR6), `CLIENT SPECIFIED` | no | `SINGLE ... INTO (...)` inside `LOOP AT lt_dev_clients` |
+
+    ### 10.2 Notable points
+    - The `TADIR` `SELECT *` at line 92651 looks alarming in isolation but carries a specific
+      `WHERE pgmid = 'R3TR' AND object = 'SICF' AND obj_name LIKE ...` filter - **not** an
+      unbounded scan [VERIFIED: CL-018].
+    - The git-author email fallback (146150-146175) is a `SELECT SINGLE` **inside a `LOOP AT
+      lt_dev_clients`**, i.e. up to N `CLIENT SPECIFIED` cross-client SELECTs (N = number of
+      clients flagged as development clients in `T000`), but it `EXIT`s the loop on the first hit
+      and the driving table (`T000` filtered by `cccategory`) is typically tiny - low real-world
+      impact, but technically an N+1-shaped pattern [VERIFIED: CL-020].
+    - The genuine performance-relevant finding is **BUG-001** (`COMMIT WORK` inside `LOOP AT
+      lt_tadir` during package/repo bulk delete) - see Bug candidates below
+      [VERIFIED: CL-014].
+
+    ### 10.3 Recommendations
+    1. Treat BUG-001 (commit-per-object during bulk delete) as the primary performance/atomicity
+       item to review with the object owner - batch the commits or make the partial-completion
+       semantics explicit.
+    2. A full performance review of this object would require systematically walking all 554
+       `CALL FUNCTION` sites and the SELECTs inside the ~470 embedded classes, which is out of
+       scope for a single raw-only L1 pass on a 153k-line file - flagged as a limitation, not as
+       "no further issues exist" [UNVERIFIABLE] beyond what was sampled here.
+
+  error_handling: |
+    ### COMMIT / ROLLBACK map
+    | Point | Trigger |
+    |-------|---------|
+    | `COMMIT WORK.` (~30 static sites; e.g. line 76580 inside `LOOP AT lt_tadir`) | various object-write/delete operations across the embedded classes; only the in-loop one at 76580 was traced as a bug candidate in this pass [VERIFIED: CL-014] |
+    | `COMMIT WORK AND WAIT.` (multiple sites, e.g. 61823, 69827, 73434) | write operations that must be durable before a follow-up read (two are explicitly commented `" to release lock`) |
+    | `CALL FUNCTION 'DB_COMMIT'.` (line 117732) | an explicit low-level commit distinct from `COMMIT WORK` |
+
+    ### Logging pattern
+    There is no application log (BAL) usage visible in the parts of the file read for this
+    analysis; errors surface either as classic dynpro `MESSAGE ... TYPE 'E'/'S'` (main-program
+    FORMs `run`/`output`/`exit`) [VERIFIED: CL-008] or, in background mode, via
+    `li_log->add_warning`/`add_exception` on a `zcl_abapgit_log` instance created per background
+    job [VERIFIED: CL-011].
+
+    ### Log anomalies
+    - `FORM adjust_toolbar` silently swallows `RPY_DYNPRO_READ`/`RPY_DYNPRO_INSERT` failures with a
+      bare `RETURN` (form_analysis §7.5) - acceptable for a cosmetic toolbar flag, but worth
+      flagging as a silent-failure pattern if it is ever reused for something less cosmetic.
+    - `lcl_startup=>get_package_from_adt` catches `CATCH cx_root ##NO_HANDLER` around the entire
+      dynamic ADT-context read, deliberately failing silently when ADT integration classes are
+      unavailable on older releases (explicit comment: "Some problems with dynamic ADT access...
+      fail silently") - intentional, not flagged as a bug.
+
+  bug_candidates: |
+    | ID | Severity | Type | FORM | Lines | Description | Proposed fix | Status | Red flag |
+    |----|----------|------|------|-------|-------------|--------------|--------|----------|
+    | BUG-001 | MINOR | PERFORMANCE | (embedded class, package/repo delete-all-objects path) | 76560-76580 | `COMMIT WORK.` once per deleted object inside `LOOP AT lt_tadir`; deliberate per-object durability per the adjacent comment, but no batching and no explicit partial-completion handling [VERIFIED: CL-014] | Batch commits every N objects, or make partial-completion explicit in the log | to_verify | - |
+    | BUG-002 | SMELL | SMELL | (65 abapmerge-renamed local classes, e.g. `kHGwlHbtMQYaNXTWgQdwmgPrpXDFKn`) | 61693-61715 (representative) | Collision-driven random renaming by the `abapmerge` build tool hurts readability/greppability of the merged standalone build [VERIFIED: CL-015] | Not actionable on the generated artifact; work against the upstream abapGit repo and regenerate | to_verify | - |
+
+    ### Count by severity
+    - MINOR: 1
+    - SMELL: 1
+
+    ### Count by type
+    - PERFORMANCE: 1
+    - SMELL: 1
+
+    **Scope limitation**: this is a static, evidence-anchored sample from a raw-only L1 pass on a
+    152,996-line, ~470-class file; it is not a claim that only 2 issues exist. See "Next steps".
+
+  test_coverage: |
+    Zero ABAP Unit test classes exist anywhere in this merged build - `DEFINITION FOR TESTING`
+    does not occur in the file [VERIFIED: CL-003]. This is expected for a distribution artifact:
+    the `abapmerge` tool that produces `ZABAPGIT_STANDALONE` from the abapGit GitHub repository
+    conventionally strips local test classes when building the standalone installer [INFERRED]
+    from the absence combined with the presence of the `abapmerge` build banner [VERIFIED: CL-005].
+    Real test coverage for the abapGit codebase, if any, lives in the upstream multi-file
+    repository, not in this generated object - [UNVERIFIABLE] from this raw file alone whether
+    ACME maintains a separately-tested fork.
+
+  business_open_questions: |
+    1. Is `ZABAPGIT_STANDALONE` still the intended way abapGit is run at ACME, or has it since
+       been superseded by installing the full multi-object abapGit repository (of which this
+       program would then only be the original installer)? (§3.1)
+    2. Who is authorized to start this program in production - is `zcl_abapgit_auth=>is_allowed(
+       ...-startup )` (FORM `run`, line 152808) configured restrictively, and has ACME
+       implemented the optional `zabapgit_authorizations_exit` customer-exit include to further
+       restrict it? (§8.7, BUG n/a)
+    3. What does the "emergency DB-utility" mode (SPA/GPA parameter `DBT = 'ZABAPGIT'`, FORM
+       `open_gui`) expose, and who is expected to use it? (§7.2)
+    4. Is any background/batch job configured today (`zcl_abapgit_background=>run`'s job list,
+       §3.2/§7 CL-011) - i.e. does any repository auto-sync unattended, and if so which
+       repositories and on what schedule? [UNVERIFIABLE] from this raw file (the job list is
+       persisted in the database, not in source).
+    5. For BUG-001 (commit-per-object during bulk package/repo delete): is the current
+       per-object-commit behaviour a deliberate choice to preserve partial progress on a failed
+       bulk delete, or should it be batched/transactional? (§15)
+    6. Has ACME implemented any of the four optional customer-exit includes
+       (`zabapgit_authorizations_exit`, `zabapgit_user_exit`, `zabapgit_background_user_exit`,
+       `zabapgit_gui_pages_userexit`)? None exist in the raw sources provided for this analysis.
+       (§8.7)
+    7. Given the scale of this object (152,996 lines, 554 static FM calls, ~470 embedded classes),
+       is a deeper L2/targeted review warranted for the specific classes ACME actually
+       exercises (e.g. the HTTP/git-transport layer, or the object serializers for the object
+       types actually version-controlled), rather than this file as a whole? (§10.3, §18)
+
+  next_steps: |
+    ### Bug attack order
+    1. BUG-001 (MINOR, PERFORMANCE) - confirm with the owning team whether commit-per-object
+       during bulk delete is intentional; if not, batch it.
+    2. BUG-002 (SMELL) - no action needed on the generated file; note for anyone maintaining a
+       ACME fork to work against the upstream abapGit repository instead.
+
+    ### Structural refactoring
+    Not applicable - this is a vendored, machine-generated build artifact; structural refactoring
+    should happen upstream (github.com/abapGit/abapGit), not on this file.
+
+    ### Scope note for future analysis passes
+    This L1 pass is deliberately a **targeted, evidence-anchored sample** of a 152,996-line file
+    (entry points, version/build metadata, a curated set of ~30 genuine external SAP dependencies,
+    the 6 main-program `FORM`s, and 2 concretely-evidenced bug candidates) rather than an
+    exhaustive line-by-line audit of all 554 `CALL FUNCTION` sites, 63+ `SELECT *` sites, and
+    ~5400 methods across ~470 embedded classes. A follow-up pass - ideally scoped to the specific
+    embedded classes ACME's usage actually depends on (e.g. the HTTP/git-transport classes, or
+    the object serializers for the object types actually pushed/pulled) - would be more valuable
+    than a brute-force full-file re-read.
+
+    ### Required tests
+    None exist to build on (§12); if ACME maintains a fork with local modifications, adding
+    ABAP Unit coverage for those specific local changes (not for vendored abapGit code) would be
+    the pragmatic starting point.
+
+summary_line: "Analysis completed: 33 dependencies, 1 MINOR + 1 SMELL bug candidate, 3 patterns, 23 claims (vendored abapGit v1.133.0 standalone build, 152,996 lines, representative sample given scale)."

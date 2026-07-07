@@ -1,0 +1,73 @@
+# Pipeline state: the SQLite DB is runtime, not committed (binary, continuous churn).
+# Its history lives in state/exports/ (text dump + progress, committed).
+state/abap_wiki.db
+state/abap_wiki.db-wal
+state/abap_wiki.db-shm
+
+# Ephemeral: sub-agent run artifacts and reports regenerable from the DB.
+output/
+
+# Local Python environment
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Coverage (pytest-cov artifact: binary, contains absolute local paths)
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# Obsidian UI state (the vault config is committed, the workspace is not)
+abap_wiki/.obsidian/workspace.json
+abap_wiki/.obsidian/workspace-mobile.json
+abap_wiki/.obsidian/graph.json
+abap_wiki/.obsidian/cache/
+
+# Local Claude Code config
+.claude/settings.local.json
+
+# Local MCP config: may contain local credentials or tokens.
+.mcp.json
+
+# Real SAP data in the operational inbox must NEVER be published.
+# The root raw/ inbox holds the user's real SAP exports in an operational clone;
+# only the scaffold (README / .gitkeep) is tracked. The public demo sources live
+# under examples/ instead and stay tracked.
+raw/system-library/*
+!raw/system-library/.gitkeep
+!raw/system-library/README.md
+raw/tadir/*
+!raw/tadir/.gitkeep
+!raw/tadir/README.md
+raw/docs/*
+!raw/docs/.gitkeep
+!raw/docs/README.md
+
+# Defence-in-depth: real SAP exports (TADIR / table dumps) are Excel files and must
+# NEVER be committed, wherever they land in the tree (e.g. a stray copy at the repo
+# root). The tracked demo data under examples/ is plain text, not Excel, so a blanket
+# Excel ignore is safe for this template.
+*.xlsx
+*.XLSX
+*.xls
+*.XLS
+
+# Obsidian UI state for the bundled example vault (auto-created when opened)
+examples/token-saving/abap_wiki/.obsidian/
+
+# Temporary files
+*.tmp
+~$*
+
+# Local/private files
+.env
+.env.*
+!.env.example
+*.local
+*.local.*
+*.secret
+*.secrets
+*.log
+

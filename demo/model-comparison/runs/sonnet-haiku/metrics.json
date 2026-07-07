@@ -1,0 +1,65 @@
+{
+  "config": "sonnet-haiku",
+  "author_model": "claude-sonnet-5",
+  "judge_model": "claude-haiku-4-5-20251001",
+  "source": {
+    "file": "zabapgit_standalone.txt",
+    "physical_lines": 152996,
+    "non_blank_lines": 126501,
+    "bytes": 5063858,
+    "abapgit_version": "1.133.0",
+    "downloaded": "2026-07-02"
+  },
+  "l1": {
+    "agent_runs": [
+      {"role": "author", "model": "sonnet", "attempt": 1, "tokens": 186527, "tool_uses": 54, "wall_seconds": 1014, "started": "2026-07-02T22:12:25+02:00", "outcome": "validation_rejected (1 error: output_mapping 'fields' missing or empty)"},
+      {"role": "author-fix", "model": "sonnet", "attempt": 1, "tokens": 83704, "tool_uses": 10, "wall_seconds": 77, "outcome": "read the validator source, restructured the no-output channel to []; submitted (21 claims, 21 deps)"},
+      {"role": "deepcheck", "model": "haiku", "round": 1, "tokens": 76712, "tool_uses": 52, "wall_seconds": 180, "outcome": "BLOCKED (coverage 40/42); its own summary flagged CL-014 counts as off (405 vs 386 SELECT, 563 vs 558 CALL FUNCTION, 69 vs 70 SELECT *)"},
+      {"role": "deepcheck", "model": "haiku", "round": 2, "tokens": 75854, "tool_uses": 43, "wall_seconds": 302, "outcome": "ACCEPT (42/42 coverage, all supported - including the counts round 1 had doubted)"}
+    ],
+    "tokens_total_measured": 422797,
+    "gate": {
+      "verdict": "ACCEPT",
+      "claims_total": 21,
+      "supported": 21,
+      "partially_supported": 0,
+      "rejected": 0,
+      "deps_total": 21,
+      "deps_confirmed": 21
+    },
+    "applied": true,
+    "author_attempts": 1,
+    "author_validation_retries": 1,
+    "judge_reruns": 1,
+    "wall_clock_total_minutes": 38,
+    "notes": [
+      "Cheapest path to ACCEPT with a sonnet author: the strong author produced a clean artifact (self spot-checked, correctly excluded local classes as self-dependencies), and the haiku judge confirmed without ever REVERTing.",
+      "The haiku judge again failed verdict coverage on round 1 (40/42) - the same systematic weakness as in haiku-haiku - and was inconsistent on counts across rounds (flagged then accepted).",
+      "Open question this pairing exposes: how much verification quality is lost with the cheaper judge - the sonnet judge in sonnet-sonnet caught 4 mis-attributed dependency citations of the same author-model class that this haiku judge never checked for."
+    ]
+  },
+  "l2": {
+    "agent_runs": [
+      {"role": "researcher", "model": "sonnet", "tokens": 96731, "tool_uses": 27, "wall_seconds": 351, "outcome": "submitted (10 gaps: 4 auto-answered incl. generic PURPOSE, 6 open incl. deployment PURPOSE split into its own gap)"},
+      {"role": "owner-answer", "model": null, "tokens": 0, "outcome": "questionnaire (6 questions) -> owner's session statement captured via capture-answer: 3 gaps answered (deployment PURPOSE, batch TRIGGER, CONFIG anomaly)"},
+      {"role": "functional-author", "model": "sonnet", "tokens": 108894, "tool_uses": 25, "wall_seconds": 352, "outcome": "submitted first try (11 FUN + 5 PRC claims) - self-validated against functional_io before returning"},
+      {"role": "functional-gate", "model": "haiku", "target": "functional", "tokens": 55492, "tool_uses": 9, "wall_seconds": 126, "outcome": "ACCEPT (11/11: 8 supported, 3 rule-capped partials)"},
+      {"role": "functional-gate", "model": "haiku", "target": "process", "tokens": 50332, "tool_uses": 8, "wall_seconds": 93, "outcome": "ACCEPT (5/5 all supported high)"}
+    ],
+    "tokens_total_measured": 311449,
+    "gaps": {"total": 10, "auto_answered": 4, "expert_answered": 3, "open_after_research": 6, "load_bearing_open_final": 2, "questionnaire_questions": 6},
+    "gate": {
+      "functional": {"verdict": "ACCEPT", "claims_total": 11, "supported": 8, "partially_supported": 3, "not_supported": 0},
+      "process": {"verdict": "ACCEPT", "claims_total": 5}
+    },
+    "promoted": true,
+    "author_fix_passes": 0,
+    "gate_reruns": 0,
+    "notes": [
+      "The sonnet researcher split PURPOSE into two gaps (generic tool purpose - closed from docs; deployment-specific initiative - left open for the owner): the cleanest gap taxonomy of the benchmark.",
+      "The haiku gates were 2x cheaper and 3x faster than sonnet gates on the same class of content, and found nothing the sonnet gates would have blocked on this (already clean) input.",
+      "The full Phase 3 loop (questionnaire -> owner expert-answer) ran here too, driven by the sonnet researcher's skepticism."
+    ]
+  },
+  "page": {"lines": 420, "token_estimate": 9220, "raw_token_estimate": 1227716, "saving_ratio_vs_raw": 0.9925, "compression_factor": 133.2}
+}

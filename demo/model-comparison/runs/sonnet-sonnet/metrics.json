@@ -1,0 +1,70 @@
+{
+  "config": "sonnet-sonnet",
+  "author_model": "claude-sonnet-5",
+  "judge_model": "claude-sonnet-5",
+  "source": {
+    "file": "zabapgit_standalone.txt",
+    "physical_lines": 152996,
+    "non_blank_lines": 126501,
+    "bytes": 5063858,
+    "abapgit_version": "1.133.0",
+    "downloaded": "2026-07-02"
+  },
+  "l1": {
+    "agent_runs": [
+      {"role": "author", "model": "sonnet", "attempt": 1, "tokens": 190118, "tool_uses": 52, "wall_seconds": 943, "started": "2026-07-02T22:12:25+02:00", "outcome": "validation_rejected (1 error: output_mapping constant field without 'logic')"},
+      {"role": "author-fix", "model": "sonnet", "attempt": 1, "tokens": 69764, "tool_uses": 5, "wall_seconds": 28, "outcome": "fixed logic field; then H5 hygiene rejected (5 compound [VERIFIED: CL-x + path] markers)"},
+      {"role": "author-fix", "model": "sonnet", "attempt": 1, "tokens": 63752, "tool_uses": 18, "wall_seconds": 125, "outcome": "split compound markers; submitted (28 claims, 33 deps)"},
+      {"role": "deepcheck", "model": "sonnet", "round": 1, "tokens": 157546, "tool_uses": 31, "wall_seconds": 765, "outcome": "REVERT (4 dependency citations mis-attributed/off-by-one rated not-found; 9 claims partially_supported; independently re-counted all count claims)"},
+      {"role": "author", "model": "sonnet", "attempt": 2, "tokens": 159707, "tool_uses": 25, "wall_seconds": 638, "outcome": "fixed 4 dep citations (including correcting the judge's own off-by-one hint), fixed 10 partials; submitted (27 claims, 33 deps)"},
+      {"role": "deepcheck", "model": "sonnet", "round": 2, "tokens": 138753, "tool_uses": 61, "wall_seconds": 609, "outcome": "REVERT (CL-002 count 554 vs judge's 558: judge re-counted but missed the 4 comment-only hits the author had excluded)"},
+      {"role": "author", "model": "sonnet", "attempt": 3, "tokens": 140999, "tool_uses": 23, "wall_seconds": 389, "outcome": "verified the 4 disputed lines are comments char-by-char; reformulated CL-002 to the grep-reproducible raw count (558) with the comment nuance in prose; submitted"},
+      {"role": "deepcheck", "model": "sonnet", "round": 3, "tokens": 122663, "tool_uses": 30, "wall_seconds": 468, "outcome": "ACCEPT (60/60 coverage: 26 supported, 1 partially_supported medium on a pattern claim, 33/33 deps confirmed)"}
+    ],
+    "tokens_total_measured": 1043302,
+    "gate": {
+      "verdict": "ACCEPT",
+      "claims_total": 27,
+      "supported": 26,
+      "partially_supported": 1,
+      "rejected": 0,
+      "deps_total": 33,
+      "deps_confirmed": 33
+    },
+    "applied": true,
+    "author_attempts": 3,
+    "author_validation_retries": 2,
+    "judge_reruns": 2,
+    "wall_clock_total_minutes": 77,
+    "notes": [
+      "Deepest analysis of all configs: the author identified the file as a vendored abapmerge build (v1.133.0, abapmerge 0.16.8), correctly excluded local zcl_abapgit_* classes as self-dependencies, and found the 65 collision-renamed classes.",
+      "The sonnet judge is far stricter than haiku: it independently re-ran every whole-file count and caught 4 off-by-one/mis-attributed dependency citations that a weaker judge would have confirmed.",
+      "Round-2 REVERT was a judge false positive on comment detection (554 vs 558 CALL FUNCTION): the author proved the 4 disputed hits are full-line comments. The fix that survived was reformulating the claim to the grep-reproducible number - exact 'active statement' counts on a 153k-line file are razor-edge claims.",
+      "Author validation retries were format-related (output_mapping schema, compound confidence markers), not content-related."
+    ]
+  },
+  "l2": {
+    "agent_runs": [
+      {"role": "researcher", "model": "sonnet", "tokens": 142532, "tool_uses": 47, "wall_seconds": 631, "outcome": "submitted (12 gaps: 5 auto-answered, 7 open incl. PURPOSE - interpreted PURPOSE as deployment-specific, refused to close it from generic docs)"},
+      {"role": "owner-answer", "model": null, "tokens": 0, "outcome": "questionnaire (7 questions) -> owner's session statement captured via capture-answer: 5 gaps answered (PURPOSE, TRIGGER, ACTOR, CONFIG anomaly, online-mode)"},
+      {"role": "functional-author", "model": "sonnet", "tokens": 150221, "tool_uses": 28, "wall_seconds": 491, "outcome": "submitted first try (16 FUN + 8 PRC claims) - self-validated against functional_io before returning"},
+      {"role": "functional-gate", "model": "sonnet", "target": "functional", "tokens": 112933, "tool_uses": 18, "wall_seconds": 347, "outcome": "ACCEPT (16/16: 11 supported, 5 partially_supported incl. one genuine overreach finding on FUN-008)"},
+      {"role": "functional-gate", "model": "sonnet", "target": "process", "tokens": 101003, "tool_uses": 15, "wall_seconds": 215, "outcome": "ACCEPT (8/8: 6 supported, 2 rule-capped partials; explicitly rejected a false-contradiction candidate)"}
+    ],
+    "tokens_total_measured": 506689,
+    "gaps": {"total": 12, "auto_answered": 5, "expert_answered": 5, "open_after_research": 7, "load_bearing_open_final": 2, "questionnaire_questions": 7},
+    "gate": {
+      "functional": {"verdict": "ACCEPT", "claims_total": 16, "supported": 11, "partially_supported": 5, "not_supported": 0},
+      "process": {"verdict": "ACCEPT", "claims_total": 8}
+    },
+    "promoted": true,
+    "author_fix_passes": 0,
+    "gate_reruns": 0,
+    "notes": [
+      "The sonnet researcher was the most skeptical of all: it refused to close PURPOSE from the generic abapGit docs and demanded the deployment-specific answer - which forced the full Phase 3 loop (questionnaire -> owner answer -> capture-answer). More faithful to the L2 design, at the cost of one human turnaround.",
+      "It also produced the benchmark's only multi-source auto-closure: proving no customer-exit includes exist by cross-referencing the TADIR export with dependency-derived stubs, and flagged the Z-package-vs-$-package [ANOMALY].",
+      "The functional author self-validated with the pipeline's own validators before returning - zero fix passes (vs 3 for haiku)."
+    ]
+  },
+  "page": {"lines": 647, "token_estimate": 12833, "raw_token_estimate": 1227716, "saving_ratio_vs_raw": 0.9895, "compression_factor": 95.7}
+}

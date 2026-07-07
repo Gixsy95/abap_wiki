@@ -1,0 +1,17 @@
+# Slice manifest skeleton - copy into slices/<slice-id>/manifest.yaml
+# The manifest holds ONLY the hand-curated seed: anchors + owner.
+# The membership is NEVER listed by hand: it is derived from the dependency graph
+# (slices/<slice-id>/membership.md, auto-generated - L2 process, see core/docs/03-l2-process.md).
+slice:
+  id: <slice-id>                      # kebab-case, e.g. store-returns-cycle
+  title: "<Business process title>"
+  type: domain                        # domain | transaction-flow | batch-chain | interface
+  owner: <user@example.com>  # MANDATORY: the lint blocks L2 promotion with a missing or TBD owner
+  experts:                            # NOMINAL recipients for questionnaire triage
+    business: <user@example.com>
+    developer: <user@example.com>
+    basis: <user@example.com>
+  status: draft                       # draft | researching | awaiting-experts | l2-complete
+  anchors:                            # curated entry-points: transactions, batch programs, landmark tables
+    - { ref: <sap_type>-<NAME>, role: entry-point, note: "<why it is an anchor>" }
+  external_inputs: []                 # out-of-scope interfaces/objects cited but not members

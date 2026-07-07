@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" role="img" aria-label="The adversarial gate: author, artifact, independent judge, accept or revert">
+  <defs>
+    <marker id="ga" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#6366F1"/>
+    </marker>
+  </defs>
+  <g font-family="system-ui, -apple-system, Segoe UI, sans-serif">
+    <g>
+      <rect x="30" y="110" width="230" height="90" rx="14" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="2"/>
+      <text x="145" y="150" text-anchor="middle" font-size="24" font-weight="700" fill="#1E293B">author</text>
+      <text x="145" y="178" text-anchor="middle" font-size="16" fill="#64748B">abap-analyzer</text>
+    </g>
+    <g>
+      <rect x="330" y="110" width="210" height="90" rx="14" fill="#EEF2FF" stroke="#6366F1" stroke-width="2"/>
+      <text x="435" y="150" text-anchor="middle" font-size="22" font-weight="700" fill="#1E293B">artifact</text>
+      <text x="435" y="178" text-anchor="middle" font-size="16" fill="#475569">analysis + claims</text>
+    </g>
+    <g>
+      <rect x="640" y="110" width="240" height="90" rx="14" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="2"/>
+      <text x="760" y="150" text-anchor="middle" font-size="24" font-weight="700" fill="#1E293B">judge</text>
+      <text x="760" y="178" text-anchor="middle" font-size="16" fill="#64748B">abap-deepcheck</text>
+    </g>
+    <text x="760" y="228" text-anchor="middle" font-size="16" fill="#64748B">separate session, different model</text>
+    <g>
+      <rect x="960" y="60" width="210" height="66" rx="12" fill="#ECFDF5" stroke="#10B981" stroke-width="2"/>
+      <text x="1065" y="90" text-anchor="middle" font-size="21" font-weight="700" fill="#065F46">ACCEPT</text>
+      <text x="1065" y="112" text-anchor="middle" font-size="15" fill="#047857">promote</text>
+    </g>
+    <g>
+      <rect x="960" y="184" width="210" height="66" rx="12" fill="#FEF2F2" stroke="#EF4444" stroke-width="2"/>
+      <text x="1065" y="214" text-anchor="middle" font-size="21" font-weight="700" fill="#991B1B">REVERT</text>
+      <text x="1065" y="236" text-anchor="middle" font-size="15" fill="#B91C1C">back to author</text>
+    </g>
+    <line x1="262" y1="155" x2="328" y2="155" stroke="#6366F1" stroke-width="3" marker-end="url(#ga)"/>
+    <line x1="542" y1="155" x2="638" y2="155" stroke="#6366F1" stroke-width="3" marker-end="url(#ga)"/>
+    <line x1="882" y1="140" x2="958" y2="98" stroke="#6366F1" stroke-width="3" marker-end="url(#ga)"/>
+    <line x1="882" y1="172" x2="958" y2="214" stroke="#6366F1" stroke-width="3" marker-end="url(#ga)"/>
+    <text x="600" y="300" text-anchor="middle" font-size="17" font-weight="600" fill="#475569">fail-closed: no promotion without proof</text>
+  </g>
+</svg>

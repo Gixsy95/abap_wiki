@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 240" role="img" aria-label="The L0 to L3 pipeline">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#6366F1"/>
+    </marker>
+  </defs>
+  <g font-family="system-ui, -apple-system, Segoe UI, sans-serif">
+    <g>
+      <rect x="25" y="55" width="250" height="110" rx="14" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="2"/>
+      <text x="150" y="110" text-anchor="middle" font-size="40" font-weight="700" fill="#1E293B">L0</text>
+      <text x="150" y="140" text-anchor="middle" font-size="20" fill="#475569">inventory</text>
+      <text x="150" y="195" text-anchor="middle" font-size="17" fill="#64748B">stub from TADIR</text>
+    </g>
+    <g>
+      <rect x="325" y="55" width="250" height="110" rx="14" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="2"/>
+      <text x="450" y="110" text-anchor="middle" font-size="40" font-weight="700" fill="#1E293B">L1</text>
+      <text x="450" y="140" text-anchor="middle" font-size="20" fill="#475569">code analysis</text>
+      <text x="450" y="195" text-anchor="middle" font-size="17" fill="#64748B">author + gate</text>
+    </g>
+    <g>
+      <rect x="625" y="55" width="250" height="110" rx="14" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="2"/>
+      <text x="750" y="110" text-anchor="middle" font-size="40" font-weight="700" fill="#1E293B">L2</text>
+      <text x="750" y="140" text-anchor="middle" font-size="20" fill="#475569">functional</text>
+      <text x="750" y="195" text-anchor="middle" font-size="17" fill="#64748B">and process</text>
+    </g>
+    <g>
+      <rect x="925" y="55" width="250" height="110" rx="14" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="2"/>
+      <text x="1050" y="110" text-anchor="middle" font-size="40" font-weight="700" fill="#1E293B">L3</text>
+      <text x="1050" y="140" text-anchor="middle" font-size="20" fill="#475569">process</text>
+      <text x="1050" y="195" text-anchor="middle" font-size="17" fill="#64748B">cross-object</text>
+    </g>
+    <line x1="277" y1="110" x2="323" y2="110" stroke="#6366F1" stroke-width="3" marker-end="url(#arrow)"/>
+    <line x1="577" y1="110" x2="623" y2="110" stroke="#6366F1" stroke-width="3" marker-end="url(#arrow)"/>
+    <line x1="877" y1="110" x2="923" y2="110" stroke="#6366F1" stroke-width="3" marker-end="url(#arrow)"/>
+  </g>
+</svg>

@@ -1,0 +1,6 @@
+# DEVELOPMENT dependencies (not runtime). They do NOT belong in requirements.lock.txt:
+# the lockfile is frozen from a runtime-only environment (see freeze_lock.py) to
+# stay minimal. Install with: pip install -r core/src/requirements-dev.txt
+-r requirements.txt
+pytest-cov>=7.1.0
+ruff==0.15.20

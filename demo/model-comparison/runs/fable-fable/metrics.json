@@ -1,0 +1,64 @@
+{
+  "config": "fable-fable",
+  "author_model": "claude-fable-5",
+  "judge_model": "claude-fable-5",
+  "source": {
+    "file": "zabapgit_standalone.txt",
+    "physical_lines": 152996,
+    "non_blank_lines": 126501,
+    "bytes": 5063858,
+    "abapgit_version": "1.133.0",
+    "downloaded": "2026-07-02"
+  },
+  "l1": {
+    "agent_runs": [
+      {"role": "author", "model": "fable", "attempt": 1, "tokens": 124534, "tool_uses": 35, "wall_seconds": 707, "started": "2026-07-03T01:01:27+02:00", "outcome": "submitted first try - ZERO validation errors (38 claims incl. generated IN/OUT, 17 deps, 5 bug candidates)"},
+      {"role": "deepcheck", "model": "fable", "round": 1, "tokens": 127602, "tool_uses": 24, "wall_seconds": 714, "outcome": "ACCEPT (55/55 coverage: 34 supported, 4 partially_supported all in the out-of-range-citation class, 17/17 deps confirmed; counted every count claim mechanically incl. detecting 2 comment-only 'FOR TESTING' matches)"}
+    ],
+    "tokens_total_measured": 252136,
+    "gate": {
+      "verdict": "ACCEPT",
+      "claims_total": 38,
+      "supported": 34,
+      "partially_supported": 4,
+      "rejected": 0,
+      "deps_total": 17,
+      "deps_confirmed": 17
+    },
+    "applied": true,
+    "author_attempts": 1,
+    "author_validation_retries": 0,
+    "judge_reruns": 0,
+    "wall_clock_total_minutes": 26,
+    "notes": [
+      "Cheapest total of ALL configs (~252k tokens) AND the only author (with fable-opus) to pass deterministic validation on the first try - zero format errors.",
+      "Richest artifact: 38 judgeable claims (vs 19-29 for the others) and 5 evidenced bug candidates, at a token cost comparable to opus and 4x less than sonnet-sonnet's churned total.",
+      "The fable judge separated falsehood from citation-coverage: its 4 partially_supported were 'true in source but the cited range does not prove it' - it verified each one in the source before downgrading rather than rejecting.",
+      "Dynamic-name dependencies (CALL_V1_PING via variable, ZABAPGIT via (c_tabname)) were correctly claimed by the author and confirmed by the judge through the literal assignments - the hardest dependency class in the contract."
+    ]
+  },
+  "l2": {
+    "agent_runs": [
+      {"role": "researcher", "model": "fable", "attempt": 1, "tokens": 0, "wall_seconds": 201, "outcome": "KILLED by session limit (resets 6am) - no artifacts written; clean retry after reset"},
+      {"role": "researcher", "model": "fable", "attempt": 2, "tokens": 96444, "tool_uses": 21, "wall_seconds": 487, "outcome": "submitted (13 gaps, ALL auto-answered incl. the owner statement recorded as citable evidence; 0 questionnaire)"},
+      {"role": "functional-author", "model": "fable", "tokens": 104461, "tool_uses": 23, "wall_seconds": 455, "outcome": "submitted first try (18 FUN + 10 PRC claims), self-validated"},
+      {"role": "functional-gate", "model": "fable", "target": "functional", "tokens": 75220, "tool_uses": 10, "wall_seconds": 220, "outcome": "ACCEPT (18/18: 14 supported, 4 partials incl. one citation-window defect pinpointed to the exact missing lines)"},
+      {"role": "functional-gate", "model": "fable", "target": "process", "tokens": 87326, "tool_uses": 14, "wall_seconds": 293, "outcome": "ACCEPT (10/10: 8 supported, 2 partials; resolved an apparent doc-quote tension instead of raising a false contradiction)"}
+    ],
+    "tokens_total_measured": 363451,
+    "gaps": {"total": 13, "auto_answered": 13, "expert_answered": 0, "open_after_research": 0, "load_bearing_open_final": 0, "questionnaire_questions": 0},
+    "gate": {
+      "functional": {"verdict": "ACCEPT", "claims_total": 18, "supported": 14, "partially_supported": 4, "not_supported": 0},
+      "process": {"verdict": "ACCEPT", "claims_total": 10}
+    },
+    "promoted": true,
+    "author_fix_passes": 0,
+    "gate_reruns": 0,
+    "notes": [
+      "First researcher attempt was killed by a session limit (the documented interrupted-batch failure mode) - nothing was lost: artifacts are the only agent output and the retry started clean.",
+      "Zero human turnaround: the researcher recorded the owner's session statement as citable evidence and auto-closed all 13 gaps.",
+      "The fable gates verified raw-source lines directly (re-read 152815-152859) and separated citation-window defects from falsehoods, suggesting the exact evidence-range fix."
+    ]
+  },
+  "page": {"lines": 482, "token_estimate": 8512, "raw_token_estimate": 1227716, "saving_ratio_vs_raw": 0.9931, "compression_factor": 144.2}
+}

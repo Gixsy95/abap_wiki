@@ -1,0 +1,63 @@
+{
+  "object_slug": "_process",
+  "model": "claude-sonnet-5",
+  "contract_version": "abap-functional-gate/1",
+  "verdicts": [
+    {
+      "claim_id": "PRC-001",
+      "verdict": "partially_supported",
+      "confidence": "medium",
+      "rationale": "abapgit-purpose-and-actor.md:22-26 (the 'Who operates it (ACTOR)' paragraph) proves only the 'not a <COMPANY> FI/MM/SD/CO business process' / cross-cutting developer-tool part of the sentence. It does not state 'offline installation and usage' (that theme is established in the online-offline-usage-integration.md research, not cited here) nor 'version control + transport-independent code exchange' verbatim ('version control' is in the same file's PURPOSE paragraph at lines 14-20, outside the cited range, and 'transport-independent code exchange' appears only in the online-offline-usage-integration.md conclusion, an entirely different file not cited for this claim). Core assertion proven; the descriptive parenthetical and 'offline' framing are not proven by the cited lines."
+    },
+    {
+      "claim_id": "PRC-002",
+      "verdict": "partially_supported",
+      "confidence": "medium",
+      "rationale": "standalone-install-and-trigger.md:24-28 (the 'How it is launched (TRIGGER)' paragraph) fully proves the create/upload/activate/run-via-SE38 steps. The trailing clause 'with no prior abapGit installation required' is not stated in that paragraph - it belongs to the preceding 'Packaging' paragraph ('meant to be installed and run without abapGit already present', lines 21-23), which is a separate topic block outside the cited range, not a same-sentence line-boundary spillover. Installation mechanics proven; the no-prior-install clause is not proven by the cited lines."
+    },
+    {
+      "claim_id": "PRC-003",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "online-offline-usage-integration.md:14-21 states the online workflow verbatim: 'launch transaction ZABAPGIT, clone the repo, add objects ... push changes via a \"commit\" link, and pull remote updates' and 'abapGit synchronizes the SAP system against a remote Git repo.' The claim's 'add and commit objects, push changes' is a standard-Git paraphrase of the source's add/commit(-push) wording; the overall synchronization semantics match exactly. Consistent with the parallel member-level claim (FUN-014) verified against the same evidence."
+    },
+    {
+      "claim_id": "PRC-004",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "online-offline-usage-integration.md:23-31 states verbatim: offline repos work with 'no internet and no SSL certificates', setup via 'transaction ZABAPGIT -> \"New Offline\" -> enter project name + SAP package -> \"Create Offline Repo\"', and objects 'imported via ZIP upload, and exported as ZIP'. Direct match, no gaps."
+    },
+    {
+      "claim_id": "PRC-005",
+      "verdict": "partially_supported",
+      "confidence": "medium",
+      "rationale": "l1-code-analysis-facts.md:26-32 proves the standard tables (TADIR, E070/E071, REPOSRC, TRDIR) + dynpro FMs + 'not custom Z tables' portion; online-offline-usage-integration.md:14-21 proves the ZABAPGIT transaction. Neither cited range mentions transaction SE38 at all (that fact is stated in standalone-install-and-trigger.md:24-28, a file not cited for this claim). Table/FM/no-Z-table portion fully proven; the 'transactions SE38' half of the claim is not proven by the cited evidence."
+    },
+    {
+      "claim_id": "PRC-006",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "online-offline-usage-integration.md:33-37 states verbatim: abapGit 'serializes them to plain-text Git files (online) or ZIP files (offline)' and 'does not populate <COMPANY> business Z tables'. Direct match. Not contradicted by the L1 page: L1's 'html-gui' output row describes only the report shell's immediate rendered output (the interactive UI), explicitly scoped to the report shell since the inlined serialization classes are out of L1's raw-only analysis scope - a different abstraction level, not a conflicting fact."
+    },
+    {
+      "claim_id": "PRC-007",
+      "verdict": "partially_supported",
+      "confidence": "medium",
+      "rationale": "l1-code-analysis-facts.md:26-32 proves the 'standard-SAP repository/transport touchpoints, no <COMPANY> business objects downstream' half of the sentence (matches the L1 page's own 'External dependencies' table exactly: TADIR/E070/E071/REPOSRC/TRDIR + 3 FMs + 2 classes + 2 programs + 1 structure, and membership.md's identical hop-1 context list). The 'single entry-point report' framing is not stated in that cited range - it is established instead by the 'No callers' section (used_by: [] / no known references, lines 21-24 of the same file), which is not cited for this claim. Object-chain composition itself is correct and matches membership.md; only the specific cited lines don't cover the entry-point characterization."
+    },
+    {
+      "claim_id": "PRC-008",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "l1-code-analysis-facts.md:14-19 proves the batch path verbatim ('when sy-batch = abap_true, runs zcl_abapgit_background=>run()... the report shell contains no self-scheduling logic'), matching the L1 page's own 'Modes' section. deployment-context-owner.md:17-26 proves 'No background or scheduled job launches it ... it is never triggered here.' Full match, no gaps."
+    },
+    {
+      "claim_id": "PRC-009",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "deployment-context-owner.md:17-26 states verbatim: 'It is NOT productively installed and has NEVER been executed in this system' and 'No background or scheduled job launches it'. Direct, complete match; consistent with the member functional.yaml's functional_open_points/functional_summary sections stating the same fact from the same source."
+    }
+  ],
+  "contradictions": [],
+  "notes": "Check C (process consistency): object_chain (PRC-007 section) enumerates exactly the same 18 objects/roles as membership.md (1 rich_target hop-0 anchor, 4 member-role optional exit includes, 13 context-role standard-SAP touchpoints) - no drift. end_to_end_flow, standard_touchpoints, process_variants and process_open_points are fully consistent with the sole member's functional.yaml (program-ZABAPGIT_STANDALONE.yaml): same install/trigger facts, same online/offline workflow, same standard-only touchpoints, same never-executed/no-scheduled-job deployment status, same headless-batch-but-unscheduled variant. No contradiction found against the L1 code analysis (wiki/ZABAPGIT/program-ZABAPGIT_STANDALONE.md): dependency list, execution modes, and 'no <COMPANY> Z table' facts all match the page's Dependencies/Modes/Output-mapping sections."
+}

@@ -1,0 +1,24 @@
+# General rule: text is normalised to LF on commit AND on checkout, on every
+# platform (deterministic regardless of core.autocrlf). The committed lockfile
+# test asserts LF line endings, and `git archive` / a fresh clone must reproduce
+# them byte-for-byte.
+* text=auto eol=lf
+
+# Binary assets: never apply text or EOL filters.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.pdf binary
+*.xlsx binary
+*.xls binary
+
+# EXCEPTION (later rules win over earlier ones):
+# raw/ is the system's citation base: the bytes on disk are the truth
+# (source_hash = md5 of the bytes; [VERIFIED] citations resolve to physical
+# line numbers). No EOL conversion, ever: a checkout must reproduce the
+# original SAP export byte-for-byte.
+raw/** -text
+
+# Git hooks are sh scripts: they must stay LF even on Windows (a CRLF in the
+# shebang makes execution fail with `/bin/sh^M`). Force eol=lf on checkout.
+core/githooks/** text eol=lf

@@ -1,0 +1,86 @@
+# Canonical catalog of L1 analysis sections - COMMON SCHEMA.
+#
+# Single source of truth for sections: the per-type templates
+# (templates/template-<sap_type>.md) reference these keys in their
+# `sections:` frontmatter; the loader core/src/tools/section_schema.py derives
+# from here the page-render ORDER (apply_l1) and the TITLES, and from each template
+# the set of required sections per type (author_io, gate H2).
+#
+# Replaces the hardcoded lists that diverged (author_io.REQUIRED_SECTIONS
+# and apply_l1.NARRATIVE_ORDER). To change a type's sections edit the
+# template; code and gate follow. The anti-drift check is in section_schema.audit
+# (run by lint_wiki).
+#
+# class:
+#   narrative   -> produced by abap-analyzer, materialised INLINE in the page
+#   structural  -> rendered by the pipeline (invariant frame in apply_l1), not by the LLM
+# slot (narrative only):
+#   synthesis   -> rendered at the top of the page (## Executive summary)
+#   body        -> ordered narrative block; THE ORDER HERE IS THE RENDER ORDER
+#
+# NB Phase A (reconciliation at invariant behavior): the titles of the narrative
+# `body` sections are deliberately identical to the historical render
+# (key.replace('_',' ').capitalize()) so as not to change the bytes of the 80 L1
+# pages already materialised. Localisation is deferred to Phase B
+# (with rerender-pages + test update).
+version: 1
+sections:
+  # --- summary (rendered at the top of the page) ---
+  executive_summary:       { title: "Executive summary", class: narrative, slot: synthesis }
+
+  # --- narrative (slot body), IN RENDER ORDER ---
+  # NB the capitalize-style titles (Functional scope, Form analysis...) are historical
+  # (Phase A invariance: 80 program pages). Sections introduced later (output_mapping,
+  # api_surface, message_catalog, test_coverage) have no prior pages.
+  functional_scope:        { title: "Functional scope", class: narrative, slot: body }
+  api_surface:             { title: "Public interface", class: narrative, slot: body }
+  selection_screen:        { title: "Selection screen", class: narrative, slot: body }
+  input_mapping:           { title: "Input mapping", class: narrative, slot: body }
+  form_analysis:           { title: "Form analysis", class: narrative, slot: body }
+  output_mapping:          { title: "Output mapping", class: narrative, slot: body }
+  external_dependencies:   { title: "External dependencies", class: narrative, slot: body }
+  performance:             { title: "Performance", class: narrative, slot: body }
+  error_handling:          { title: "Error handling", class: narrative, slot: body }
+  bug_candidates:          { title: "Bug candidates", class: narrative, slot: body }
+  test_coverage:           { title: "Test coverage", class: narrative, slot: body }
+  field_dictionary:        { title: "Field dictionary", class: narrative, slot: body }
+  message_catalog:         { title: "Message catalog", class: narrative, slot: body }
+  business_open_questions: { title: "Business open questions", class: narrative, slot: body }
+  next_steps:              { title: "Next steps", class: narrative, slot: body }
+
+  # --- L2 functional narrative (slot: functional, level: L2) ---
+  # Functional analysis materialised INLINE in the object page (single page
+  # §2), produced by the L2 process (core/docs/03-l2-process.md). THE ORDER HERE IS
+  # THE RENDER ORDER of the functional sections (apply_l2). slot 'functional' keeps them
+  # out of the L1 render (ordered_narrative_keys filters slot 'body').
+  # Required declared in the `sections:` frontmatter of templates/template-functional.md.
+  functional_summary:      { title: "Functional summary", class: narrative, slot: functional, level: L2 }
+  business_purpose:        { title: "Business purpose", class: narrative, slot: functional, level: L2 }
+  trigger_actors:          { title: "Triggers and actors", class: narrative, slot: functional, level: L2 }
+  business_rules:          { title: "Business rules", class: narrative, slot: functional, level: L2 }
+  standard_integration:    { title: "Standard SAP integration", class: narrative, slot: functional, level: L2 }
+  data_lifecycle:          { title: "Data lifecycle", class: narrative, slot: functional, level: L2 }
+  functional_open_points:  { title: "Open points (functional)", class: narrative, slot: functional, level: L2 }
+  functional_sources:      { title: "Functional sources", class: narrative, slot: functional, level: L2 }
+
+  # --- L2 process narrative (slot: process, level: L2) ---
+  # Sections of the per-slice process document (abap_wiki/processes/<slice>.md, NOT
+  # inline), produced by the L2 process. Required in templates/template-process.md.
+  process_summary:         { title: "Process summary", class: narrative, slot: process, level: L2 }
+  end_to_end_flow:         { title: "End-to-end flow", class: narrative, slot: process, level: L2 }
+  object_chain:            { title: "Object chain", class: narrative, slot: process, level: L2 }
+  standard_touchpoints:    { title: "Standard SAP touchpoints", class: narrative, slot: process, level: L2 }
+  process_variants:        { title: "Variants and exceptions", class: narrative, slot: process, level: L2 }
+  process_open_points:     { title: "Open points (process)", class: narrative, slot: process, level: L2 }
+  process_sources:         { title: "Process sources", class: narrative, slot: process, level: L2 }
+
+  # --- structural (invariant frame rendered by apply_l1) ---
+  metadata:                { title: "Technical metadata", class: structural }
+  program_structure:       { title: "Program structure", class: structural }
+  dependencies:            { title: "Dependencies", class: structural }
+  where_used:              { title: "Where used", class: structural }
+  bug_summary:             { title: "Bug catalog - summary", class: structural }
+  user_notes:              { title: "User notes", class: structural }
+  related:                 { title: "Related articles", class: structural }
+  sources:                 { title: "Sources", class: structural }
+

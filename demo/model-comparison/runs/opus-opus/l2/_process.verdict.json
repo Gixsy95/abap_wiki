@@ -1,0 +1,51 @@
+{
+  "object_slug": "_process",
+  "slice": "abapgit-standalone-demo",
+  "model": "claude-opus-4-8[1m]",
+  "contract_version": "abap-functional-gate/1",
+  "verdicts": [
+    {
+      "claim_id": "PRC-001",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "purpose-abapgit.md:16-24 explicitly states abapGit is 'a git client for ABAP' that imports/exports code between ABAP systems under version control, and standalone-run-se38.md:17-19 states the standalone edition is the single-file program executed via SE38. Together they prove the sentence. Consistent with the L1 page (executive summary lines 53-54, 78)."
+    },
+    {
+      "claim_id": "PRC-002",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "standalone-run-se38.md:24-26 proves install as report ZABAPGIT_STANDALONE and 'Run it via transaction SE38'; runtime-trigger-dbt.md:21-24 proves the sy-batch dispatch into interactive HTML GUI vs zcl_abapgit_background=>run. Matches the L1 code analysis (lines 55, 57, 83-84). No contradiction: PRC-002 states the trigger capability, PRC-006 records it is not actually run here."
+    },
+    {
+      "claim_id": "PRC-003",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "online-workflow.md:18-27 proves the online clone -> add/commit(push) -> pull cycle against a remote Git host; offline-airgapped.md:17-28 proves the offline ZIP import/export. Both lifecycles are stated by the cited evidence and do not contradict the L1 modes section (lines 82-84)."
+    },
+    {
+      "claim_id": "PRC-004",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "online-workflow.md:30-33 names the L1-documented serialisation footprint TADIR, E070/E071, REPOSRC, DD02L read/written by the object handlers, which proves the sentence. Fully consistent with the L1 tables section (CL-010; page lines 160-165, 284-292); the tables are correctly classified as standard."
+    },
+    {
+      "claim_id": "PRC-005",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "The two orthogonal variants are each proven: online HTTP(S) (online-workflow.md:18-27) vs offline ZIP (offline-airgapped.md:17-28), and interactive GUI vs unattended background sync (runtime-trigger-dbt.md:21-24). Consistent with the L1 dual-execution-mode finding (lines 57, 83-84)."
+    },
+    {
+      "claim_id": "PRC-006",
+      "verdict": "supported",
+      "confidence": "high",
+      "rationale": "owner-demo-context.md:16 states the object exists only as input of a public demo/benchmark of the ingest pipeline (non-productive fixture); line 20 states the program is never executed here. The expert answer directly proves the sentence."
+    },
+    {
+      "claim_id": "PRC-007",
+      "verdict": "partially_supported",
+      "confidence": "high",
+      "rationale": "Inferred claim (object_chain narrative is explicitly flagged [INFERRED]); per the inferred-status rule it is judged only for reasonableness, capped at partially_supported. The chain (entry point ZABAPGIT_STANDALONE + exactly four *_exit user-exit includes + ZABAPGIT persistence table) matches membership.md members (lines 33-37) and the L1 include architecture (line 185) and persistence table (line 292). Reasonable and non-contradictory; not backed by a citable functional source, hence not fully supported."
+    }
+  ],
+  "contradictions": []
+}

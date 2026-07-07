@@ -1,0 +1,225 @@
+slice: abapgit-standalone-demo
+sap_name: ZABAPGIT_STANDALONE
+sap_type: program
+functional_sections:
+  functional_summary: |
+    A standalone, monolithic Git client (v1.1.13) for SAP ABAP systems, bundling all abapGit
+    functionality into a single program for deployment without package dependencies. Provides
+    web-based GUI for clone, pull, push, and merge operations on Git repositories; supports
+    both online (remote Git) and offline (local ZIP) workflows. Runs interactively or in batch mode.
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-purpose-and-trigger.md:26-29]
+  business_purpose: |
+    Serves as an offline, transportable Git client for mass ABAP code import/export operations,
+    enabling plain-text repository storage and code review before system import. Designed as an
+    alternative to the standard SAP transport system (TP/STMS), allowing development teams to
+    manage ABAP objects through Git version control rather than SAP transport requests. Deployed
+    as a single monolithic program when the full developer package cannot be installed.
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-purpose-and-trigger.md:26-29]
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-field-semantics-and-integration.md:44-56]
+  trigger_actors: |
+    Launched by developers via transaction SE38 (standard ABAP program editor) or via background
+    job when sy-batch = abap_true. Entry point: START-OF-SELECTION calls FORM run
+    (authorization check) → FORM open_gui (batch/interactive routing). Interactive mode renders
+    HTML GUI via zcl_abapgit_ui_factory; batch mode delegates to zcl_abapgit_background=>run().
+
+    Primary actors are ABAP developers, DevOps engineers, and SAP development team members with
+    system access (BASIS authorization for SE38 and program execution). The standalone version
+    is specifically designed for end-users (not abapGit contributors).
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-purpose-and-trigger.md:50-53]
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-actor-and-users.md:21-30]
+  business_rules: |
+    Input parameters p_url, p_user, p_pass, p_cmnt carry Git authentication credentials and UI hints:
+    - p_url: Git repository URL (HTTPS or SSH endpoint) for the remote Git repository
+    - p_user: Username for Git authentication (GitHub username or equivalent)
+    - p_pass: Password or personal access token for Git authentication (secret credential)
+    - p_cmnt: Comment/instruction line displayed in the credential popup dialog
+
+    These parameters flow through lcl_password_dialog=>popup() to drive Git clone/pull/push
+    authentication.
+
+    Emergency mode bypass via hardcoded Parameter ID 'DBT'='ZABAPGIT' (no audit logging) -
+    [ANOMALY: The L1 code analysis flags BUG-002: hardcoded emergency-mode parameter 'DBT'
+    with no constants and no audit trail. Under what circumstances is this used, and who has
+    access? This remains [UNVERIFIABLE: asked to owner on 2026-07-02]].
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-field-semantics-and-integration.md:28-32]
+  standard_integration: |
+    abapGit operates INDEPENDENTLY of the standard SAP transport system (TP/STMS). It manages
+    ABAP objects through Git version control rather than through SAP transport requests. Objects
+    are imported into SAP via abapGit after being pulled from the Git repository, bypassing the
+    traditional STMS/TR workflow. This enables:
+
+    1. Plain-text code storage (human-readable diffs)
+    2. Code review before import (via Git pull requests)
+    3. Mass import/export operations (offline or online)
+    4. Off-system backup and branching strategies
+
+    The standalone version supports both online repositories (direct remote Git connections)
+    and offline repositories (ZIP file import/export for air-gapped systems).
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-field-semantics-and-integration.md:44-71]
+  data_lifecycle: |
+    The program does not produce classic report output (no ALV, spool, or file at report level);
+    all user-facing output is HTML rendered by embedded GUI classes (zcl_abapgit_ui_factory,
+    zcl_abapgit_html).
+
+    Data persistence is managed by deferred classes zcl_abapgit_persist_* (bundled in this program)
+    as users create/modify repositories and objects. The L1 code analysis flags BUG-001 (unfiltered
+    SELECT * FROM persistence table at line 73201) but volume and retention policy remain
+    [UNVERIFIABLE: asked to owner on 2026-07-02].
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-purpose-and-trigger.md:26-29]
+  functional_sources: |
+    Auto-research from raw/docs (2026-07-03):
+    - raw/docs/01-what-is-abapgit.md (purpose, integration model)
+    - raw/docs/02-install-standalone.md (configuration, maintenance)
+    - raw/docs/03-first-online-project.md (field semantics, trigger)
+    - raw/docs/04-offline-projects.md (offline mode, air-gapped support)
+
+    L1 code analysis (wiki/ZABAPGIT/program-ZABAPGIT_STANDALONE.md) for technical verification.
+  functional_open_points: |
+    1. Authorization model: What SAP authorization objects back zif_abapgit_auth=>c_authorization-startup?
+       Custom (Z*) or standard? [UNVERIFIABLE: asked to owner on 2026-07-02]
+    2. Emergency mode ('DBT'='ZABAPGIT'): Under what circumstances does support use it?
+       Is it documented internally? [UNVERIFIABLE: asked to owner on 2026-07-02]
+    3. Persistence table volume: How large is the abapGit persistence table, and what is the
+       actual impact of BUG-001? [UNVERIFIABLE: asked to owner on 2026-07-02]
+
+claims:
+  - claim_id: FUN-001
+    class: PURPOSE
+    status: verified
+    section: business_purpose
+    sentence: ZABAPGIT_STANDALONE serves as an offline, transportable Git client for mass ABAP code import/export operations with plain-text repository storage and code review capabilities.
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-purpose-and-trigger.md", line_start: 26, line_end: 29 }
+
+  - claim_id: FUN-002
+    class: PURPOSE
+    status: verified
+    section: business_purpose
+    sentence: It operates as an alternative to the standard SAP transport system (TP/STMS), managing ABAP objects through Git version control rather than SAP transport requests.
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-field-semantics-and-integration.md", line_start: 44, line_end: 56 }
+
+  - claim_id: FUN-003
+    class: TRIGGER
+    status: verified
+    section: trigger_actors
+    sentence: ZABAPGIT_STANDALONE is launched by developers via transaction SE38 (standard ABAP program editor) or via background job when sy-batch = abap_true.
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-purpose-and-trigger.md", line_start: 50, line_end: 53 }
+
+  - claim_id: FUN-004
+    class: TRIGGER
+    status: verified
+    section: trigger_actors
+    sentence: Entry point is START-OF-SELECTION → FORM run (authorization check) → FORM open_gui, which routes to interactive HTML GUI or batch processing via zcl_abapgit_background=>run().
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-purpose-and-trigger.md", line_start: 50, line_end: 53 }
+
+  - claim_id: FUN-005
+    class: ACTOR
+    status: verified
+    section: trigger_actors
+    sentence: Primary actors are ABAP developers, DevOps engineers, and SAP development team members with system access (BASIS authorization for SE38 and program execution).
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-actor-and-users.md", line_start: 21, line_end: 30 }
+
+  - claim_id: FUN-006
+    class: ACTOR
+    status: verified
+    section: trigger_actors
+    sentence: The standalone version is specifically designed for end-users (not abapGit codebase contributors), with authorization enforced via zcl_abapgit_auth=>is_allowed().
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-actor-and-users.md", line_start: 21, line_end: 30 }
+
+  - claim_id: FUN-007
+    class: FIELD-SEMANTICS
+    status: verified
+    section: business_rules
+    sentence: Input parameter p_url carries the Git repository URL (HTTPS or SSH endpoint) for the remote Git repository.
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-field-semantics-and-integration.md", line_start: 28, line_end: 32 }
+
+  - claim_id: FUN-008
+    class: FIELD-SEMANTICS
+    status: verified
+    section: business_rules
+    sentence: Input parameter p_user carries the username for Git authentication (GitHub username or equivalent).
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-field-semantics-and-integration.md", line_start: 28, line_end: 32 }
+
+  - claim_id: FUN-009
+    class: FIELD-SEMANTICS
+    status: verified
+    section: business_rules
+    sentence: Input parameter p_pass carries the password or personal access token for Git authentication (secret credential).
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-field-semantics-and-integration.md", line_start: 28, line_end: 32 }
+
+  - claim_id: FUN-010
+    class: FIELD-SEMANTICS
+    status: verified
+    section: business_rules
+    sentence: Input parameter p_cmnt carries a comment/instruction line displayed in the credential popup dialog, instructing the user.
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-field-semantics-and-integration.md", line_start: 28, line_end: 32 }
+
+  - claim_id: FUN-011
+    class: BUSINESS-RULE
+    status: not-verifiable
+    section: business_rules
+    sentence: Emergency mode via hardcoded Parameter ID 'DBT'='ZABAPGIT' provides database-utility access with no audit logging.
+    evidence: []
+
+  - claim_id: FUN-012
+    class: INTEGRATION
+    status: verified
+    section: standard_integration
+    sentence: abapGit manages ABAP objects through Git version control, bypassing the standard SAP transport system (TP/STMS) workflow entirely.
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-field-semantics-and-integration.md", line_start: 44, line_end: 56 }
+
+  - claim_id: FUN-013
+    class: INTEGRATION
+    status: verified
+    section: standard_integration
+    sentence: The standalone version supports both online repositories (direct remote Git connections) and offline repositories (ZIP file import/export for air-gapped systems).
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-field-semantics-and-integration.md", line_start: 58, line_end: 71 }
+
+  - claim_id: FUN-014
+    class: INTEGRATION
+    status: inferred
+    section: standard_integration
+    sentence: Plain-text code storage enables human-readable diffs and code review before import (via Git pull requests), addressing a key limitation of binary SAP transport files.
+    evidence: []
+
+  - claim_id: FUN-015
+    class: DATA-LIFECYCLE
+    status: verified
+    section: data_lifecycle
+    sentence: The program produces no classic report output; all user-facing output is HTML rendered by embedded GUI classes (zcl_abapgit_ui_factory, zcl_abapgit_html).
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-purpose-and-trigger.md", line_start: 26, line_end: 29 }
+
+  - claim_id: FUN-016
+    class: DATA-LIFECYCLE
+    status: inferred
+    section: data_lifecycle
+    sentence: Data persistence is managed by deferred classes zcl_abapgit_persist_* (bundled in this program) as users create/modify repositories and objects.
+    evidence: []
+
+  - claim_id: FUN-017
+    class: CONFIG
+    status: verified
+    section: business_purpose
+    sentence: Installation requires no customizing tables or configuration transactions; the program is ready to use after activation in a local development package (e.g., $ABAPGIT).
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-maintenance-and-config.md", line_start: 24, line_end: 44 }
+
+  - claim_id: FUN-018
+    class: CONFIG
+    status: verified
+    section: business_purpose
+    sentence: "Upgrade path is manual: download new version from GitHub and re-upload/re-activate the program; there is no automatic update mechanism."
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-maintenance-and-config.md", line_start: 33, line_end: 44 }

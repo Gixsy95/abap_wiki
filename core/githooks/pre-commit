@@ -1,0 +1,64 @@
+#!/bin/sh
+# What it does: git pre-commit hook for the repo - covers raw commits outside the pipeline by doing
+#   two things: fail-CLOSED secret scan on staged files and fail-open alignment of the log.md view.
+# How it works: runs doctor.py --secret-scan --staged (blocks the commit if plaintext secrets are
+#   found); then regenerates log.md from the DB `events` and re-stages it (fail-open if no
+#   interpreter/DB). Selects the interpreter: repo venv first, then system python/python3.
+# Connections: uses core/src/tools/doctor.py and the pipeline (oplog.rebuild); activated by
+#   `git config core.hooksPath core/githooks`; complements gitops.commit_batch (CLAUDE.md §13).
+#
+# pre-commit hook abap_wiki - two responsibilities:
+#  1. SECRET SCAN (fail-CLOSED): blocks the commit if plaintext secrets are found in
+#     staged files (doctor.py --secret-scan --staged). Always runs, even without a DB.
+#  2. LOG ALIGN (fail-open): regenerates the log.md view from the DB `events` and
+#     stages it, so a raw `git commit` stays aligned (CLAUDE.md §13).
+#
+# NOTE: pipeline commits (`pipeline.py git-commit` -> gitops.commit_batch) use
+# `--no-verify` and skip this hook: there, log.md alignment is guaranteed by
+# oplog.rebuild + direct staging. This hook covers raw commits outside the pipeline.
+#
+# Fail-open on the log if interpreter/DB is missing (fresh clone). One-time activation:
+#   git config core.hooksPath core/githooks
+set -e
+
+root="$(git rev-parse --show-toplevel)"
+
+# interpreter: repo venv first, then system python/python3
+if [ -x "$root/.venv/Scripts/python.exe" ]; then
+  py="$root/.venv/Scripts/python.exe"
+elif [ -x "$root/.venv/bin/python" ]; then
+  py="$root/.venv/bin/python"
+elif command -v python >/dev/null 2>&1; then
+  py=python
+elif command -v python3 >/dev/null 2>&1; then
+  py=python3
+else
+  exit 0   # no interpreter: do not block the commit
+fi
+
+# --- fail-closed: block plaintext secrets in staged files (C2) ---
+# Runs ALWAYS (even without a DB) and BEFORE early exits. Scans the index
+# (git grep --cached). Fail-open only if the tool is missing; never on matches.
+if ! "$py" "$root/core/src/tools/doctor.py" --secret-scan --staged; then
+  echo "pre-commit: secret scan FAILED - commit blocked. Use 'git commit --no-verify' only if you are certain." >&2
+  exit 1
+fi
+
+# --- fail-closed: Ruff lint (skip if ruff is not installed, e.g. fresh clone) ---
+if "$py" -m ruff --version >/dev/null 2>&1; then
+  if ! "$py" -m ruff check "$root"; then
+    echo "pre-commit: ruff check FAILED - commit blocked. Fix the findings or 'git commit --no-verify' only if you are certain." >&2
+    exit 1
+  fi
+fi
+
+# no DB (clone without runtime state): nothing to regenerate
+[ -f "$root/state/abap_wiki.db" ] || exit 0
+
+# regenerate the view; if it fails do not block the commit
+"$py" "$root/core/src/tools/pipeline.py" log >/dev/null 2>&1 || exit 0
+
+# stage the updated view (no-op if unchanged)
+git add -- "$root/log.md" 2>/dev/null || true
+
+exit 0

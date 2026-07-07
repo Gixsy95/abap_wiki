@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<msag:messageClass xmlns:adtcore="http://www.sap.com/adt/core" xmlns:msag="http://www.sap.com/adt/messageclass" adtcore:name="ZDEMO_MSG" adtcore:masterLanguage="EN" adtcore:description="Demo messages (synthetic)">
+  <msag:message msag:number="001" msag:text="No stock rows match the selection"/>
+  <msag:message msag:number="002" msag:text="Stock lookup failed for material &amp;1"/>
+  <msag:message msag:number="003" msag:text="ALV display error"/>
+</msag:messageClass>

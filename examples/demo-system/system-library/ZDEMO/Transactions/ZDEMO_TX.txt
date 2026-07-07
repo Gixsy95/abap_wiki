@@ -1,0 +1,4 @@
+Transaction ZDEMO_TX (synthetic demo)
+Type: report transaction
+Program: ZDEMO_STOCK_REPORT
+Description: Demo stock report below threshold

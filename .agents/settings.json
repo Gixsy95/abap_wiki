@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python core/src/tools/pipeline.py *)",
+      "Bash(python core/src/tools/lint_wiki.py *)",
+      "Bash(python core/src/tools/sync_agents.py *)",
+      "Bash(python -m pytest *)",
+      "Bash(git status)",
+      "Bash(git log *)",
+      "Bash(git diff *)"
+    ],
+    "deny": [
+      "Write(raw/**)",
+      "Edit(raw/**)"
+    ]
+  }
+}
+

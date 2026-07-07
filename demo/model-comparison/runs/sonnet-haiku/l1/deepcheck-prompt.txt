@@ -1,0 +1,749 @@
+=== CLAIM 1: CL-001 [behavior] ===
+SENTENCE: ZABAPGIT_STANDALONE is an abapmerge-generated single-file bundle of the open-source abapGit tool (MIT licence, Copyright abapGit Contributors); the merge marker interface LIF_ABAPMERGE_MARKER at the end of the file records abapmerge version 0.16.8 and a merge timestamp of 2026-07-01T10:45:14.302Z.
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:1-27
+    1  REPORT zabapgit_standalone LINE-SIZE 100.
+    2  
+    3  * See http://www.abapgit.org
+    4  
+    5  ********************************************************************************
+    6  * The MIT License (MIT)
+    7  *
+    8  * Copyright (c) 2014 abapGit Contributors
+    9  *
+    10  * Permission is hereby granted, free of charge, to any person obtaining a copy
+    11  * of this software and associated documentation files (the "Software"), to deal
+    12  * in the Software without restriction, including without limitation the rights
+    13  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    14  * copies of the Software, and to permit persons to whom the Software is
+    15  * furnished to do so, subject to the following conditions:
+    16  *
+    17  * The above copyright notice and this permission notice shall be included in all
+    18  * copies or substantial portions of the Software.
+    19  *
+    20  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    21  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    22  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    23  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    24  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    25  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    26  * SOFTWARE.
+    27  ********************************************************************************
+
+=== CLAIM 1: CL-001 [behavior] ===
+SENTENCE: ZABAPGIT_STANDALONE is an abapmerge-generated single-file bundle of the open-source abapGit tool (MIT licence, Copyright abapGit Contributors); the merge marker interface LIF_ABAPMERGE_MARKER at the end of the file records abapmerge version 0.16.8 and a merge timestamp of 2026-07-01T10:45:14.302Z.
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:152991-152996
+    152991  ****************************************************
+    152992  INTERFACE lif_abapmerge_marker.
+    152993  * abapmerge 0.16.8 - 2026-07-01T10:45:14.302Z
+    152994    CONSTANTS c_merge_timestamp TYPE string VALUE `2026-07-01T10:45:14.302Z`.
+    152995    CONSTANTS c_abapmerge_version TYPE string VALUE `0.16.8`.
+    152996  ENDINTERFACE.
+
+=== CLAIM 2: CL-002 [behavior] ===
+SENTENCE: The bundled abapGit release is version 1.133.0, exposed via the constant ZIF_ABAPGIT_VERSION=>C_ABAP_VERSION and reused elsewhere (e.g. in the HTTP User-Agent string and the About page).
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:7261-7266
+    7261  INTERFACE zif_abapgit_version .
+    7262  
+    7263    CONSTANTS c_xml_version TYPE string VALUE 'v1.0.0' ##NO_TEXT.
+    7264    CONSTANTS c_abap_version TYPE string VALUE '1.133.0' ##NO_TEXT.
+    7265  
+    7266  ENDINTERFACE.
+
+=== CLAIM 3: CL-003 [count] ===
+SENTENCE: Counted with the exact patterns ^CLASS \w+ DEFINITION DEFERRED\.$ / ^INTERFACE \w+ DEFERRED\.$ / ^CLASS \w+ IMPLEMENTATION\.$ / ^ENDINTERFACE\.$ over the whole 152,996-line file: 511 classes and 113 interfaces are forward-declared DEFERRED, then given 516 real CLASS...IMPLEMENTATION bodies and 114 real interface bodies further down in the SAME file - every ZIF_ABAPGIT_*/ZCL_ABAPGIT_*/ZCX_ABAPGIT_* object the tool uses is defined locally here, not fetched from an external Z package.
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:1-152996
+    1  REPORT zabapgit_standalone LINE-SIZE 100.
+    2  
+    3  * See http://www.abapgit.org
+    4  
+    5  ********************************************************************************
+    6  * The MIT License (MIT)
+    7  *
+    8  * Copyright (c) 2014 abapGit Contributors
+    9  *
+    10  * Permission is hereby granted, free of charge, to any person obtaining a copy
+    11  * of this software and associated documentation files (the "Software"), to deal
+    12  * in the Software without restriction, including without limitation the rights
+    13  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    14  * copies of the Software, and to permit persons to whom the Software is
+    15  * furnished to do so, subject to the following conditions:
+    16  *
+    17  * The above copyright notice and this permission notice shall be included in all
+    18  * copies or substantial portions of the Software.
+    19  *
+    20  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    21  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    22  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    23  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    24  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    25  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    ... (152966 lines omitted) ...
+    152992  INTERFACE lif_abapmerge_marker.
+    152993  * abapmerge 0.16.8 - 2026-07-01T10:45:14.302Z
+    152994    CONSTANTS c_merge_timestamp TYPE string VALUE `2026-07-01T10:45:14.302Z`.
+    152995    CONSTANTS c_abapmerge_version TYPE string VALUE `0.16.8`.
+    152996  ENDINTERFACE.
+
+=== CLAIM 3: CL-003 [count] ===
+SENTENCE: Counted with the exact patterns ^CLASS \w+ DEFINITION DEFERRED\.$ / ^INTERFACE \w+ DEFERRED\.$ / ^CLASS \w+ IMPLEMENTATION\.$ / ^ENDINTERFACE\.$ over the whole 152,996-line file: 511 classes and 113 interfaces are forward-declared DEFERRED, then given 516 real CLASS...IMPLEMENTATION bodies and 114 real interface bodies further down in the SAME file - every ZIF_ABAPGIT_*/ZCL_ABAPGIT_*/ZCX_ABAPGIT_* object the tool uses is defined locally here, not fetched from an external Z package.
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:29-140
+    29  INTERFACE zif_abapgit_version DEFERRED.
+    30  INTERFACE zif_abapgit_definitions DEFERRED.
+    31  INTERFACE zif_abapgit_xml_output DEFERRED.
+    32  INTERFACE zif_abapgit_xml_input DEFERRED.
+    33  INTERFACE zif_abapgit_log DEFERRED.
+    34  INTERFACE zif_abapgit_popups DEFERRED.
+    35  INTERFACE zif_abapgit_frontend_services DEFERRED.
+    36  INTERFACE zif_abapgit_services_repo DEFERRED.
+    37  INTERFACE zif_abapgit_services_git DEFERRED.
+    38  INTERFACE zif_abapgit_progress DEFERRED.
+    39  INTERFACE zif_abapgit_gui_diff_extra DEFERRED.
+    40  INTERFACE zif_abapgit_gui_diff DEFERRED.
+    41  INTERFACE zif_abapgit_html_table DEFERRED.
+    42  INTERFACE zif_abapgit_html_popup DEFERRED.
+    43  INTERFACE zif_abapgit_html_form DEFERRED.
+    44  INTERFACE zif_abapgit_gui_render_item DEFERRED.
+    45  INTERFACE zif_abapgit_gui_page_title DEFERRED.
+    46  INTERFACE zif_abapgit_gui_menu_provider DEFERRED.
+    47  INTERFACE zif_abapgit_flow_logic DEFERRED.
+    48  INTERFACE zif_abapgit_flow_exit DEFERRED.
+    49  INTERFACE zif_abapgit_html_viewer DEFERRED.
+    50  INTERFACE zif_abapgit_html DEFERRED.
+    51  INTERFACE zif_abapgit_gui_services DEFERRED.
+    52  INTERFACE zif_abapgit_gui_renderable DEFERRED.
+    53  INTERFACE zif_abapgit_gui_modal DEFERRED.
+    ... (82 lines omitted) ...
+    136  CLASS zcl_abapgit_injector DEFINITION DEFERRED.
+    137  CLASS zcl_abapgit_factory DEFINITION DEFERRED.
+    138  CLASS zcl_abapgit_xml_pretty DEFINITION DEFERRED.
+    139  CLASS zcl_abapgit_xml_output DEFINITION DEFERRED.
+    140  CLASS zcl_abapgit_xml_input DEFINITION DEFERRED.
+
+=== CLAIM 4: CL-004 [count] ===
+SENTENCE: The report itself owns only 6 top-level FORM routines (pattern ^FORM \w+): PASSWORD_POPUP (152559), RUN (152802), OPEN_GUI (152822), OUTPUT (152850), EXIT (152878), ADJUST_TOOLBAR (152904) - all business logic runs through METHODs of the locally defined classes, not through FORMs.
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:152559-152559
+    152559  FORM password_popup
+
+=== CLAIM 4: CL-004 [count] ===
+SENTENCE: The report itself owns only 6 top-level FORM routines (pattern ^FORM \w+): PASSWORD_POPUP (152559), RUN (152802), OPEN_GUI (152822), OUTPUT (152850), EXIT (152878), ADJUST_TOOLBAR (152904) - all business logic runs through METHODs of the locally defined classes, not through FORMs.
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:152802-152802
+    152802  FORM run.
+
+=== CLAIM 4: CL-004 [count] ===
+SENTENCE: The report itself owns only 6 top-level FORM routines (pattern ^FORM \w+): PASSWORD_POPUP (152559), RUN (152802), OPEN_GUI (152822), OUTPUT (152850), EXIT (152878), ADJUST_TOOLBAR (152904) - all business logic runs through METHODs of the locally defined classes, not through FORMs.
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:152822-152822
+    152822  FORM open_gui RAISING zcx_abapgit_exception.
+
+=== CLAIM 4: CL-004 [count] ===
+SENTENCE: The report itself owns only 6 top-level FORM routines (pattern ^FORM \w+): PASSWORD_POPUP (152559), RUN (152802), OPEN_GUI (152822), OUTPUT (152850), EXIT (152878), ADJUST_TOOLBAR (152904) - all business logic runs through METHODs of the locally defined classes, not through FORMs.
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:152850-152850
+    152850  FORM output.
+
+=== CLAIM 4: CL-004 [count] ===
+SENTENCE: The report itself owns only 6 top-level FORM routines (pattern ^FORM \w+): PASSWORD_POPUP (152559), RUN (152802), OPEN_GUI (152822), OUTPUT (152850), EXIT (152878), ADJUST_TOOLBAR (152904) - all business logic runs through METHODs of the locally defined classes, not through FORMs.
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:152878-152878
+    152878  FORM exit.
+
+=== CLAIM 4: CL-004 [count] ===
+SENTENCE: The report itself owns only 6 top-level FORM routines (pattern ^FORM \w+): PASSWORD_POPUP (152559), RUN (152802), OPEN_GUI (152822), OUTPUT (152850), EXIT (152878), ADJUST_TOOLBAR (152904) - all business logic runs through METHODs of the locally defined classes, not through FORMs.
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:152904-152904
+    152904  FORM adjust_toolbar USING pv_dynnr TYPE sy-dynnr.
+
+=== CLAIM 5: CL-005 [control-flow] ===
+SENTENCE: INITIALIZATION runs PERFORM adjust_toolbar USING '1001' and LCL_PASSWORD_DIALOG=>ON_SCREEN_INIT; START-OF-SELECTION runs PERFORM run, which - inside a TRY block - first raises ZCX_ABAPGIT_EXCEPTION if ZCL_ABAPGIT_AUTH=>IS_ALLOWED( ZIF_ABAPGIT_AUTH=>C_AUTHORIZATION-STARTUP ) is abap_false, otherwise calls ZCL_ABAPGIT_MIGRATIONS=>RUN( ) and then PERFORM open_gui; both ZCX_ABAPGIT_EXCEPTION and ZCX_ABAPGIT_NOT_FOUND are caught and surfaced via MESSAGE ... TYPE 'E'.
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:152966-152972
+    152966  **********************************************************************
+    152967  INITIALIZATION.
+    152968    PERFORM adjust_toolbar USING '1001'.
+    152969    lcl_password_dialog=>on_screen_init( ).
+    152970  
+    152971  START-OF-SELECTION.
+    152972    PERFORM run.
+
+=== CLAIM 5: CL-005 [control-flow] ===
+SENTENCE: INITIALIZATION runs PERFORM adjust_toolbar USING '1001' and LCL_PASSWORD_DIALOG=>ON_SCREEN_INIT; START-OF-SELECTION runs PERFORM run, which - inside a TRY block - first raises ZCX_ABAPGIT_EXCEPTION if ZCL_ABAPGIT_AUTH=>IS_ALLOWED( ZIF_ABAPGIT_AUTH=>C_AUTHORIZATION-STARTUP ) is abap_false, otherwise calls ZCL_ABAPGIT_MIGRATIONS=>RUN( ) and then PERFORM open_gui; both ZCX_ABAPGIT_EXCEPTION and ZCX_ABAPGIT_NOT_FOUND are caught and surfaced via MESSAGE ... TYPE 'E'.
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:152802-152820
+    152802  FORM run.
+    152803  
+    152804    DATA lx_exception TYPE REF TO zcx_abapgit_exception.
+    152805    DATA lx_not_found TYPE REF TO zcx_abapgit_not_found.
+    152806  
+    152807    TRY.
+    152808        IF zcl_abapgit_auth=>is_allowed( zif_abapgit_auth=>c_authorization-startup ) = abap_false.
+    152809          zcx_abapgit_exception=>raise( 'No authorization to start abapGit' ).
+    152810        ENDIF.
+    152811  
+    152812        zcl_abapgit_migrations=>run( ).
+    152813        PERFORM open_gui.
+    152814      CATCH zcx_abapgit_exception INTO lx_exception.
+    152815        MESSAGE lx_exception TYPE 'E'.
+    152816      CATCH zcx_abapgit_not_found INTO lx_not_found.
+    152817        MESSAGE lx_not_found TYPE 'E'.
+    152818    ENDTRY.
+    152819  
+    152820  ENDFORM.                    "run
+
+=== CLAIM 6: CL-006 [control-flow] ===
+SENTENCE: FORM open_gui branches on SY-BATCH: in batch/background execution (SY-BATCH = abap_true) it delegates the whole run to ZCL_ABAPGIT_BACKGROUND=>RUN( ); in dialog mode it reads memory parameter ID 'DBT' via GET PARAMETER to choose between the emergency database-utility action (C_ACTION-GO_DB, only when DBT = 'ZABAPGIT') and the normal home action (C_ACTION-GO_HOME), then calls ZCL_ABAPGIT_UI_FACTORY=>GET_GUI( )->GO_HOME( lv_action ) and triggers dynpro 1001 with CALL SELECTION-SCREEN 1001.
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:152822-152846
+    152822  FORM open_gui RAISING zcx_abapgit_exception.
+    152823  
+    152824    DATA lv_action TYPE string.
+    152825    DATA lv_mode   TYPE tabname.
+    152826  
+    152827    IF sy-batch = abap_true.
+    152828      zcl_abapgit_background=>run( ).
+    152829    ELSE.
+    152830  
+    152831  * https://docs.abapgit.org/user-guide/reference/database-util.html#emergency-mode
+    152832      GET PARAMETER ID 'DBT' FIELD lv_mode.
+    152833      CASE lv_mode.
+    152834        WHEN 'ZABAPGIT'.
+    152835          lv_action = zif_abapgit_definitions=>c_action-go_db.
+    152836        WHEN OTHERS.
+    152837          lv_action = zif_abapgit_definitions=>c_action-go_home.
+    152838      ENDCASE.
+    152839  
+    152840      zcl_abapgit_html=>set_debug_mode( boolc( lv_mode = 'HREF' ) ).
+    152841  
+    152842      lcl_startup=>prepare_gui_startup( ).
+    152843      zcl_abapgit_ui_factory=>get_gui( )->go_home( lv_action ).
+    152844      CALL SELECTION-SCREEN 1001. " trigger screen
+    152845  
+    152846    ENDIF.
+
+=== CLAIM 7: CL-007 [behavior] ===
+SENTENCE: Selection screen 1001 (SELECTION-SCREEN BEGIN OF SCREEN 1001 ... END OF SCREEN 1001) is an intentionally empty dummy screen with no PARAMETERS/SELECT-OPTIONS; the in-line comment documents it exists only to force the Java SAP GUI to render a dynpro, which the tool's HTML-based GUI framework then takes over.
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:152376-152378
+    152376  SELECTION-SCREEN BEGIN OF SCREEN 1001.
+    152377  * dummy for triggering screen on Java SAP GUI
+    152378  SELECTION-SCREEN END OF SCREEN 1001.
+
+=== CLAIM 8: CL-008 [data-flow] ===
+SENTENCE: On screen 1002 (the git-login popup), LCL_PASSWORD_DIALOG=>ON_SCREEN_OUTPUT forces P_URL and P_CMNT to read-only (SCREEN-INPUT = '0') via LOOP AT SCREEN, leaving only P_USER and P_PASS editable; ON_SCREEN_EVENT confirms the dialog only on UCOMM 'OK' (sets GV_CONFIRM = abap_true and LEAVE TO SCREEN 0), any other UCOMM clears GV_CONFIRM.
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:152488-152510
+    152488    METHOD on_screen_output.
+    152489  
+    152490      DATA lt_ucomm TYPE TABLE OF sy-ucomm.
+    152491  
+    152492      ASSERT sy-dynnr = c_dynnr.
+    152493  
+    152494      LOOP AT SCREEN.
+    152495        IF screen-name = 'P_URL' OR screen-name = 'P_CMNT'.
+    152496          screen-input       = '0'.
+    152497          screen-intensified = '1'.
+    152498          screen-display_3d  = '0'.
+    152499          MODIFY SCREEN.
+    152500        ENDIF.
+    152501        IF screen-name = 'P_CMNT' OR screen-name = 'SC_CMNT'.
+    152502          screen-active    = '1'.
+    152503          screen-invisible = '0'.
+    152504          MODIFY SCREEN.
+    152505        ENDIF.
+    152506        IF screen-name = 'P_PASS'.
+    152507          screen-invisible = '1'.
+    152508          MODIFY SCREEN.
+    152509        ENDIF.
+    152510      ENDLOOP.
+
+=== CLAIM 8: CL-008 [data-flow] ===
+SENTENCE: On screen 1002 (the git-login popup), LCL_PASSWORD_DIALOG=>ON_SCREEN_OUTPUT forces P_URL and P_CMNT to read-only (SCREEN-INPUT = '0') via LOOP AT SCREEN, leaving only P_USER and P_PASS editable; ON_SCREEN_EVENT confirms the dialog only on UCOMM 'OK' (sets GV_CONFIRM = abap_true and LEAVE TO SCREEN 0), any other UCOMM clears GV_CONFIRM.
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:152527-152543
+    152527    METHOD on_screen_event.
+    152528  
+    152529      ASSERT sy-dynnr = c_dynnr.
+    152530  
+    152531      CASE iv_ucomm.
+    152532        WHEN 'OK'. " Enter
+    152533          gv_confirm = abap_true.
+    152534          LEAVE TO SCREEN 0.
+    152535        WHEN 'HELP'. " F1
+    152536          TRY.
+    152537              zcl_abapgit_services_abapgit=>open_abapgit_wikipage( 'guide-authentication.html' ).
+    152538            CATCH zcx_abapgit_exception ##NO_HANDLER.
+    152539          ENDTRY.
+    152540        WHEN OTHERS. " Escape
+    152541          gv_confirm = abap_false.
+    152542          LEAVE TO SCREEN 0.
+    152543      ENDCASE.
+
+=== CLAIM 9: CL-009 [control-flow] ===
+SENTENCE: The classic-dynpro password popup exists as a LOCAL mirror (LCL_PASSWORD_DIALOG + FORM password_popup, lines 152414-152573) of the global ZCL_ABAPGIT_PASSWORD_DIALOG=>POPUP logic, because a SELECTION-SCREEN can only be declared inside an executable program; the global class reaches it dynamically via PERFORM password_popup IN PROGRAM (sy-cprog) USING iv_repo_url CHANGING cv_user cv_pass, catching CX_SY_DYN_CALL_ILLEGAL_FORM if abapGit was invoked headless via API.
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:39822-39849
+    39822  CLASS zcl_abapgit_password_dialog IMPLEMENTATION.
+    39823    METHOD popup.
+    39824  
+    39825      DATA lx_error TYPE REF TO cx_sy_dyn_call_illegal_form.
+    39826      DATA li_exit TYPE REF TO zif_abapgit_exit.
+    39827  
+    39828      li_exit = zcl_abapgit_exit=>get_instance( ).
+    39829      li_exit->change_password_popup_username(
+    39830        EXPORTING
+    39831          iv_repo_url = iv_repo_url
+    39832        CHANGING
+    39833          cv_user     = cv_user ).
+    39834  
+    39835      IF zcl_abapgit_ui_factory=>get_frontend_services( )->gui_is_available( ) = abap_true.
+    39836  
+    39837        TRY.
+    39838            PERFORM password_popup
+    39839              IN PROGRAM (sy-cprog)
+    39840              USING iv_repo_url
+    39841              CHANGING cv_user cv_pass.
+    39842          CATCH cx_sy_dyn_call_illegal_form INTO lx_error.
+    39843            " abapGit was called via API and either wrong or no username/password
+    39844            " was supplied. It's not possible to call abapGit password popup in
+    39845            " this case.
+    39846            " See https://docs.abapgit.org/development/api.html#online-repository
+    39847            " on how to provide username/password
+    39848            zcx_abapgit_exception=>raise_with_text( lx_error ).
+    39849        ENDTRY.
+
+=== CLAIM 9: CL-009 [control-flow] ===
+SENTENCE: The classic-dynpro password popup exists as a LOCAL mirror (LCL_PASSWORD_DIALOG + FORM password_popup, lines 152414-152573) of the global ZCL_ABAPGIT_PASSWORD_DIALOG=>POPUP logic, because a SELECTION-SCREEN can only be declared inside an executable program; the global class reaches it dynamically via PERFORM password_popup IN PROGRAM (sy-cprog) USING iv_repo_url CHANGING cv_user cv_pass, catching CX_SY_DYN_CALL_ILLEGAL_FORM if abapGit was invoked headless via API.
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:152559-152573
+    152559  FORM password_popup
+    152560        USING
+    152561          pv_repo_url TYPE string
+    152562        CHANGING
+    152563          cv_user     TYPE string
+    152564          cv_pass     TYPE string ##CALLED.
+    152565  
+    152566    lcl_password_dialog=>popup(
+    152567      EXPORTING
+    152568        iv_repo_url     = pv_repo_url
+    152569      CHANGING
+    152570        cv_user         = cv_user
+    152571        cv_pass         = cv_pass ).
+    152572  
+    152573  ENDFORM.
+
+=== CLAIM 10: CL-010 [behavior] ===
+SENTENCE: P_PASS is masked, not hidden: LOOP AT SCREEN sets SCREEN-INVISIBLE = '1' only for the field named 'P_PASS' (leaving SCREEN-INPUT untouched, i.e. still enterable) - the standard classical-dynpro technique for password-style masking on a selection screen.
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:152494-152510
+    152494      LOOP AT SCREEN.
+    152495        IF screen-name = 'P_URL' OR screen-name = 'P_CMNT'.
+    152496          screen-input       = '0'.
+    152497          screen-intensified = '1'.
+    152498          screen-display_3d  = '0'.
+    152499          MODIFY SCREEN.
+    152500        ENDIF.
+    152501        IF screen-name = 'P_CMNT' OR screen-name = 'SC_CMNT'.
+    152502          screen-active    = '1'.
+    152503          screen-invisible = '0'.
+    152504          MODIFY SCREEN.
+    152505        ENDIF.
+    152506        IF screen-name = 'P_PASS'.
+    152507          screen-invisible = '1'.
+    152508          MODIFY SCREEN.
+    152509        ENDIF.
+    152510      ENDLOOP.
+
+=== CLAIM 11: CL-011 [control-flow] ===
+SENTENCE: FORM adjust_toolbar reads the current dynpro's header via CALL FUNCTION 'RPY_DYNPRO_READ' (progname = sy-cprog, dynnr = pv_dynnr), computes the desired NO_TOOLBAR flag from ZCL_ABAPGIT_FACTORY=>GET_ENVIRONMENT( )->IS_VARIANT_MAINTENANCE( ), and only if it differs from the current header rewrites it via CALL FUNCTION 'RPY_DYNPRO_INSERT'; every FM failure branch (sy-subrc <> 0, or sy-subrc not in {0,2} on insert) is silently ignored with RETURN.
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:152904-152965
+    152904  FORM adjust_toolbar USING pv_dynnr TYPE sy-dynnr.
+    152905  
+    152906    DATA: ls_header               TYPE rpy_dyhead,
+    152907          lt_containers           TYPE dycatt_tab,
+    152908          lt_fields_to_containers TYPE dyfatc_tab,
+    152909          lt_flow_logic           TYPE swydyflow,
+    152910          lv_no_toolbar           LIKE ls_header-no_toolbar.
+    152911  
+    152912    CALL FUNCTION 'RPY_DYNPRO_READ'
+    152913      EXPORTING
+    152914        progname             = sy-cprog
+    152915        dynnr                = pv_dynnr
+    152916      IMPORTING
+    152917        header               = ls_header
+    152918      TABLES
+    152919        containers           = lt_containers
+    152920        fields_to_containers = lt_fields_to_containers
+    152921        flow_logic           = lt_flow_logic
+    152922      EXCEPTIONS
+    152923        cancelled            = 1
+    152924        not_found            = 2
+    152925        permission_error     = 3
+    152926        OTHERS               = 4.
+    152927    IF sy-subrc IS NOT INITIAL.
+    152928      RETURN. " Ignore errors, just exit
+    ... (32 lines omitted) ...
+    152961    IF sy-subrc <> 2 AND sy-subrc <> 0.
+    152962      RETURN. " Ignore errors, just exit
+    152963    ENDIF.
+    152964  
+    152965  ENDFORM.
+
+=== CLAIM 12: CL-012 [bug-candidate] ===
+SENTENCE: In CLASS zcl_abapgit_objects_program METHOD deserialize_cua, the statement 'sy-tcode = 'SE41' ##WRITE_OK.' directly overwrites the system field SY-TCODE immediately before CALL FUNCTION 'RS_CUA_INTERNAL_WRITE'; the inline comment self-labels it 'evil hack, workaround to handle fixes in note 2159455'.
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:74664-74664
+    74664    METHOD deserialize_cua.
+
+=== CLAIM 12: CL-012 [bug-candidate] ===
+SENTENCE: In CLASS zcl_abapgit_objects_program METHOD deserialize_cua, the statement 'sy-tcode = 'SE41' ##WRITE_OK.' directly overwrites the system field SY-TCODE immediately before CALL FUNCTION 'RS_CUA_INTERNAL_WRITE'; the inline comment self-labels it 'evil hack, workaround to handle fixes in note 2159455'.
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:74696-74710
+    74696      ls_adm = is_cua-adm.
+    74697      auto_correct_cua_adm( EXPORTING is_cua = is_cua CHANGING cs_adm = ls_adm ).
+    74698  
+    74699      sy-tcode = 'SE41' ##WRITE_OK. " evil hack, workaround to handle fixes in note 2159455
+    74700      CALL FUNCTION 'RS_CUA_INTERNAL_WRITE'
+    74701        EXPORTING
+    74702          program   = iv_program_name
+    74703          language  = mv_language
+    74704          tr_key    = ls_tr_key
+    74705          adm       = ls_adm
+    74706          state     = c_state-inactive
+    74707        TABLES
+    74708          sta       = is_cua-sta
+    74709          fun       = is_cua-fun
+    74710          men       = is_cua-men
+
+=== CLAIM 13: CL-013 [count] ===
+SENTENCE: The pattern 'DEFINITION FOR TESTING' has 0 occurrences across the 152,996-line merged file: no ABAP Unit test class ships inside this standalone build (the upstream abapGit project's own test suite is excluded from this abapmerge output).
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:1-152996
+    1  REPORT zabapgit_standalone LINE-SIZE 100.
+    2  
+    3  * See http://www.abapgit.org
+    4  
+    5  ********************************************************************************
+    6  * The MIT License (MIT)
+    7  *
+    8  * Copyright (c) 2014 abapGit Contributors
+    9  *
+    10  * Permission is hereby granted, free of charge, to any person obtaining a copy
+    11  * of this software and associated documentation files (the "Software"), to deal
+    12  * in the Software without restriction, including without limitation the rights
+    13  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    14  * copies of the Software, and to permit persons to whom the Software is
+    15  * furnished to do so, subject to the following conditions:
+    16  *
+    17  * The above copyright notice and this permission notice shall be included in all
+    18  * copies or substantial portions of the Software.
+    19  *
+    20  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    21  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    22  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    23  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    24  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    25  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    ... (152966 lines omitted) ...
+    152992  INTERFACE lif_abapmerge_marker.
+    152993  * abapmerge 0.16.8 - 2026-07-01T10:45:14.302Z
+    152994    CONSTANTS c_merge_timestamp TYPE string VALUE `2026-07-01T10:45:14.302Z`.
+    152995    CONSTANTS c_abapmerge_version TYPE string VALUE `0.16.8`.
+    152996  ENDINTERFACE.
+
+=== CLAIM 14: CL-014 [count] ===
+SENTENCE: Counted with literal-anchored patterns over the whole file: 386 lines start with SELECT (regex ^\s*SELECT ), 558 CALL FUNCTION statements name a literal FM (regex CALL FUNCTION '), 70 lines contain 'SELECT *', and 30 lines contain COMMIT WORK (with or without AND WAIT). Of these, the two COMMIT WORK occurrences inspected at lines 40797 and 40838 sit inside TRY/CATCH error-cleanup paths of NEW_OFFLINE / NEW_ONLINE (repo-creation methods), each firing once per method call, not inside a LOOP.
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:1-152996
+    1  REPORT zabapgit_standalone LINE-SIZE 100.
+    2  
+    3  * See http://www.abapgit.org
+    4  
+    5  ********************************************************************************
+    6  * The MIT License (MIT)
+    7  *
+    8  * Copyright (c) 2014 abapGit Contributors
+    9  *
+    10  * Permission is hereby granted, free of charge, to any person obtaining a copy
+    11  * of this software and associated documentation files (the "Software"), to deal
+    12  * in the Software without restriction, including without limitation the rights
+    13  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    14  * copies of the Software, and to permit persons to whom the Software is
+    15  * furnished to do so, subject to the following conditions:
+    16  *
+    17  * The above copyright notice and this permission notice shall be included in all
+    18  * copies or substantial portions of the Software.
+    19  *
+    20  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    21  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    22  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    23  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    24  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    25  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    ... (152966 lines omitted) ...
+    152992  INTERFACE lif_abapmerge_marker.
+    152993  * abapmerge 0.16.8 - 2026-07-01T10:45:14.302Z
+    152994    CONSTANTS c_merge_timestamp TYPE string VALUE `2026-07-01T10:45:14.302Z`.
+    152995    CONSTANTS c_abapmerge_version TYPE string VALUE `0.16.8`.
+    152996  ENDINTERFACE.
+
+=== CLAIM 14: CL-014 [count] ===
+SENTENCE: Counted with literal-anchored patterns over the whole file: 386 lines start with SELECT (regex ^\s*SELECT ), 558 CALL FUNCTION statements name a literal FM (regex CALL FUNCTION '), 70 lines contain 'SELECT *', and 30 lines contain COMMIT WORK (with or without AND WAIT). Of these, the two COMMIT WORK occurrences inspected at lines 40797 and 40838 sit inside TRY/CATCH error-cleanup paths of NEW_OFFLINE / NEW_ONLINE (repo-creation methods), each firing once per method call, not inside a LOOP.
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:40775-40851
+    40775    METHOD new_offline.
+    40776  
+    40777      DATA lx_error TYPE REF TO zcx_abapgit_exception.
+    40778  
+    40779      check_package( is_repo_params ).
+    40780  
+    40781      " create new repo and add to favorites
+    40782      ri_repo = zcl_abapgit_repo_srv=>get_instance( )->new_offline(
+    40783        iv_name           = is_repo_params-name
+    40784        iv_package        = is_repo_params-package
+    40785        iv_folder_logic   = is_repo_params-folder_logic
+    40786        iv_labels         = is_repo_params-labels
+    40787        iv_ign_subpkg     = is_repo_params-ignore_subpackages
+    40788        iv_main_lang_only = is_repo_params-main_lang_only
+    40789        iv_abap_lang_vers = is_repo_params-abap_lang_vers ).
+    40790  
+    40791      TRY.
+    40792          " Make sure there're no leftovers from previous repos (also checks folder logic)
+    40793          ri_repo->checksums( )->rebuild( ).
+    40794  
+    40795        CATCH zcx_abapgit_exception INTO lx_error.
+    40796          zcl_abapgit_repo_srv=>get_instance( )->delete( ri_repo ).
+    40797          COMMIT WORK.
+    40798          RAISE EXCEPTION lx_error.
+    40799      ENDTRY.
+    ... (47 lines omitted) ...
+    40847      COMMIT WORK AND WAIT.
+    40848  
+    40849      ri_repo_online ?= li_repo.
+    40850  
+    40851    ENDMETHOD.
+
+=== CLAIM 15: CL-015 [behavior] ===
+SENTENCE: The 'SELECT * FROM tadir' at line 92651 is always scoped by an explicit WHERE on pgmid/object/obj_name (not an unfiltered mass read) and carries the pragmas ##TOO_MANY_ITAB_FIELDS and #EC CI_GENBUFF, showing the wildcard SELECT is a deliberate, already ATC-acknowledged choice rather than a raw performance defect.
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:92651-92655
+    92651      SELECT * FROM tadir INTO CORRESPONDING FIELDS OF TABLE lt_tadir
+    92652        WHERE pgmid = 'R3TR'
+    92653        AND object  = 'SICF'
+    92654        AND obj_name LIKE lv_obj_name
+    92655        ORDER BY PRIMARY KEY ##TOO_MANY_ITAB_FIELDS.      "#EC CI_GENBUFF
+
+=== CLAIM 16: CL-016 [behavior] ===
+SENTENCE: The standard authorization object S_DEVELOP is checked via AUTHORITY-CHECK OBJECT 'S_DEVELOP' at two points in object-type handler classes (lines 86251, 93575), and S_OA2C_ADM gates OAuth2 configuration access (line 98928); tool startup itself is separately gated in FORM run by ZCL_ABAPGIT_AUTH=>IS_ALLOWED( ZIF_ABAPGIT_AUTH=>C_AUTHORIZATION-STARTUP ) before any GUI or migration logic executes, so the 'DBT' emergency-mode branch in open_gui (CL-006) is reached only after this same startup check has already passed.
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:86251-86251
+    86251      AUTHORITY-CHECK OBJECT 'S_DEVELOP'
+
+=== CLAIM 16: CL-016 [behavior] ===
+SENTENCE: The standard authorization object S_DEVELOP is checked via AUTHORITY-CHECK OBJECT 'S_DEVELOP' at two points in object-type handler classes (lines 86251, 93575), and S_OA2C_ADM gates OAuth2 configuration access (line 98928); tool startup itself is separately gated in FORM run by ZCL_ABAPGIT_AUTH=>IS_ALLOWED( ZIF_ABAPGIT_AUTH=>C_AUTHORIZATION-STARTUP ) before any GUI or migration logic executes, so the 'DBT' emergency-mode branch in open_gui (CL-006) is reached only after this same startup check has already passed.
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:93575-93575
+    93575      AUTHORITY-CHECK OBJECT 'S_DEVELOP'
+
+=== CLAIM 16: CL-016 [behavior] ===
+SENTENCE: The standard authorization object S_DEVELOP is checked via AUTHORITY-CHECK OBJECT 'S_DEVELOP' at two points in object-type handler classes (lines 86251, 93575), and S_OA2C_ADM gates OAuth2 configuration access (line 98928); tool startup itself is separately gated in FORM run by ZCL_ABAPGIT_AUTH=>IS_ALLOWED( ZIF_ABAPGIT_AUTH=>C_AUTHORIZATION-STARTUP ) before any GUI or migration logic executes, so the 'DBT' emergency-mode branch in open_gui (CL-006) is reached only after this same startup check has already passed.
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:98928-98928
+    98928      AUTHORITY-CHECK OBJECT 'S_OA2C_ADM'
+
+=== CLAIM 16: CL-016 [behavior] ===
+SENTENCE: The standard authorization object S_DEVELOP is checked via AUTHORITY-CHECK OBJECT 'S_DEVELOP' at two points in object-type handler classes (lines 86251, 93575), and S_OA2C_ADM gates OAuth2 configuration access (line 98928); tool startup itself is separately gated in FORM run by ZCL_ABAPGIT_AUTH=>IS_ALLOWED( ZIF_ABAPGIT_AUTH=>C_AUTHORIZATION-STARTUP ) before any GUI or migration logic executes, so the 'DBT' emergency-mode branch in open_gui (CL-006) is reached only after this same startup check has already passed.
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:152807-152810
+    152807    TRY.
+    152808        IF zcl_abapgit_auth=>is_allowed( zif_abapgit_auth=>c_authorization-startup ) = abap_false.
+    152809          zcx_abapgit_exception=>raise( 'No authorization to start abapGit' ).
+    152810        ENDIF.
+
+=== CLAIM 17: CL-017 [pattern] ===
+SENTENCE: Object-type handler classes carry literal jump-to-editor transaction codes for more than a dozen different SAP maintenance tools passed as IV_TCODE to internal jump helpers (sampled: SMW0 at 81393, SD11 at 82786, SE54 at 82210, SE72 at 86616, SMARTFORMS at 87502, SICF at 92633, SNRO at 99731, WE30 at 103114, SE71 at 107122, SE61 at 112381, SE35 at 112456, SQ01 at 118284), reflecting abapGit's role as a generic serializer/deserializer across dozens of TADIR object types; only SE93 and SE91 (see dependencies) were traced to a direct, literal CALL FUNCTION 'ABAP4_CALL_TRANSACTION' at the call site - the downstream call chain of the other IV_TCODE literals was not traced in this pass.
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:81393-81393
+    81393        iv_tcode   = 'SMW0'
+
+=== CLAIM 17: CL-017 [pattern] ===
+SENTENCE: Object-type handler classes carry literal jump-to-editor transaction codes for more than a dozen different SAP maintenance tools passed as IV_TCODE to internal jump helpers (sampled: SMW0 at 81393, SD11 at 82786, SE54 at 82210, SE72 at 86616, SMARTFORMS at 87502, SICF at 92633, SNRO at 99731, WE30 at 103114, SE71 at 107122, SE61 at 112381, SE35 at 112456, SQ01 at 118284), reflecting abapGit's role as a generic serializer/deserializer across dozens of TADIR object types; only SE93 and SE91 (see dependencies) were traced to a direct, literal CALL FUNCTION 'ABAP4_CALL_TRANSACTION' at the call site - the downstream call chain of the other IV_TCODE literals was not traced in this pass.
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:82786-82786
+    82786        iv_tcode   = 'SD11'
+
+=== CLAIM 17: CL-017 [pattern] ===
+SENTENCE: Object-type handler classes carry literal jump-to-editor transaction codes for more than a dozen different SAP maintenance tools passed as IV_TCODE to internal jump helpers (sampled: SMW0 at 81393, SD11 at 82786, SE54 at 82210, SE72 at 86616, SMARTFORMS at 87502, SICF at 92633, SNRO at 99731, WE30 at 103114, SE71 at 107122, SE61 at 112381, SE35 at 112456, SQ01 at 118284), reflecting abapGit's role as a generic serializer/deserializer across dozens of TADIR object types; only SE93 and SE91 (see dependencies) were traced to a direct, literal CALL FUNCTION 'ABAP4_CALL_TRANSACTION' at the call site - the downstream call chain of the other IV_TCODE literals was not traced in this pass.
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:82210-82210
+    82210        iv_tcode   = 'SE54'
+
+=== CLAIM 17: CL-017 [pattern] ===
+SENTENCE: Object-type handler classes carry literal jump-to-editor transaction codes for more than a dozen different SAP maintenance tools passed as IV_TCODE to internal jump helpers (sampled: SMW0 at 81393, SD11 at 82786, SE54 at 82210, SE72 at 86616, SMARTFORMS at 87502, SICF at 92633, SNRO at 99731, WE30 at 103114, SE71 at 107122, SE61 at 112381, SE35 at 112456, SQ01 at 118284), reflecting abapGit's role as a generic serializer/deserializer across dozens of TADIR object types; only SE93 and SE91 (see dependencies) were traced to a direct, literal CALL FUNCTION 'ABAP4_CALL_TRANSACTION' at the call site - the downstream call chain of the other IV_TCODE literals was not traced in this pass.
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:86616-86616
+    86616        iv_tcode   = 'SE72'
+
+=== CLAIM 17: CL-017 [pattern] ===
+SENTENCE: Object-type handler classes carry literal jump-to-editor transaction codes for more than a dozen different SAP maintenance tools passed as IV_TCODE to internal jump helpers (sampled: SMW0 at 81393, SD11 at 82786, SE54 at 82210, SE72 at 86616, SMARTFORMS at 87502, SICF at 92633, SNRO at 99731, WE30 at 103114, SE71 at 107122, SE61 at 112381, SE35 at 112456, SQ01 at 118284), reflecting abapGit's role as a generic serializer/deserializer across dozens of TADIR object types; only SE93 and SE91 (see dependencies) were traced to a direct, literal CALL FUNCTION 'ABAP4_CALL_TRANSACTION' at the call site - the downstream call chain of the other IV_TCODE literals was not traced in this pass.
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:87502-87502
+    87502        iv_tcode   = 'SMARTFORMS'
+
+=== CLAIM 17: CL-017 [pattern] ===
+SENTENCE: Object-type handler classes carry literal jump-to-editor transaction codes for more than a dozen different SAP maintenance tools passed as IV_TCODE to internal jump helpers (sampled: SMW0 at 81393, SD11 at 82786, SE54 at 82210, SE72 at 86616, SMARTFORMS at 87502, SICF at 92633, SNRO at 99731, WE30 at 103114, SE71 at 107122, SE61 at 112381, SE35 at 112456, SQ01 at 118284), reflecting abapGit's role as a generic serializer/deserializer across dozens of TADIR object types; only SE93 and SE91 (see dependencies) were traced to a direct, literal CALL FUNCTION 'ABAP4_CALL_TRANSACTION' at the call site - the downstream call chain of the other IV_TCODE literals was not traced in this pass.
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:92633-92633
+    92633        iv_tcode   = 'SICF'
+
+=== CLAIM 18: CL-018 [behavior] ===
+SENTENCE: The program declares 4 conditional customer-exit includes guarded by IF FOUND - zabapgit_authorizations_exit, zabapgit_user_exit, zabapgit_background_user_exit, zabapgit_gui_pages_userexit - none of which exist as separate files in this raw dump (only ZABAPGIT_STANDALONE.prog.abap is present in its folder), so on this system they are silently skipped at generation time.
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:152574-152589
+    152574  * create class ZCL_ABAPGIT_AUTH_EXIT implementing ZIF_ABAPGIT_AUTH in following include,
+    152575  * if using the development version of abapGit create a global class instead
+    152576  * place the object in a different package than ZABAPGIT
+    152577  INCLUDE zabapgit_authorizations_exit IF FOUND.
+    152578  
+    152579  * create class ZCL_ABAPGIT_USER_EXIT implementing ZIF_ABAPGIT_EXIT in following include,
+    152580  * if using the development version of abapGit create a global class instead
+    152581  * place the object in a different package than ZABAPGIT
+    152582  INCLUDE zabapgit_user_exit IF FOUND.
+    152583  
+    152584  * place all implementations of ZIF_ABAPGIT_BACKGROUND in following include,
+    152585  * if using the development version of abapGit create a global classes instead
+    152586  * place the object in a different package than ZABAPGIT
+    152587  INCLUDE zabapgit_background_user_exit IF FOUND.
+    152588  
+    152589  INCLUDE zabapgit_gui_pages_userexit IF FOUND.
+
+=== CLAIM 19: CL-019 [behavior] ===
+SENTENCE: The tool's user-facing output is an interactive HTML-rendered GUI (backed by CL_GUI_HTML_VIEWER, line 23336, and the merged ZCL_ABAPGIT_GUI_* component framework) refreshed on repeated PBO/PAI round-trips of dynpro 1001 via FORM output / FORM exit, not a materialized business-data extract mappable field-by-field to DDIC sources - hence output_mapping is recorded as channel no-output.
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:152850-152876
+    152850  FORM output.
+    152851  
+    152852    DATA: lx_error TYPE REF TO zcx_abapgit_exception,
+    152853          lt_ucomm TYPE TABLE OF sy-ucomm.
+    152854  
+    152855    PERFORM set_pf_status IN PROGRAM rsdbrunt IF FOUND.
+    152856  
+    152857    APPEND 'CRET' TO lt_ucomm.  "Button Execute
+    152858    APPEND 'SPOS' TO lt_ucomm.  "Button Save
+    152859  
+    152860    CALL FUNCTION 'RS_SET_SELSCREEN_STATUS'
+    152861      EXPORTING
+    152862        p_status  = sy-pfkey
+    152863      TABLES
+    152864        p_exclude = lt_ucomm.
+    152865  
+    152866    " For variant maintenance we have to omit this because
+    152867    " it instantiates controls and hides maintenance screens.
+    152868    IF zcl_abapgit_factory=>get_environment( )->is_variant_maintenance( ) = abap_false.
+    152869      TRY.
+    152870          zcl_abapgit_ui_factory=>get_gui( )->set_focus( ).
+    152871        CATCH zcx_abapgit_exception INTO lx_error.
+    152872          MESSAGE lx_error TYPE 'S' DISPLAY LIKE 'E'.
+    152873      ENDTRY.
+    152874    ENDIF.
+    152875  
+    152876  ENDFORM.
+
+=== CLAIM 19: CL-019 [behavior] ===
+SENTENCE: The tool's user-facing output is an interactive HTML-rendered GUI (backed by CL_GUI_HTML_VIEWER, line 23336, and the merged ZCL_ABAPGIT_GUI_* component framework) refreshed on repeated PBO/PAI round-trips of dynpro 1001 via FORM output / FORM exit, not a materialized business-data extract mappable field-by-field to DDIC sources - hence output_mapping is recorded as channel no-output.
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:23336-23336
+    23336      DATA mo_html_viewer TYPE REF TO cl_gui_html_viewer .
+
+=== CLAIM 20: IN-001 [data-flow] ===
+SENTENCE: Input field 'P_USER' (channel selection-screen): parameter -> CV_USER (CHANGING param of LCL_PASSWORD_DIALOG=>POPUP, returned to caller ZCL_ABAPGIT_PASSWORD_DIALOG=>POPUP) - Captured only if the user confirms (OK/Enter): IF gv_confirm = abap_true. cv_user = p_user. ELSE CLEAR cv_user..
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:152469-152474
+    152469      IF gv_confirm = abap_true.
+    152470        cv_user = p_user.
+    152471        cv_pass = p_pass.
+    152472      ELSE.
+    152473        CLEAR: cv_user, cv_pass.
+    152474      ENDIF.
+
+=== CLAIM 21: IN-002 [data-flow] ===
+SENTENCE: Input field 'P_PASS' (channel selection-screen): parameter -> CV_PASS (CHANGING param of LCL_PASSWORD_DIALOG=>POPUP, returned to caller ZCL_ABAPGIT_PASSWORD_DIALOG=>POPUP) - Captured only if the user confirms (OK/Enter): IF gv_confirm = abap_true. cv_pass = p_pass. ELSE CLEAR cv_pass. Field is CLEARed again unconditionally after popup( ) returns..
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:152469-152476
+    152469      IF gv_confirm = abap_true.
+    152470        cv_user = p_user.
+    152471        cv_pass = p_pass.
+    152472      ELSE.
+    152473        CLEAR: cv_user, cv_pass.
+    152474      ENDIF.
+    152475  
+    152476      CLEAR: p_url, p_user, p_pass.
+
+=== DEP 1: DEP-001 [table|standard] TADIR ===
+CONTEXT: SELECT SINGLE * FROM tadir INTO ls_tadir
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:94126-94126
+    94126      SELECT SINGLE * FROM tadir INTO ls_tadir
+
+=== DEP 2: DEP-002 [table|standard] E070 ===
+CONTEXT: SELECT SINGLE as4user FROM e070 INTO rv_user WHERE trkorr = lv_transport
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:84503-84503
+    84503        SELECT SINGLE as4user FROM e070 INTO rv_user WHERE trkorr = lv_transport.
+
+=== DEP 3: DEP-003 [table|standard] TDEVC ===
+CONTEXT: SELECT SINGLE dlvunit FROM tdevc INTO ls_header-component WHERE devclass = iv_package
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:95196-95196
+    95196      SELECT SINGLE dlvunit FROM tdevc INTO ls_header-component WHERE devclass = iv_package.
+
+=== DEP 4: DEP-004 [table|standard] DD02L ===
+CONTEXT: SELECT SINGLE tabname FROM dd02l INTO lv_tabname
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:74072-74072
+    74072      SELECT SINGLE tabname FROM dd02l INTO lv_tabname
+
+=== DEP 5: DEP-005 [function-module|standard] RS_CORR_INSERT ===
+CONTEXT: CALL FUNCTION 'RS_CORR_INSERT' - insert an object key into a transport request
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:77764-77764
+    77764      CALL FUNCTION 'RS_CORR_INSERT'
+
+=== DEP 6: DEP-006 [function-module|standard] DDIF_TABL_GET ===
+CONTEXT: CALL FUNCTION 'DDIF_TABL_GET' - read a DDIC table/structure definition
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:122043-122043
+    122043      CALL FUNCTION 'DDIF_TABL_GET'
+
+=== DEP 7: DEP-007 [function-module|standard] DDIF_TABL_PUT ===
+CONTEXT: CALL FUNCTION 'DDIF_TABL_PUT' - write a DDIC table/structure definition
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:74029-74029
+    74029      CALL FUNCTION 'DDIF_TABL_PUT'
+
+=== DEP 8: DEP-008 [function-module|standard] ABAP4_CALL_TRANSACTION ===
+CONTEXT: CALL FUNCTION 'ABAP4_CALL_TRANSACTION' DESTINATION 'NONE' STARTING NEW TASK 'ABAPGIT'
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:41641-41641
+    41641      CALL FUNCTION 'ABAP4_CALL_TRANSACTION'
+
+=== DEP 9: DEP-009 [function-module|standard] TR_READ_REQUEST_WITH_TASKS ===
+CONTEXT: CALL FUNCTION 'TR_READ_REQUEST_WITH_TASKS' - read transport request header/tasks
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:150065-150065
+    150065        CALL FUNCTION 'TR_READ_REQUEST_WITH_TASKS'
+
+=== DEP 10: DEP-010 [function-module|standard] SEO_INTERFACE_CREATE_COMPLETE ===
+CONTEXT: CALL FUNCTION 'SEO_INTERFACE_CREATE_COMPLETE' - generate an interface object on deserialize
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:124973-124973
+    124973          CALL FUNCTION 'SEO_INTERFACE_CREATE_COMPLETE'
+
+=== DEP 11: DEP-011 [function-module|standard] WWWDATA_IMPORT ===
+CONTEXT: CALL FUNCTION 'WWWDATA_IMPORT' - import a MIME/W3 repository object
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:65323-65323
+    65323      CALL FUNCTION 'WWWDATA_IMPORT'
+
+=== DEP 12: DEP-012 [function-module|standard] PRGN_AFTER_IMP_SUSO_SAP_ALL ===
+CONTEXT: CALL FUNCTION 'PRGN_AFTER_IMP_SUSO_SAP_ALL' EXPORTING iv_tarclient = '000' - after-import handling for authorization/profile objects
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:85672-85672
+    85672      CALL FUNCTION 'PRGN_AFTER_IMP_SUSO_SAP_ALL'
+
+=== DEP 13: DEP-013 [function-module|standard] RPY_DYNPRO_READ ===
+CONTEXT: CALL FUNCTION 'RPY_DYNPRO_READ' progname = sy-cprog dynnr = pv_dynnr - read dynpro header (toolbar flag)
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:152912-152912
+    152912    CALL FUNCTION 'RPY_DYNPRO_READ'
+
+=== DEP 14: DEP-014 [function-module|standard] RPY_DYNPRO_INSERT ===
+CONTEXT: CALL FUNCTION 'RPY_DYNPRO_INSERT' header = ls_header - rewrite dynpro header to toggle toolbar
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:152942-152942
+    152942    CALL FUNCTION 'RPY_DYNPRO_INSERT'
+
+=== DEP 15: DEP-015 [function-module|standard] RS_CUA_INTERNAL_WRITE ===
+CONTEXT: CALL FUNCTION 'RS_CUA_INTERNAL_WRITE' - write a CUA (menu-painter) status during PROG deserialize
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:74700-74700
+    74700      CALL FUNCTION 'RS_CUA_INTERNAL_WRITE'
+
+=== DEP 16: DEP-016 [class|standard] CL_HTTP_CLIENT ===
+CONTEXT: cl_http_client=>create_by_url( EXPORTING url = iv_url ... IMPORTING client = li_client )
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:141224-141224
+    141224      cl_http_client=>create_by_url(
+
+=== DEP 17: DEP-017 [interface|standard] IF_HTTP_CLIENT ===
+CONTEXT: DATA li_client TYPE REF TO if_http_client
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:141216-141216
+    141216      DATA li_client TYPE REF TO if_http_client.
+
+=== DEP 18: DEP-018 [class|standard] CL_ABAP_ZIP ===
+CONTEXT: DATA lo_zip TYPE REF TO cl_abap_zip - DB backup / repo ZIP export
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:54948-54948
+    54948        lo_zip      TYPE REF TO cl_abap_zip,
+
+=== DEP 19: DEP-019 [class|standard] CL_GUI_HTML_VIEWER ===
+CONTEXT: DATA mo_html_viewer TYPE REF TO cl_gui_html_viewer - embeds the tool's HTML GUI
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:23336-23336
+    23336      DATA mo_html_viewer TYPE REF TO cl_gui_html_viewer .
+
+=== DEP 20: DEP-020 [transaction|standard] SE93 ===
+CONTEXT: CALL FUNCTION 'ABAP4_CALL_TRANSACTION' EXPORTING tcode = 'SE93' mode_val = 'N' - jump to Maintain Transaction
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:84017-84017
+    84017          tcode     = 'SE93'
+
+=== DEP 21: DEP-021 [transaction|standard] SE91 ===
+CONTEXT: CALL FUNCTION 'ABAP4_CALL_TRANSACTION' STARTING NEW TASK 'GIT' EXPORTING tcode = 'SE91' - jump to Message Class maintenance
+EVIDENCE raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:61132-61132
+    61132          tcode                 = 'SE91'

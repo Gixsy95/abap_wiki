@@ -1,0 +1,298 @@
+# functional.yaml - L2 functional synthesis (Phase 4) for program-ZABAPGIT_STANDALONE
+# Author: abap-functional-author | date: 2026-07-03 | slice: abapgit-standalone-demo
+# Sources: 6 auto-research evidence files (slices/abapgit-standalone-demo/research/),
+# the L1 code analysis inline in wiki/ZABAPGIT/program-ZABAPGIT_STANDALONE.md (anchor,
+# not cited), and standard SAP/abapGit knowledge (marked [INFERRED]).
+slice: abapgit-standalone-demo
+sap_name: ZABAPGIT_STANDALONE
+sap_type: program
+page_path: wiki/ZABAPGIT/program-ZABAPGIT_STANDALONE.md
+functional_sections:
+  functional_summary: |
+    ZABAPGIT_STANDALONE is the single-file distribution of abapGit, the community git
+    client for ABAP: version control and cross-system distribution of ABAP development
+    objects in plain text, used by ABAP developers with system access
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-what-is-abapgit.md:15-29].
+    It serves the development / change-management process, not an FI/MM/SD business flow
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-what-is-abapgit.md:26-29].
+    In this workspace the program exists only as the input fixture of a public
+    demo/benchmark of the wiki pipeline (official distribution downloaded on 2026-07-02):
+    it is not productively installed, has never been executed and has no users or
+    scheduled jobs
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-owner-deployment-context.md:16-35].
+  business_purpose: |
+    abapGit exists to bring git-based version control to ABAP development: it imports and
+    exports code between ABAP systems, enabling mass operations that would otherwise
+    require manual execution, and keeps repositories in plain text - unlike traditional
+    transport files - so code can be reviewed before being imported into target systems
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-what-is-abapgit.md:15-29].
+    The need covered is development / change management (distribution and review of
+    development objects outside the transport system); no FI/MM/SD business process
+    depends on it
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-what-is-abapgit.md:26-29].
+    Without it, cross-system distribution of the affected objects would fall back to
+    classic transports or manual re-creation [INFERRED].
+
+    In this workspace the purpose is narrower: ZABAPGIT_STANDALONE is the official abapGit
+    standalone distribution downloaded from the official site on 2026-07-02 as the input
+    of a public demo/benchmark of this wiki pipeline. It is not a productive tool of a
+    business process, and the ZABAPGIT package/TADIR row is a synthetic demo fixture
+    created by demo/model-comparison/prepare.py
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-owner-deployment-context.md:16-29].
+  trigger_actors: |
+    Official trigger: interactive execution of the report via transaction SE38 (or the
+    SE80/ADT equivalents); the standalone version has no transaction code of its own -
+    transaction ZABAPGIT belongs to the developer version only
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-standalone-trigger-se38.md:14-24]
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-standalone-trigger-se38.md:26-36].
+    At runtime the report branches on sy-batch: when run as a job it executes the
+    configured background methods per repository, otherwise it opens the HTML GUI, with
+    the SPA/GPA parameter DBT = 'ZABAPGIT' switching startup to the emergency
+    database-utility page - consistent with the three execution modes documented in the L1
+    code analysis of this page
+    [VERIFIED: raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:152822-152848].
+
+    Actors (product): ABAP developers with system access, who manage ABAP artifacts
+    through version control
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-what-is-abapgit.md:20-24].
+    Startup is guarded by the zcl_abapgit_auth hook (L1 section "Error handling"); with no
+    authorization exit installed the upstream default allows startup, so the effective
+    gate is only the generic ability to run reports via SE38 [INFERRED].
+
+    In this workspace: no trigger and no actors exist - the program has never been
+    executed here, no jobs schedule it, and nobody operates it
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-owner-deployment-context.md:30-31]
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-owner-deployment-context.md:35].
+    Consequently no background configuration exists and no git credentials are persisted
+    for background runs, so the exposure of BUG-003 (clear-text credentials in background
+    mode, L1 bug catalog) is theoretical here
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-owner-deployment-context.md:32-34].
+  business_rules: |
+    1. Key-value persistence semantics (table ZABAPGIT) - affected code: L1 sections
+    "External dependencies" and "Performance" of this page (dynamic DML on constant
+    c_tabname = 'ZABAPGIT'). The table is a generic key-value store with fields TYPE (kind
+    of entry), VALUE (key within the kind) and DATA_STR (serialized XML payload); the TYPE
+    values cover repository metadata/settings, per-user settings, global settings,
+    background job configuration and APACK info [INFERRED]. This semantic catalog is
+    consistent with the access shape already proven at L1 (single-record reads by
+    type/value, full-table list for the repo overview)
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-wiki-version-and-persistence.md:24-37].
+
+    2. Dummy update-task call (BUG-004 rationale) - affected code: L1 section "Error
+    handling / Locking" (zcl_abapgit_persistence_db=>lock). Registering a harmless
+    standard FM (CALL_V1_PING where available, else BANK_OBJ_WORKL_RELEASE_LOCKS) IN
+    UPDATE TASK makes COMMIT WORK run the update task, which releases the EZABAPGIT
+    enqueue locks owned by the update owner (_SCOPE = 2 default). It is a deliberate
+    upstream design trick to auto-release locks at commit, NOT a functional integration
+    with the banking/V1 modules whose FMs are borrowed [INFERRED].
+
+    3. Magic value DBT = 'ZABAPGIT' - affected code: FORM open_gui (L1 section "Form
+    analysis"). The SPA/GPA parameter DBT compared against the literal 'ZABAPGIT' selects
+    the emergency database-utility start page (persistence repair mode) instead of the
+    home page; the related literal 'HREF' toggles HTML debug mode
+    [VERIFIED: raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap:152822-152848].
+  standard_integration: |
+    abapGit is development infrastructure (Basis/workbench level): it serves no FI/MM/SD
+    module flow and its integration surface is the ABAP development toolchain
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-what-is-abapgit.md:26-29].
+    Relationship with the abapGit product family: the standalone version is targeted at
+    users and is run via SE38; the developer version (transaction ZABAPGIT, parallel
+    processing) is targeted at abapGit contributors and requires the standalone version to
+    be installed first
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-standalone-trigger-se38.md:26-36].
+    Provenance: this is the unmodified official distribution (no local development
+    happened in this workspace)
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-owner-deployment-context.md:46-48];
+    the embedded build stamp (abapGit 1.133.0, abapmerge 0.16.8, 2026-07-01) is one day
+    older than the download date, consistent with a then-current official release
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-wiki-version-and-persistence.md:15-22].
+
+    Customizing / prerequisites that condition the behaviour: SAP BASIS 702 or higher;
+    works best with SAP GUI for Windows; SSL setup (STRUST) is needed only for the online
+    features; the recommended installation is in a local $ package
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-standalone-trigger-se38.md:38-48].
+    Offline repositories exist precisely for landscapes without internet access or SSL
+    (air-gapped systems), exchanging objects as ZIP files
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-repo-workflows.md:27-40].
+
+    Local extension points: the four optional user-exit includes referenced with
+    INCLUDE ... IF FOUND (ZABAPGIT_AUTHORIZATIONS_EXIT, ZABAPGIT_USER_EXIT,
+    ZABAPGIT_BACKGROUND_USER_EXIT, ZABAPGIT_GUI_PAGES_USEREXIT) are not part of this
+    system: the fixture contains only the standalone program, so no local
+    authorization/UI/background policy is installed
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-owner-deployment-context.md:36-41];
+    the IF FOUND includes then compile as absent and the upstream defaults apply
+    [INFERRED]. This closes L1 business open questions 1, 2 and 6 (provenance, user
+    exits, transaction code) and answers question 4 (startup authorization) by default
+    behaviour.
+  data_lifecycle: |
+    The custom table ZABAPGIT (the tool's only persistence, L1 section "External
+    dependencies") is populated exclusively by abapGit itself: rows come into existence
+    when a user creates online/offline repositories and runs add/commit/pull operations -
+    there is no external feed
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-repo-workflows.md:42-45].
+    Expected volume is small: one row per repository, user-settings or settings entry
+    [INFERRED]. There is no file or RFC output; git data leaves the system only through
+    the HTTPS transport of the online workflow or as ZIP exports in the offline workflow
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-repo-workflows.md:27-40].
+
+    In this workspace the persistence has never been populated: the program was never
+    executed, so no repositories, settings or background configuration exist
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-owner-deployment-context.md:42-43].
+    Lifecycle of the vendored source: one-shot download from the official site on
+    2026-07-02 as the benchmark input; no periodic upgrade/re-import policy exists here
+    [VERIFIED: slices/abapgit-standalone-demo/research/2026-07-03-owner-deployment-context.md:44-45].
+    On a productive install the policy would be re-upload of the released single file over
+    the same report at each upgrade [INFERRED].
+  functional_open_points: |
+    No open gaps remain: all 13 gaps of the slice are auto-answered (0 open, no expert
+    questionnaire was needed). Three topics rest on standard abapGit knowledge and stay
+    [INFERRED] pending a read-only system check (MCP was unavailable in this benchmark):
+    the semantic catalog of the ZABAPGIT TYPE values, the update-task lock-release
+    rationale (BUG-004), and the upstream default of the startup authorization when no
+    exit is installed. None of them is load-bearing for the flow.
+  functional_sources: |
+    Auto-research evidence (slices/abapgit-standalone-demo/research/, all dated
+    2026-07-03): 2026-07-03-what-is-abapgit.md and 2026-07-03-repo-workflows.md and
+    2026-07-03-standalone-trigger-se38.md (extracts of the raw/docs/ snapshots of
+    docs.abapgit.org fetched 2026-07-02); 2026-07-03-owner-deployment-context.md (verbatim
+    owner statement of 2026-07-02, gixsy95github@gmail.com);
+    2026-07-03-wiki-version-and-persistence.md (L1 facts reused);
+    2026-07-03-abapgit-standard-knowledge.md (standard knowledge, [INFERRED] only).
+    No formal expert answers were needed (inputs/expert-answers/ is empty). Technical
+    anchor: the gate-accepted L1 code analysis inline in this page (hash 15fe0137) and
+    the raw source raw/system-library/ZABAPGIT/Source Code Library/Programs/
+    ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap. L2 gate verdict: pending
+    (abap-functional-gate, separate session).
+claims:
+  - claim_id: FUN-001
+    class: PURPOSE
+    status: verified
+    section: business_purpose
+    sentence: "abapGit is the community git client for ABAP: it provides version control and cross-system distribution of ABAP development objects in plain text (reviewable before import), serving the development / change-management process and not an FI/MM/SD business flow."
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-what-is-abapgit.md", line_start: 15, line_end: 29 }
+  - claim_id: FUN-002
+    class: PURPOSE
+    status: verified
+    section: business_purpose
+    sentence: "In this workspace ZABAPGIT_STANDALONE is the official abapGit standalone distribution downloaded on 2026-07-02 as the input fixture of a public demo/benchmark of the wiki pipeline; it is not productively installed and the ZABAPGIT package/TADIR row is a synthetic demo fixture created by demo/model-comparison/prepare.py."
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-owner-deployment-context.md", line_start: 16, line_end: 29 }
+  - claim_id: FUN-003
+    class: TRIGGER
+    status: verified
+    section: trigger_actors
+    sentence: "The official launch path is interactive execution of the report via SE38; the standalone version has no transaction code of its own - transaction ZABAPGIT belongs to the developer version only."
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-standalone-trigger-se38.md", line_start: 14, line_end: 24 }
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-standalone-trigger-se38.md", line_start: 26, line_end: 36 }
+  - claim_id: FUN-004
+    class: TRIGGER
+    status: verified
+    section: trigger_actors
+    sentence: "At runtime FORM open_gui branches on sy-batch (background methods per repository when batch, HTML GUI otherwise) and the SPA/GPA parameter DBT = 'ZABAPGIT' switches startup to the emergency database-utility page."
+    evidence:
+      - { path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap", line_start: 152822, line_end: 152848 }
+  - claim_id: FUN-005
+    class: TRIGGER
+    status: verified
+    section: trigger_actors
+    sentence: "In this workspace the program has never been executed and no jobs schedule it; therefore no background configuration exists and no git credentials are persisted, making the BUG-003 exposure theoretical here."
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-owner-deployment-context.md", line_start: 30, line_end: 34 }
+  - claim_id: FUN-006
+    class: ACTOR
+    status: verified
+    section: trigger_actors
+    sentence: "The product actors are ABAP developers with system access, who manage ABAP artifacts through version control."
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-what-is-abapgit.md", line_start: 20, line_end: 24 }
+  - claim_id: FUN-007
+    class: ACTOR
+    status: verified
+    section: trigger_actors
+    sentence: "In this workspace nobody operates the program (demo fixture, no users)."
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-owner-deployment-context.md", line_start: 35, line_end: 35 }
+  - claim_id: FUN-008
+    class: ACTOR
+    status: inferred
+    section: trigger_actors
+    sentence: "With no authorization exit installed, the upstream default of zcl_abapgit_auth allows startup, so the effective gate is only the generic ability to run reports via SE38."
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-abapgit-standard-knowledge.md", line_start: 40, line_end: 47 }
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-owner-deployment-context.md", line_start: 36, line_end: 41 }
+  - claim_id: FUN-009
+    class: FIELD-SEMANTICS
+    status: inferred
+    section: business_rules
+    sentence: "The table ZABAPGIT is a generic key-value store (TYPE / VALUE / DATA_STR with serialized XML payload) whose TYPE values cover repository metadata/settings, per-user settings, global settings, background job configuration and APACK info, consistent with the L1-proven access shape."
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-abapgit-standard-knowledge.md", line_start: 17, line_end: 26 }
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-wiki-version-and-persistence.md", line_start: 24, line_end: 37 }
+  - claim_id: FUN-010
+    class: BUSINESS-RULE
+    status: inferred
+    section: business_rules
+    sentence: "The dummy IN UPDATE TASK call of CALL_V1_PING (or BANK_OBJ_WORKL_RELEASE_LOCKS as fallback) exists so that COMMIT WORK releases the EZABAPGIT enqueue locks; it is a deliberate upstream trick, not a functional integration with the banking/V1 modules."
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-abapgit-standard-knowledge.md", line_start: 28, line_end: 38 }
+  - claim_id: FUN-011
+    class: BUSINESS-RULE
+    status: verified
+    section: business_rules
+    sentence: "The SPA/GPA parameter DBT compared against the literal 'ZABAPGIT' selects the emergency database-utility start page instead of the home page, and the literal 'HREF' toggles HTML debug mode."
+    evidence:
+      - { path: "raw/system-library/ZABAPGIT/Source Code Library/Programs/ZABAPGIT_STANDALONE/ZABAPGIT_STANDALONE.prog.abap", line_start: 152822, line_end: 152848 }
+  - claim_id: FUN-012
+    class: INTEGRATION
+    status: verified
+    section: standard_integration
+    sentence: "The standalone version targets users and is run via SE38, while the developer version (transaction ZABAPGIT, parallel processing) targets abapGit contributors and requires the standalone version to be installed first."
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-standalone-trigger-se38.md", line_start: 26, line_end: 36 }
+  - claim_id: FUN-013
+    class: CONFIG
+    status: verified
+    section: standard_integration
+    sentence: "The four optional user-exit includes (ZABAPGIT_AUTHORIZATIONS_EXIT, ZABAPGIT_USER_EXIT, ZABAPGIT_BACKGROUND_USER_EXIT, ZABAPGIT_GUI_PAGES_USEREXIT) do not exist in this system, so no local authorization/UI/background policy is installed."
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-owner-deployment-context.md", line_start: 36, line_end: 41 }
+  - claim_id: FUN-014
+    class: CONFIG
+    status: verified
+    section: standard_integration
+    sentence: "System prerequisites are SAP BASIS 702 or higher, best with SAP GUI for Windows, SSL setup only for the online features and installation in a local $ package; offline repositories cover landscapes without internet/SSL via ZIP exchange."
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-standalone-trigger-se38.md", line_start: 38, line_end: 48 }
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-repo-workflows.md", line_start: 27, line_end: 40 }
+  - claim_id: FUN-015
+    class: DATA-LIFECYCLE
+    status: verified
+    section: data_lifecycle
+    sentence: "The ZABAPGIT persistence is populated exclusively by abapGit itself when users create online/offline repositories and run add/commit/pull operations; there is no external feed."
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-repo-workflows.md", line_start: 42, line_end: 45 }
+  - claim_id: FUN-016
+    class: DATA-LIFECYCLE
+    status: verified
+    section: data_lifecycle
+    sentence: "In this workspace the ZABAPGIT persistence has never been populated because the program was never executed (no repos, no settings, no background configuration)."
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-owner-deployment-context.md", line_start: 42, line_end: 43 }
+  - claim_id: FUN-017
+    class: DATA-LIFECYCLE
+    status: verified
+    section: data_lifecycle
+    sentence: "The vendored source has no upgrade policy here: it is a one-shot download from the official site on 2026-07-02 made as the benchmark input."
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-owner-deployment-context.md", line_start: 44, line_end: 45 }
+  - claim_id: FUN-018
+    class: INTEGRATION
+    status: verified
+    section: standard_integration
+    sentence: "The program is the unmodified official abapGit distribution: no local development happened in this workspace, and the embedded build stamp (1.133.0, abapmerge 0.16.8, 2026-07-01) is one day older than the download date, consistent with a then-current release."
+    evidence:
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-owner-deployment-context.md", line_start: 46, line_end: 48 }
+      - { path: "slices/abapgit-standalone-demo/research/2026-07-03-wiki-version-and-persistence.md", line_start: 15, line_end: 22 }
