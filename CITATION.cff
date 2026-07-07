@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+title: abap_wiki
+message: "If you use this software, please cite it using the metadata from this file."
+type: software
+authors:
+  - given-names: Luigi
+    family-names: Venturino
+repository-code: "https://github.com/Gixsy95/abap_wiki"
+url: "https://github.com/Gixsy95/abap_wiki"
+abstract: >-
+  An agent-driven engine that turns SAP S/4HANA custom objects into a
+  navigable, verifiable and citable Markdown/Obsidian knowledge base for
+  humans and AI agents.
+keywords:
+  - abap
+  - sap
+  - s4hana
+  - agentic-ai
+  - knowledge-base
+  - llm
+license: MIT
