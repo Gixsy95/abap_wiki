@@ -4,9 +4,9 @@ All notable changes to `abap_wiki` are documented in this file. The format is
 inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions
 follow [SemVer](https://semver.org/lang/en/).
 
-## [1.0.0] - unreleased
+## [1.0.0] - 2026-07-08
 
-First public release. The date will be set on publication day.
+First public release.
 
 ### Added
 
