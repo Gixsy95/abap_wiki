@@ -33,8 +33,10 @@ pipeline. Declared inspirations:
   ABAP remote filesystem, VS Code, and MCP.
 
 ABAP FS is recommended for extracting sources and, when needed, for live
-read-only queries. `abap_wiki` then organizes knowledge into persistent,
-citable pages optimized for agentic work.
+queries. The connector itself also supports writing, but `abap_wiki`'s agents only ever
+call its read tools, by contract (never activate, create, modify, or run transport).
+`abap_wiki` then organizes knowledge into persistent, citable pages optimized for
+agentic work.
 
 ## 2. The two planes
 
@@ -145,7 +147,7 @@ diverge and indexes never drift.
 | **devclass** | the SAP package of an object |
 | **DDIC** | the Data Dictionary: SAP's central repository of table/field/type definitions (tables, structures, data elements, domains); DDIC metadata objects follow the deterministic path in [01-pipeline-l0-l1](01-pipeline-l0-l1.md) §7b |
 | **selection screen** | the input screen of an ABAP report (`PARAMETERS` / `SELECT-OPTIONS`): what the user fills in before running it; see [08-structured-vs-narrative-sections](08-structured-vs-narrative-sections.md) §2 |
-| **MCP `abap-fs`** | the read-only connector to the SAP system `<SAP_DEV_SYSTEM>` |
+| **MCP `abap-fs`** | the connector to the SAP system `<SAP_DEV_SYSTEM>`; abap_wiki's agents use it strictly read-only, by contract |
 
 ## 8. Discarded alternatives (and why)
 

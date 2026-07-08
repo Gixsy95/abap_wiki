@@ -233,8 +233,9 @@ in Obsidian. Alternatives compatible with wikilinks: VS Code + Foam, Logseq.
 Once the wiki exists, at any level, you point an agent at it and ask. The `/query` command
 pulls the wiki pages relevant to your question and answers in detail, every claim backed by
 the engine's verification across all phases. It can optionally extend the answer to the
-live SAP system through the read-only MCP connector (strongly recommended:
-[vscode_abap_remote_fs](https://github.com/marcellourbani/vscode_abap_remote_fs)), always
+live SAP system through an MCP connector (strongly recommended:
+[vscode_abap_remote_fs](https://github.com/marcellourbani/vscode_abap_remote_fs), used here
+read-only by agent contract, not by a limitation of the connector itself), always
 citing wiki vs. system.
 
 ## Getting started
@@ -418,13 +419,14 @@ packages into `raw/system-library/`, two options:
 
 1. Find out which standard packages are touched, download their sources into
    `raw/system-library/` as well, and run L1 on them like any other object.
-2. Use the read-only MCP connector
+2. Use an MCP connector
    ([marcellourbani/vscode_abap_remote_fs](https://github.com/marcellourbani/vscode_abap_remote_fs))
    so an agent can retrieve what it needs from the live system (the source to analyse, a
-   where-used, a current value), always citing "wiki vs. system". Set it up following the
-   official documentation: <https://marcellourbani.github.io/vscode_abap_remote_fs/>. Keep
-   your local MCP configuration out of version control, and never commit credentials,
-   internal hosts, or tokens.
+   where-used, a current value), always citing "wiki vs. system". The connector itself also
+   supports writing; abap_wiki's agents never do, by contract (see the agent files' MCP tool
+   whitelist). Set it up following the official documentation:
+   <https://marcellourbani.github.io/vscode_abap_remote_fs/>. Keep your local MCP configuration
+   out of version control, and never commit credentials, internal hosts, or tokens.
 
 ## Why I built this
 
