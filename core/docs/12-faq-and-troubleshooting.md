@@ -1,8 +1,8 @@
 # FAQ and first-day troubleshooting
 
 The failures a newcomer actually hits in the first hour, with the fix for each.
-Every entry below was observed on a real fresh-clone onboarding; none is
-hypothetical.
+Every entry below comes from a real fresh-clone onboarding or a real question
+asked by SAP practitioners; none is hypothetical.
 
 > **Scope.** First-day failures: bootstrap, empty directories, TADIR import,
 > source resolution counts, agent-runner setup, interrupted L1 batches.
@@ -32,6 +32,19 @@ Normal on a fresh clone: the runtime DB does not ship with the template. It
 disappears after `pipeline.py init-db`.
 
 ## TADIR import and source resolution
+
+**Does it work with ECC, or only with S/4HANA?**
+Both. The engine never connects to SAP: it only needs a TADIR export
+(`SE16N` works the same on ECC) and the ABAP sources as files under
+`raw/system-library/`. Old procedural code is actually the target workload:
+reports, includes and function groups are first-class object types in the
+pipeline. The only release-specific question is extraction: ABAP FS runs on
+the ADT services (NetWeaver 7.31+, so most ECC 6.0 EhP6+ landscapes qualify);
+on older kernels, extract with [abapGit](https://github.com/abapGit/abapGit)
+or manually, following the naming convention in
+[09-first-clone-and-sap-input-guide](09-first-clone-and-sap-input-guide.md)
+section 4b. What an ECC system does not have is CDS/RAP content, but that is
+absent from the system itself, not a limitation of the engine.
 
 **`import-tadir` fails with "expected columns missing".**
 The importer accepts the SAP technical headers (`OBJECT`, `OBJ_NAME`,

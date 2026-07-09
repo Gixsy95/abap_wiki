@@ -26,6 +26,12 @@ to place the ABAP sources, when to configure live SAP access, and how to start L
 - VS Code if you want to download the ABAP file system via ABAP FS.
 - SAP authorizations consistent with extracting only the custom objects to be
   documented.
+- Any SAP release that can provide the two inputs works, S/4HANA or ECC alike:
+  the engine never connects to SAP and only reads the files placed under
+  `raw/`. ABAP FS itself needs the ADT services (NetWeaver 7.31+, which covers
+  most ECC 6.0 EhP6+ landscapes); on older kernels without ADT, extract the
+  sources with [abapGit](https://github.com/abapGit/abapGit) or manually,
+  following the naming convention described in section 4.
 
 ABAP FS reference:
 
@@ -121,6 +127,28 @@ raw/system-library/ZPACKAGE/...
 Do not manually modify the sources after downloading. `raw/` is the citational
 base of the knowledge base: hashes, line numbers, and citations all depend on
 the bytes on disk.
+
+### 4b. The object-as-file naming convention
+
+The engine binds a TADIR object to its source by the file's extension chain:
+`ZFOO.prog.abap` for a program, `.clas.abap` for a class, `.fugr.abap` for a
+function group, `.tabl.xml` for a table, and so on. This convention was born
+with [abapGit](https://github.com/abapGit/abapGit), whose serializers did the
+heavy lifting of mapping every TADIR object type to a file representation;
+ABAP FS extracts sources in that same convention, which is why the download
+procedure above needs no renaming.
+
+Practical consequences:
+
+- Files downloaded with ABAP FS are already named correctly: copy them as-is.
+- Sources extracted with abapGit or downloaded manually (for example from a
+  system without ADT) must carry the expected extension for their type,
+  otherwise `resolve-sources` will not classify them as `available`.
+- The folder layout is free: the index scans `raw/system-library/` recursively
+  and matches on package and basename, so flat files and per-object folders
+  both work.
+- The authoritative type-to-extension mapping is `TYPE_EXTENSIONS` in
+  `core/src/tools/sources.py`; consult it rather than guessing.
 
 ## 5. Local repo, agents, and live SAP access
 

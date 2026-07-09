@@ -20,8 +20,8 @@ pipeline reads comes from here, and nothing here is ever produced by the agent.
 
 | Path | Content | Consumed by |
 |---|---|---|
-| `raw/tadir/` | TADIR export (CSV, semicolon-delimited, English SAP GUI headers) | `pipeline.py import-tadir` |
-| `raw/system-library/<DEVCLASS>/...` | source exports (vscode_abap_remote_fs layout, one directory per object) | `resolve-sources`, L1 agents |
+| `raw/tadir/` | TADIR export (`.xlsx` or `.csv`, SAP technical or Italian GUI headers) | `pipeline.py import-tadir` |
+| `raw/system-library/<DEVCLASS>/...` | source exports (abapGit-style object-as-file naming, as produced by vscode_abap_remote_fs) | `resolve-sources`, L1 agents |
 | `raw/docs/` | functional documents: specs, process notes, ticket exports | L2 auto-research (`[VERIFIED: raw-docs]` evidence) |
 
 ## What belongs in raw/docs/

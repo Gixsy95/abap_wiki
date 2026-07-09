@@ -24,6 +24,13 @@ The pipeline indexes this directory once during
 files exactly as exported: `raw/** -text` in `.gitattributes` avoids automatic
 line-ending conversions and preserves hashes and citations.
 
+The files must follow the object-as-file naming convention born with
+[abapGit](https://github.com/abapGit/abapGit) (`ZFOO.prog.abap`, `.clas.abap`,
+`.fugr.abap`, ...): ABAP FS produces it automatically. If you extract sources
+another way (abapGit, or a manual download from a system without ADT), name
+the files accordingly, or `resolve-sources` will not bind them. Full
+explanation: `core/docs/09-first-clone-and-sap-input-guide.md` section 4b.
+
 This directory is a template scaffold: it contains no real data.
 
 Full guide: `core/docs/09-first-clone-and-sap-input-guide.md`.

@@ -306,6 +306,14 @@ inbox `raw/` (do not place credentials, tokens, or local config in tracked data;
 3. Copy the downloaded content to `raw/system-library/`, preserving the folder structure
    produced by the tool.
 
+The source files must follow the object-as-file naming convention born with
+[abapGit](https://github.com/abapGit/abapGit) (`ZFOO.prog.abap`, `.clas.abap`,
+`.fugr.abap`, ...): ABAP FS produces it automatically, and the engine relies on it to bind
+each TADIR object to its source. Because the engine never talks to SAP directly, any system
+that can provide these two inputs works, S/4HANA or ECC alike: ABAP FS needs the ADT
+services (NetWeaver 7.31+, so most ECC 6.0 EhP6+ landscapes qualify), and on older kernels
+abapGit or a manual download with the same naming convention works too.
+
 Complete guide for obtaining SAP inputs: `core/docs/09-first-clone-and-sap-input-guide.md`.
 
 **3. Run the pipeline (L0 data bootstrap).** Run after copying TADIR and sources.
@@ -459,6 +467,12 @@ how.
   results) that inspired the shape of L2's auto-research loop.
 - **Marcello Urbani's [vscode_abap_remote_fs](https://github.com/marcellourbani/vscode_abap_remote_fs):**
   navigable access to SAP objects via the ABAP remote filesystem, VS Code, and MCP.
+- **[abapGit](https://github.com/abapGit/abapGit):** the project that first made ABAP
+  objects live as files. Its serializers did the heavy lifting of mapping every TADIR
+  object type to a file representation with its own extension (`.prog.abap`,
+  `.clas.abap`, `.fugr.abap`, ...); ABAP FS extracts sources in that same convention,
+  and this engine consumes them. Three layers of open source, each standing on the
+  previous one.
 
 ## What is not included
 
