@@ -15,7 +15,7 @@ cli_loop, cli_l2, spot_check, token_metrics, check_headers when the command is r
 Doc: core/docs/05-runbook.md, core/docs/01-pipeline-l0-l1.md for the full flow.
 
 Bootstrap sub-commands (Phase 1):
-  init-db | import-tadir | resolve-sources | ingest-l0 | enqueue-l1 | progress
+  init-db | import-tadir | resolve-sources | ingest-l0 | enqueue-l1 | progress | l0-run
 L1 loop sub-commands (Phase 2, in apply_l1/graph_project/deepcheck_io):
   claim | submit-author | submit-verdict | apply | project | recover |
   git-commit | export-excel | dashboard | retry-reset | requeue-skipped | gc-runs
@@ -804,6 +804,56 @@ def _build_metadata_frontmatter(con, object_id: int, ingest_date: str) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# l0-run (one-shot deterministic L0 sequence)
+# ---------------------------------------------------------------------------
+_L0_EXTENSIONS = (".xlsx", ".csv")
+
+
+def _discover_tadir(root: Path) -> Path | None:
+    """Newest TADIR export in raw/tadir/ (lexicographic max: dated names sort
+    chronologically). Returns None when the folder is empty or missing."""
+    tadir_dir = root / "raw" / "tadir"
+    if not tadir_dir.is_dir():
+        return None
+    candidates = sorted(
+        p for p in tadir_dir.iterdir() if p.suffix.lower() in _L0_EXTENSIONS and p.is_file()
+    )
+    return candidates[-1] if candidates else None
+
+
+def cmd_l0_run(args) -> int:
+    """Runs the whole deterministic L0 bootstrap as one process: init-db ->
+    import-tadir -> resolve-sources -> ingest-l0 -> enqueue-l1 -> progress.
+    No LLM is involved at any point (see core/docs/01-pipeline-l0-l1.md)."""
+    if args.file:
+        tadir = Path(args.file)
+    else:
+        tadir = _discover_tadir(db.repo_root())
+        if tadir is None:
+            print(
+                "ERROR: no TADIR export (*.xlsx/*.csv) found in raw/tadir/. "
+                "Copy the export there or pass --file.",
+                file=sys.stderr,
+            )
+            return 1
+    steps = [
+        ["init-db"],
+        ["import-tadir", "--file", str(tadir)],
+        ["resolve-sources"],
+        ["ingest-l0"],
+        ["enqueue-l1"],
+        ["progress"],
+    ]
+    for step in steps:
+        print(f"== l0-run: {' '.join(step)}")
+        rc = main(step)
+        if rc != 0:
+            print(f"ERROR: step '{step[0]}' failed with exit code {rc}", file=sys.stderr)
+            return rc
+    return 0
+
+
+# ---------------------------------------------------------------------------
 # Dispatch
 # ---------------------------------------------------------------------------
 def build_parser() -> argparse.ArgumentParser:
@@ -827,6 +877,13 @@ def build_parser() -> argparse.ArgumentParser:
     sp = sub.add_parser("progress", help="Progress statistics")
     sp.add_argument("--json", action="store_true")
     sp.add_argument("--package", help="Limit statistics to a single devclass (+ l1_remaining)")
+
+    sp = sub.add_parser(
+        "l0-run",
+        help="One-shot deterministic L0 bootstrap: init-db -> import-tadir -> "
+        "resolve-sources -> ingest-l0 -> enqueue-l1 -> progress (no LLM)",
+    )
+    sp.add_argument("--file", help="TADIR export (default: newest *.xlsx/*.csv in raw/tadir/)")
 
     sp = sub.add_parser("slices-registry", help="Regenerate slices.yaml from the slice manifests")
     sp.add_argument(
@@ -891,6 +948,7 @@ _HANDLERS = {
     "ingest-l0": cmd_ingest_l0,
     "enqueue-l1": cmd_enqueue_l1,
     "progress": cmd_progress,
+    "l0-run": cmd_l0_run,
     "slices-registry": cmd_slices_registry,
     "check-headers": cmd_check_headers,
     "ingest-metadata": cmd_ingest_metadata,

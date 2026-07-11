@@ -1,6 +1,6 @@
 """Test 10 - sync_agents: agent contracts match the canonical definitions.
 
-What it does: verifies sync_agents (Test 10) - generate creates the invocable copies in .claude/agents and .agents/agents from the canonical contracts in core/src/agentic/programs; check passes after generate and detects drift (manually edited copy), missing invocable, and missing canonical; contract_parity keeps the numbered sections of CLAUDE.md and AGENTS.md aligned (CLAUDE.md is the source of truth).
+What it does: verifies sync_agents (Test 10) - generate creates the invocable copies in .claude/agents, .agents/agents, and .github/agents (GitHub Copilot, model: line stripped) from the canonical contracts in core/src/agentic/programs; check passes after generate and detects drift (manually edited copy), missing invocable, and missing canonical, tolerating a user-pinned model: line in the Copilot projection; contract_parity keeps the numbered sections of CLAUDE.md and AGENTS.md aligned (CLAUDE.md is the source of truth).
 How it works: pytest on the `repo` fixture; _setup writes the 5 canonical contracts, then calls sync_agents.generate/check; assertions verify the generated files and drift/missing messages for each invocable directory. The parity tests write fixture CLAUDE.md/AGENTS.md strings and assert section-level drift detection with whitespace tolerance and preamble exclusion.
 Connections: exercises sync_agents (generate, check, contract_parity); uses the `repo` fixture from conftest.py.
 """
@@ -84,6 +84,75 @@ def test_check_detects_missing_canonical(repo):
     (repo / "core/src/agentic/programs/00-abap-analyzer.md").unlink()
     drifts = sync_agents.check(repo)
     assert any("abap-analyzer" in d for d in drifts)
+
+
+# --- Copilot projection (.github/agents/*.agent.md) --------------------------
+
+COPILOT_DIR = ".github/agents"
+
+
+def test_generate_creates_copilot_agent_files(repo):
+    _setup(repo)
+    sync_agents.generate(repo)
+    for name in EXPECTED_AGENTS:
+        assert (repo / COPILOT_DIR / f"{name}.agent.md").exists()
+
+
+def test_copilot_projection_strips_model_line(repo):
+    _setup(repo)
+    sync_agents.generate(repo)
+    # canonical deepcheck fixture carries "model: sonnet" (a Claude alias)
+    text = (repo / COPILOT_DIR / "abap-deepcheck.agent.md").read_text(encoding="utf-8")
+    assert "model:" not in text
+    assert "# deepcheck" in text  # body preserved verbatim
+
+
+def test_copilot_check_tolerates_user_pinned_model(repo):
+    _setup(repo)
+    sync_agents.generate(repo)
+    path = repo / COPILOT_DIR / "abap-analyzer.agent.md"
+    content = path.read_text(encoding="utf-8")
+    # user pins a VS Code model inside the frontmatter: allowed, not drift
+    pinned = content.replace(
+        "name: abap-analyzer", "name: abap-analyzer\nmodel: 'Claude Haiku 4.5'", 1
+    )
+    path.write_text(pinned, encoding="utf-8")
+    assert sync_agents.check(repo) == []
+
+
+def test_copilot_check_detects_body_drift(repo):
+    _setup(repo)
+    sync_agents.generate(repo)
+    path = repo / COPILOT_DIR / "abap-analyzer.agent.md"
+    path.write_text("---\nname: abap-analyzer\n---\n# EDITED\n", encoding="utf-8")
+    drifts = sync_agents.check(repo)
+    assert len(drifts) == 1
+    assert "abap-analyzer" in drifts[0] and "DRIFT" in drifts[0]
+    assert ".github/agents/abap-analyzer.agent.md" in drifts[0]
+
+
+def test_copilot_check_detects_missing_file(repo):
+    _setup(repo)
+    sync_agents.generate(repo)
+    (repo / COPILOT_DIR / "abap-deepcheck.agent.md").unlink()
+    drifts = sync_agents.check(repo)
+    assert any("abap-deepcheck" in d and "missing" in d and COPILOT_DIR in d for d in drifts)
+
+
+def test_copilot_strip_is_scoped_to_frontmatter(repo):
+    _setup(repo)
+    # frontmatter carries model: sonnet; the body carries a line that merely
+    # LOOKS like a model field (prose/example) and must survive the projection
+    (repo / "core/src/agentic/programs/00-abap-deepcheck.md").write_text(
+        "---\nname: abap-deepcheck\nmodel: sonnet\n---\n# deepcheck\n"
+        "model: example-in-body\nbody\n",
+        encoding="utf-8",
+    )
+    sync_agents.generate(repo)
+    text = (repo / COPILOT_DIR / "abap-deepcheck.agent.md").read_text(encoding="utf-8")
+    assert "model: sonnet" not in text  # frontmatter field stripped
+    assert "model: example-in-body" in text  # body line preserved verbatim
+    assert sync_agents.check(repo) == []
 
 
 # --- CLAUDE.md / AGENTS.md contract parity ----------------------------------

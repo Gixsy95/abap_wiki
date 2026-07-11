@@ -314,6 +314,9 @@ that can provide these two inputs works, S/4HANA or ECC alike: ABAP FS needs the
 services (NetWeaver 7.31+, so most ECC 6.0 EhP6+ landscapes qualify), and on older kernels
 abapGit or a manual download with the same naming convention works too.
 
+Driving these two downloads directly from ABAP FS (tools `abap_download` and
+`execute_data_query`) is documented in `core/docs/14-abap-fs-integration.md`.
+
 Complete guide for obtaining SAP inputs: `core/docs/09-first-clone-and-sap-input-guide.md`.
 
 **3. Run the pipeline (L0 data bootstrap).** Run after copying TADIR and sources.
@@ -339,6 +342,20 @@ On Linux/macOS:
 .venv/bin/python core/src/tools/pipeline.py enqueue-l1
 .venv/bin/python core/src/tools/pipeline.py progress
 ```
+
+Or run the whole L0 sequence as a single deterministic command:
+
+```powershell
+.venv\Scripts\python core/src/tools/pipeline.py l0-run
+```
+
+```sh
+.venv/bin/python core/src/tools/pipeline.py l0-run
+```
+
+`l0-run` picks the newest TADIR export in `raw/tadir/` (or takes `--file`) and
+stops at the first failing step. No LLM is involved: L0 stays fully
+deterministic end to end.
 
 **4. Run L1 and beyond.** `abap_wiki/` now exists: open it as an Obsidian vault. Drive L1 and
 L2 with the agent skills in `.agents/skills/` and `.claude/skills/` (the autonomous loop
@@ -389,11 +406,19 @@ Full architecture: `core/docs/00-architecture.md` (also `02-adversarial-gate.md`
 - `11-agent-runtime-and-cost.md`: agent runners, the author/judge model split, and per-object/per-batch cost measured on a real batch, not estimated.
 - `12-faq-and-troubleshooting.md`: first-hour failures a newcomer actually hits (bootstrap, TADIR import, agent-runner setup) with the fix for each, all observed on a real fresh-clone onboarding.
 - `13-improving-the-engine.md`: the observe-then-fix loop for engine work: run on real cases end to end, log problems without fixing mid-run, then fix and reprocess with full regression checks.
+- `14-abap-fs-integration.md`: provisioning and feeding an instance from ABAP FS
+  (release-zip wizard, TADIR/source download via ABAP FS tools, `l0-run`, runner
+  setup including Copilot), per issue #473.
 
 ## Agents
 
 - Codex: `AGENTS.md`, `.agents/agents/`, `.agents/skills/`.
 - Claude: `CLAUDE.md`, `.claude/agents/`, `.claude/skills/`, `.claude/commands/`.
+- Copilot (VS Code): `.github/agents/*.agent.md` (custom agents projected from the
+  same canonical contracts; set each agent's `model:` line to the VS Code model of
+  your choice; it is the only hand-editable line, and the drift check ignores it).
+  Copilot agent mode reads the skills from `.agents/skills/` natively and loads
+  `AGENTS.md` via the `chat.useAgentsMdFile` setting.
 
 The canonical contracts live in `core/src/agentic/programs/` and are synchronised with:
 

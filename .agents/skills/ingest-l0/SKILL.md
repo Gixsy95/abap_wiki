@@ -15,6 +15,10 @@ State lives in `state/abap_wiki.db` (see `core/docs/01-pipeline-l0-l1.md`).
 
 ## Procedure
 
+> Shortcut: `python core/src/tools/pipeline.py l0-run` runs steps 1-6 as a
+> single deterministic command (newest TADIR in `raw/tadir/` or `--file`).
+> The step-by-step procedure below remains the reference for diagnostics.
+
 All commands must be run from the repo root with the venv active.
 
 1. **Initialize the schema** (idempotent):

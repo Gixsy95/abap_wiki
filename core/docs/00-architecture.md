@@ -88,9 +88,12 @@ respective agents can load them from the working directory, which must see
 
 Five LLM sub-agents operate in the L1/L2 pipeline. The **canonical** contract
 for each lives in `core/src/agentic/programs/00-<name>.md`; the **invocable**
-copies live in `.claude/agents/<name>.md` and `.agents/agents/<name>.md`,
-generated from the canonical via `core/src/tools/sync_agents.py`. The lint
-verifies that the copies match: drift is impossible.
+copies live in `.claude/agents/<name>.md`, `.agents/agents/<name>.md`, and
+`.github/agents/<name>.agent.md` for GitHub Copilot, generated from the
+canonical via `core/src/tools/sync_agents.py`. The Copilot copy has its
+frontmatter `model:` line stripped, the only hand-editable part left in it;
+the drift check ignores that line. The lint verifies that the copies match:
+drift is impossible.
 
 | Agent | Role | Status |
 |---|---|---|
@@ -101,8 +104,11 @@ verifies that the copies match: drift is impossible.
 | `abap-functional-gate` | L2 fidelity gate | active |
 
 Why canonical + copy: the contract is a versioned "program" stored alongside
-audit logs and runs; the copies in `.claude/agents/` and `.agents/agents/` are
-technical constraints of the agentic runtimes. Never edit the copies by hand.
+audit logs and runs; the copies in `.claude/agents/`, `.agents/agents/` and
+`.github/agents/` are technical constraints of the agentic runtimes. Never
+edit the copies by hand (sole exception: a `model:` line added to a
+`.github/agents/*.agent.md` file, which is the user's per-agent model choice
+and is ignored by the drift check).
 
 ## 5. Documentation levels
 
