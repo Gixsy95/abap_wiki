@@ -404,6 +404,11 @@ Full architecture: `core/docs/00-architecture.md` (also `02-adversarial-gate.md`
 
 - Codex: `AGENTS.md`, `.agents/agents/`, `.agents/skills/`.
 - Claude: `CLAUDE.md`, `.claude/agents/`, `.claude/skills/`, `.claude/commands/`.
+- Copilot (VS Code): `.github/agents/*.agent.md` (custom agents projected from the
+  same canonical contracts; set each agent's `model:` line to the VS Code model of
+  your choice; it is the only hand-editable line, and the drift check ignores it).
+  Copilot agent mode reads the skills from `.agents/skills/` natively and loads
+  `AGENTS.md` via the `chat.useAgentsMdFile` setting.
 
 The canonical contracts live in `core/src/agentic/programs/` and are synchronised with:
 

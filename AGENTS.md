@@ -209,4 +209,4 @@ code/fields/processes; marking a source `unavailable` without evidence; merging
 function module and function group; overwriting "User notes"; creating a page
 that already exists (always global identity in DB); promoting without an ACCEPT gate;
 using `--force` on the gate; hand-editing the views (indexes, export, `slices.yaml`,
-`.claude/agents/`).
+`.claude/agents/`, `.github/agents/` except the `model:` line).
