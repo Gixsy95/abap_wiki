@@ -340,6 +340,16 @@ On Linux/macOS:
 .venv/bin/python core/src/tools/pipeline.py progress
 ```
 
+Or run the whole L0 sequence as a single deterministic command:
+
+```powershell
+.venv\Scripts\python core/src/tools/pipeline.py l0-run
+```
+
+`l0-run` picks the newest TADIR export in `raw/tadir/` (or takes `--file`) and
+stops at the first failing step. No LLM is involved: L0 stays fully
+deterministic end to end.
+
 **4. Run L1 and beyond.** `abap_wiki/` now exists: open it as an Obsidian vault. Drive L1 and
 L2 with the agent skills in `.agents/skills/` and `.claude/skills/` (the autonomous loop
 is documented in `core/docs/07-autonomous-loop.md`), and query with `/query`. The L1/L2
