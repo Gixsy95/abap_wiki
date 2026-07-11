@@ -52,6 +52,7 @@ def _agent_dirs(root: Path) -> tuple[Path, ...]:
 
 
 _MODEL_LINE = re.compile(rb"^model:[^\n]*\n", re.MULTILINE)
+_FRONTMATTER = re.compile(rb"\A---\r?\n(.*?\r?\n)---\r?\n", re.DOTALL)
 
 
 def _copilot_dir(root: Path) -> Path:
@@ -61,8 +62,15 @@ def _copilot_dir(root: Path) -> Path:
 def _strip_model_line(data: bytes) -> bytes:
     """Drops any frontmatter `model:` line: canonical values are runner-specific
     (Claude aliases like `inherit`/`sonnet`); in the Copilot projection the model
-    is the user's choice, set per file and ignored by the drift check."""
-    return _MODEL_LINE.sub(b"", data)
+    is the user's choice, set per file and ignored by the drift check. Only the
+    frontmatter block (between the leading `---` fences) is touched; a body line
+    that happens to start with `model:` is preserved verbatim, and a file without
+    a frontmatter fence is returned unchanged."""
+    m = _FRONTMATTER.match(data)
+    if not m:
+        return data
+    start, end = m.span(1)
+    return data[:start] + _MODEL_LINE.sub(b"", data[start:end]) + data[end:]
 
 
 def _display_path(root: Path, path: Path) -> str:

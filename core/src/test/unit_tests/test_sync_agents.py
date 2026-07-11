@@ -139,6 +139,22 @@ def test_copilot_check_detects_missing_file(repo):
     assert any("abap-deepcheck" in d and "missing" in d and COPILOT_DIR in d for d in drifts)
 
 
+def test_copilot_strip_is_scoped_to_frontmatter(repo):
+    _setup(repo)
+    # frontmatter carries model: sonnet; the body carries a line that merely
+    # LOOKS like a model field (prose/example) and must survive the projection
+    (repo / "core/src/agentic/programs/00-abap-deepcheck.md").write_text(
+        "---\nname: abap-deepcheck\nmodel: sonnet\n---\n# deepcheck\n"
+        "model: example-in-body\nbody\n",
+        encoding="utf-8",
+    )
+    sync_agents.generate(repo)
+    text = (repo / COPILOT_DIR / "abap-deepcheck.agent.md").read_text(encoding="utf-8")
+    assert "model: sonnet" not in text  # frontmatter field stripped
+    assert "model: example-in-body" in text  # body line preserved verbatim
+    assert sync_agents.check(repo) == []
+
+
 # --- CLAUDE.md / AGENTS.md contract parity ----------------------------------
 
 
