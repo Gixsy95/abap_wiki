@@ -349,6 +349,10 @@ Or run the whole L0 sequence as a single deterministic command:
 .venv\Scripts\python core/src/tools/pipeline.py l0-run
 ```
 
+```sh
+.venv/bin/python core/src/tools/pipeline.py l0-run
+```
+
 `l0-run` picks the newest TADIR export in `raw/tadir/` (or takes `--file`) and
 stops at the first failing step. No LLM is involved: L0 stays fully
 deterministic end to end.

@@ -12,6 +12,8 @@ Connections: exercises pipeline (cmd_l0_run, _discover_tadir); uses the
 `repo` fixture from conftest.py.
 """
 
+import types
+
 import db
 import pipeline
 
@@ -60,3 +62,23 @@ def test_l0_run_explicit_file_overrides_discovery(repo, capsys):
     out = capsys.readouterr().out
     assert rc == 0
     assert "OTHER.csv" in out
+
+
+def test_l0_run_stops_at_first_failing_step(repo, capsys, monkeypatch):
+    _write_tadir(repo)
+    calls = []
+
+    real_main = pipeline.main
+
+    def tracking_main(argv=None):
+        calls.append(argv[0])
+        if argv[0] == "resolve-sources":
+            return 3
+        return real_main(argv)
+
+    monkeypatch.setattr(pipeline, "main", tracking_main)
+    rc = pipeline.cmd_l0_run(types.SimpleNamespace(file=None))
+    err = capsys.readouterr().err
+    assert rc == 3
+    assert "resolve-sources" in err
+    assert calls == ["init-db", "import-tadir", "resolve-sources"]

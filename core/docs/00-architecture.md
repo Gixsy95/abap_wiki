@@ -88,9 +88,12 @@ respective agents can load them from the working directory, which must see
 
 Five LLM sub-agents operate in the L1/L2 pipeline. The **canonical** contract
 for each lives in `core/src/agentic/programs/00-<name>.md`; the **invocable**
-copies live in `.claude/agents/<name>.md` and `.agents/agents/<name>.md`,
-generated from the canonical via `core/src/tools/sync_agents.py`. The lint
-verifies that the copies match: drift is impossible.
+copies live in `.claude/agents/<name>.md`, `.agents/agents/<name>.md`, and
+`.github/agents/<name>.agent.md` for GitHub Copilot, generated from the
+canonical via `core/src/tools/sync_agents.py`. The Copilot copy has its
+frontmatter `model:` line stripped, the only hand-editable part left in it;
+the drift check ignores that line. The lint verifies that the copies match:
+drift is impossible.
 
 | Agent | Role | Status |
 |---|---|---|
