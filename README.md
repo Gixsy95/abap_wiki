@@ -135,7 +135,7 @@ depends_on:
 ...
 ```
 
-The page continues for another 100000+ lines: the rest of the dependency list,
+The page continues for another 500+ lines: the rest of the dependency list,
 functional scope, input/output mapping, form analysis, external dependencies,
 performance, error handling, bug candidates, and (this object reached L2) the
 full functional and process analysis, every claim pinned to the exact source
