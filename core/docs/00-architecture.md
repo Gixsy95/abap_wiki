@@ -104,8 +104,11 @@ drift is impossible.
 | `abap-functional-gate` | L2 fidelity gate | active |
 
 Why canonical + copy: the contract is a versioned "program" stored alongside
-audit logs and runs; the copies in `.claude/agents/` and `.agents/agents/` are
-technical constraints of the agentic runtimes. Never edit the copies by hand.
+audit logs and runs; the copies in `.claude/agents/`, `.agents/agents/` and
+`.github/agents/` are technical constraints of the agentic runtimes. Never
+edit the copies by hand (sole exception: a `model:` line added to a
+`.github/agents/*.agent.md` file, which is the user's per-agent model choice
+and is ignored by the drift check).
 
 ## 5. Documentation levels
 
