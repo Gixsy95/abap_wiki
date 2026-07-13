@@ -11,6 +11,8 @@ Connections: exercises core/src/tools/llm_client.py; no fixture dependencies
 beyond tmp_path (block_network guards against accidental real HTTP).
 """
 
+import json
+
 import llm_client  # noqa: E402
 import pytest
 
@@ -241,3 +243,18 @@ def test_complete_empty_completion_raises(tmp_path):
     with pytest.raises(llm_client.LLMError) as exc:
         llm_client.complete(profile, "S", "U", transport=transport, sleeper=lambda s: None)
     assert "empty" in str(exc.value)
+
+
+def test_complete_malformed_200_body_is_retried_and_safe(tmp_path):
+    profile = _author_profile(tmp_path)
+    calls = []
+
+    def transport(url, headers, body, timeout):
+        calls.append(1)
+        raise json.JSONDecodeError("Expecting value", "sk-author-secret-body", 0)
+
+    with pytest.raises(llm_client.LLMError) as exc:
+        llm_client.complete(profile, "S", "U", transport=transport, sleeper=lambda s: None)
+    assert len(calls) == llm_client.MAX_ATTEMPTS
+    assert "JSONDecodeError" in str(exc.value)
+    assert "sk-author-secret-body" not in str(exc.value)

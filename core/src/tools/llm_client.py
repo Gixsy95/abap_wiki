@@ -226,7 +226,16 @@ def complete(
         status: int | None
         try:
             status, payload = transport(url, headers, body, profile.timeout_sec)
-        except (urllib.error.URLError, OSError, TimeoutError) as exc:
+        # JSONDecodeError/UnicodeDecodeError: a 200 with a non-JSON or garbled body
+        # (e.g. a proxy error page) must stay inside the bounded-retry, secret-safe
+        # boundary.
+        except (
+            urllib.error.URLError,
+            OSError,
+            TimeoutError,
+            json.JSONDecodeError,
+            UnicodeDecodeError,
+        ) as exc:
             status, payload = None, {}
             last = f"network error: {exc.__class__.__name__}"
         if status == 200:
