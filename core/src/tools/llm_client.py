@@ -18,6 +18,10 @@ in llm-profiles.yaml.example. Doc: core/docs/15-headless-l1-runner.md.
 
 from __future__ import annotations
 
+import json
+import time
+import urllib.error
+import urllib.request
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -187,3 +191,58 @@ def strip_frontmatter(text: str) -> str:
         if lines[i].strip() == "---":
             return "\n".join(lines[i + 1 :]).lstrip("\n")
     return text
+
+
+def _urllib_transport(url: str, headers: dict, body: dict, timeout: int) -> tuple[int, dict]:
+    """Default transport: one POST, JSON in/out. HTTP error bodies are drained
+    but never surfaced (they may echo the prompt, i.e. customer code)."""
+    req = urllib.request.Request(
+        url, data=json.dumps(body).encode("utf-8"), headers=headers, method="POST"
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:  # noqa: S310
+            return resp.status, json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        exc.read()
+        return exc.code, {}
+
+
+def complete(
+    profile: LLMProfile,
+    system: str,
+    user: str,
+    *,
+    transport=None,
+    sleeper=time.sleep,
+) -> str:
+    """Single-shot completion with bounded retry (429/5xx/network, exponential
+    backoff 1s/2s). Raises LLMError on exhaustion, non-retryable HTTP status,
+    truncated or empty output. Error messages carry only profile name, HTTP
+    status or exception class name: never the api key, prompt or response."""
+    transport = transport or _urllib_transport
+    url, headers, body = build_request(profile, system, user)
+    last = "no attempt made"
+    for attempt in range(1, MAX_ATTEMPTS + 1):
+        status: int | None
+        try:
+            status, payload = transport(url, headers, body, profile.timeout_sec)
+        except (urllib.error.URLError, OSError, TimeoutError) as exc:
+            status, payload = None, {}
+            last = f"network error: {exc.__class__.__name__}"
+        if status == 200:
+            result = parse_response(profile, payload)
+            if result.truncated:
+                raise LLMError(
+                    f"{profile.name}: completion truncated "
+                    f"(stop_reason={result.stop_reason}); raise max_tokens"
+                )
+            if not result.text.strip():
+                raise LLMError(f"{profile.name}: empty completion from the endpoint")
+            return result.text
+        if status is not None:
+            last = f"HTTP {status}"
+            if status not in RETRY_STATUS:
+                break
+        if attempt < MAX_ATTEMPTS:
+            sleeper(2 ** (attempt - 1))
+    raise LLMError(f"{profile.name}: LLM call failed after {MAX_ATTEMPTS} attempt(s): {last}")

@@ -160,3 +160,84 @@ def test_strip_frontmatter():
     text = "---\nname: x\nmodel: y\n---\n\n# Body\nrest"
     assert llm_client.strip_frontmatter(text) == "# Body\nrest"
     assert llm_client.strip_frontmatter("# No fm\nbody") == "# No fm\nbody"
+
+
+def test_complete_retries_on_429_with_backoff(tmp_path):
+    profile = _author_profile(tmp_path)
+    calls, sleeps = [], []
+    responses = [
+        (429, {}),
+        (503, {}),
+        (200, {"content": [{"type": "text", "text": "done"}], "stop_reason": "end_turn"}),
+    ]
+
+    def transport(url, headers, body, timeout):
+        calls.append(url)
+        return responses[len(calls) - 1]
+
+    out = llm_client.complete(profile, "S", "U", transport=transport, sleeper=sleeps.append)
+    assert out == "done"
+    assert len(calls) == 3 and sleeps == [1, 2]
+
+
+def test_complete_gives_up_after_max_attempts(tmp_path):
+    profile = _author_profile(tmp_path)
+
+    def transport(url, headers, body, timeout):
+        return 503, {}
+
+    with pytest.raises(llm_client.LLMError) as exc:
+        llm_client.complete(profile, "S", "U", transport=transport, sleeper=lambda s: None)
+    assert "HTTP 503" in str(exc.value)
+    assert "sk-author-secret" not in str(exc.value)
+
+
+def test_complete_does_not_retry_client_errors(tmp_path):
+    profile = _author_profile(tmp_path)
+    calls = []
+
+    def transport(url, headers, body, timeout):
+        calls.append(1)
+        return 401, {}
+
+    with pytest.raises(llm_client.LLMError):
+        llm_client.complete(profile, "S", "U", transport=transport, sleeper=lambda s: None)
+    assert len(calls) == 1
+
+
+def test_complete_truncated_output_raises(tmp_path):
+    profile = _author_profile(tmp_path)
+
+    def transport(url, headers, body, timeout):
+        return 200, {"content": [{"type": "text", "text": "cut"}], "stop_reason": "max_tokens"}
+
+    with pytest.raises(llm_client.LLMError) as exc:
+        llm_client.complete(profile, "S", "U", transport=transport, sleeper=lambda s: None)
+    assert "truncated" in str(exc.value)
+
+
+def test_complete_network_error_is_retried_and_safe(tmp_path):
+    import urllib.error
+
+    profile = _author_profile(tmp_path)
+    calls = []
+
+    def transport(url, headers, body, timeout):
+        calls.append(1)
+        raise urllib.error.URLError("boom sk-author-secret")
+
+    with pytest.raises(llm_client.LLMError) as exc:
+        llm_client.complete(profile, "S", "U", transport=transport, sleeper=lambda s: None)
+    assert len(calls) == llm_client.MAX_ATTEMPTS
+    assert "sk-author-secret" not in str(exc.value)  # only the exception CLASS is reported
+
+
+def test_complete_empty_completion_raises(tmp_path):
+    profile = _author_profile(tmp_path)
+
+    def transport(url, headers, body, timeout):
+        return 200, {"content": [], "stop_reason": "end_turn"}
+
+    with pytest.raises(llm_client.LLMError) as exc:
+        llm_client.complete(profile, "S", "U", transport=transport, sleeper=lambda s: None)
+    assert "empty" in str(exc.value)
