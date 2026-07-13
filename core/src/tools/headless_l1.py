@@ -24,8 +24,15 @@ Doc: core/docs/15-headless-l1-runner.md.
 
 from __future__ import annotations
 
+import json
+import os
+import sys
+from datetime import UTC, datetime
 from pathlib import Path
 
+import claims_queue
+import cli_loop
+import db
 import llm_client
 import sources
 
@@ -204,3 +211,190 @@ def _build_judge_user(con, root: Path, task: dict, run_id: str) -> str:
     if not prompt_path.exists():
         raise TaskPromptError(f"deepcheck prompt not found: {prompt_path.name}")
     return f"object_slug: {task['slug']}\n\n" + prompt_path.read_text(encoding="utf-8")
+
+
+def _fail_author(con, task: dict, message: str) -> None:
+    """Consumes an attempt and resets the object (mirrors the --fail branch of
+    the submit-author CLI handler)."""
+    with db.transaction(con):
+        claims_queue.fail(con, task["task_id"], message[:300])
+        db.set_state(con, task["object_id"], "l1_ready")
+
+
+def _process_author(con, root: Path, profile, task: dict, run_id: str, batch_id: str) -> bool:
+    try:
+        user = _build_author_user(con, root, task)
+        text = llm_client.complete(profile, _author_system(root), user)
+    except (TaskPromptError, llm_client.LLMError) as exc:
+        print(f"  author {task['sap_name']}: FAILED ({exc})")
+        _fail_author(con, task, str(exc))
+        return False
+    art_dir = root / "output" / "runs" / run_id / str(task["task_id"])
+    art_dir.mkdir(parents=True, exist_ok=True)
+    (art_dir / "author.yaml").write_text(
+        llm_client.strip_code_fences(text) + "\n", encoding="utf-8"
+    )
+    out = cli_loop.submit_author(con, task["task_id"], run_id=run_id, batch_id=batch_id)
+    if out.get("ok"):
+        print(f"  author {task['sap_name']}: ok")
+        return True
+    print(f"  author {task['sap_name']}: rejected ({'; '.join(out.get('errors') or [])[:160]})")
+    return False
+
+
+def _process_judge(con, root: Path, profile, task: dict, run_id: str, batch_id: str) -> str:
+    try:
+        user = _build_judge_user(con, root, task, run_id)
+        text = llm_client.complete(profile, _judge_system(root), user)
+        verdict_dir = root / "output" / "runs" / run_id / str(task["task_id"])
+        verdict_dir.mkdir(parents=True, exist_ok=True)
+        (verdict_dir / "deepcheck.json").write_text(
+            llm_client.strip_code_fences(text) + "\n", encoding="utf-8"
+        )
+    except (TaskPromptError, llm_client.LLMError) as exc:
+        # no verdict file written: submit_verdict evaluates fail-closed (BLOCKED)
+        print(f"  judge {task['sap_name']}: LLM failed ({exc}); fail-closed verdict")
+    out = cli_loop.submit_verdict(con, task["task_id"], run_id=run_id, batch_id=batch_id)
+    outcome = out.get("outcome", "blocked")
+    print(f"  judge {task['sap_name']}: {outcome}")
+    return outcome
+
+
+def _commit_batch(con, root: Path, batch_id: str) -> bool:
+    """Per-batch commit (rule 11), mirroring the git-commit CLI handler:
+    log.md rebuilt and state dump exported BEFORE staging."""
+    import gitops
+    import oplog
+
+    oplog.rebuild(con)
+    gitops.export_state_dump(root)
+    res = gitops.commit_batch(root, f"ingest L1 headless batch {batch_id}")
+    if res.get("blocked") == "secrets":
+        print("git-commit: BLOCKED - plaintext secrets in the staged content", file=sys.stderr)
+        for off in res.get("offenders", []):
+            print(f"  {off}", file=sys.stderr)
+        return False
+    sha = res.get("sha") or ""
+    if sha and batch_id:
+        with db.transaction(con):
+            con.execute("UPDATE batches SET git_commit_sha=? WHERE batch_id=?", (sha, batch_id))
+    print(f"  git-commit: committed={res.get('committed')} sha={sha[:8] if sha else '(none)'}")
+    return True
+
+
+def _open_l1_tasks(con, package: str) -> int:
+    q = (
+        "SELECT COUNT(*) FROM tasks t JOIN objects o ON o.id=t.object_id "
+        "WHERE t.kind IN ('l1_author','l1_deepcheck','l1_apply') "
+        "AND t.status IN ('queued','claimed')"
+    )
+    params: list = []
+    if package:
+        q += " AND o.devclass=?"
+        params.append(package)
+    return con.execute(q, params).fetchone()[0]
+
+
+def run_l1(
+    *, package: str = "", limit: int = 10, max_batches: int = 20, profiles_path: str = ""
+) -> int:
+    """Headless L1 loop: batches until the queue drains or max_batches.
+    Exit codes: 0 = drained with no hard failures; 1 = open work or failures
+    remain (cron/CI-friendly); 2 = preflight/config error (nothing touched)."""
+    root = db.repo_root()
+    prof_path = Path(profiles_path) if profiles_path else root / "llm-profiles.yaml"
+    try:
+        author_p, judge_p, warnings = llm_client.load_profiles(prof_path, os.environ)
+    except llm_client.ProfileError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
+    for w in warnings:
+        print(f"WARNING: {w}")
+    if not (root / ".git").exists():
+        print(
+            "ERROR: not a git repository: the per-batch commit (rule 11) needs git.",
+            file=sys.stderr,
+        )
+        return 2
+    for rel in (ANALYZER_CONTRACT, DEEPCHECK_CONTRACT):
+        if not (root / rel).exists():
+            print(f"ERROR: canonical contract missing: {rel}", file=sys.stderr)
+            return 2
+    print(
+        f"l1-run: author={author_p.model} ({author_p.api_shape}), "
+        f"judge={judge_p.model} ({judge_p.api_shape})"
+    )
+    ts = datetime.now(UTC).strftime("%Y%m%d%H%M%S")
+    run_id = f"run-headless-{ts}"
+    con = db.connect()
+    failures = 0
+    try:
+        for n in range(1, max_batches + 1):
+            batch_id = f"b-{ts}-{n:03d}"
+            print(f"== l1-run batch {n}/{max_batches} ({run_id} / {batch_id})")
+            cli_loop.recover(con)  # spec 4: always, at the start of every batch
+            authors = claims_queue.claim(
+                con,
+                "l1_author",
+                limit,
+                run_id,
+                run_id=run_id,
+                batch_id=batch_id,
+                package=package or None,
+            )
+            for t in authors:
+                if not _process_author(con, root, author_p, t, run_id, batch_id):
+                    failures += 1
+            judges = claims_queue.claim(
+                con,
+                "l1_deepcheck",
+                limit,
+                run_id,
+                run_id=run_id,
+                batch_id=batch_id,
+                package=package or None,
+            )
+            for t in judges:
+                _process_judge(con, root, judge_p, t, run_id, batch_id)
+            if not authors and not judges:
+                print("l1-run: queue drained, nothing left to do")
+                break
+            applied = cli_loop.apply_batch(
+                con, run_id=run_id, batch_id=batch_id, limit=max(limit * 2, 50)
+            )
+            print(f"  apply: {json.dumps(applied)}")
+            cli_loop.project(con)
+            import export_excel
+
+            export_excel.export()
+            if not _commit_batch(con, root, batch_id):
+                failures += 1
+                break
+        remaining = _open_l1_tasks(con, package)
+        print(f"l1-run: done (open L1 tasks: {remaining}, hard failures this run: {failures})")
+        return 0 if remaining == 0 and failures == 0 else 1
+    finally:
+        con.close()
+
+
+def register(sub) -> None:
+    sp = sub.add_parser(
+        "l1-run",
+        help="Headless L1 loop: author+judge via direct LLM API calls "
+        "(no chat runner). Config: llm-profiles.yaml",
+    )
+    sp.add_argument("--package", default="", help="Limit to a single devclass")
+    sp.add_argument("--limit", type=int, default=10, help="Tasks claimed per batch")
+    sp.add_argument("--max-batches", type=int, default=20, dest="max_batches")
+    sp.add_argument(
+        "--profiles", default="", help="Profiles file (default: <repo>/llm-profiles.yaml)"
+    )
+
+
+def dispatch(args) -> int:
+    return run_l1(
+        package=args.package,
+        limit=args.limit,
+        max_batches=args.max_batches,
+        profiles_path=args.profiles,
+    )

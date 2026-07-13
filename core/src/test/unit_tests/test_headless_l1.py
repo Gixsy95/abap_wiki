@@ -198,3 +198,136 @@ def test_collect_source_files_pulls_declared_includes(repo):
     files = headless_l1._collect_source_files(con, repo, task)
     assert any("ZTEST_INC" in rel for rel, _ in files)
     con.close()
+
+
+def test_l1_run_registered_in_pipeline_parser():
+    import pipeline
+
+    args = pipeline.build_parser().parse_args(
+        ["l1-run", "--package", "ZTEST", "--limit", "3", "--max-batches", "2"]
+    )
+    assert args.cmd == "l1-run" and args.package == "ZTEST"
+    assert args.limit == 3 and args.max_batches == 2
+    assert "l1-run" in headless_l1.COMMANDS
+
+
+def _write_profiles_file(repo):
+    (repo / "llm-profiles.yaml").write_text(
+        "author:\n  api_shape: anthropic\n  base_url: http://127.0.0.1:9\n"
+        "  model: model-a\n  api_key_env: TEST_AUTHOR_KEY\n"
+        "judge:\n  api_shape: openai\n  base_url: http://127.0.0.1:9/v1\n"
+        "  model: model-b\n  api_key_env: TEST_JUDGE_KEY\n",
+        encoding="utf-8",
+    )
+
+
+def _canned_author_yaml_text():
+    # same canned artifact the real pipeline accepts in test_l1_cycle.py
+    import yaml as yamllib
+    from test_l1_cycle import _author_yaml
+
+    return yamllib.safe_dump(_author_yaml(), allow_unicode=True, sort_keys=False)
+
+
+def _canned_verdict_text(root, run_id, object_id, con):
+    author_task = con.execute(
+        "SELECT id FROM tasks WHERE object_id=? AND kind='l1_author' ORDER BY id DESC LIMIT 1",
+        (object_id,),
+    ).fetchone()
+    meta = json.loads(
+        (root / "output/runs" / run_id / str(author_task["id"]) / "deepcheck.meta.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    verd = [
+        {
+            "claim_id": c,
+            "class": "behavior",
+            "verdict": "supported",
+            "confidence": "high",
+            "rationale": "ok",
+        }
+        for c in meta["claim_ids"]
+    ]
+    deps = [
+        {"dep_id": c, "name": "MSEG", "verdict": "confirmed", "confidence": "high"}
+        for c in meta["dep_ids"]
+    ]
+    return json.dumps(
+        {"object_slug": meta["object_slug"], "verdicts": verd, "dependency_verdicts": deps}
+    )
+
+
+def test_run_l1_happy_path_with_mocked_llm(repo, monkeypatch):
+    _write_template(repo)
+    _write_contracts(repo)
+    _write_profiles_file(repo)
+    (repo / ".git").mkdir()  # run_l1's preflight only checks presence; _commit_batch is mocked
+    monkeypatch.setenv("TEST_AUTHOR_KEY", "k1")
+    monkeypatch.setenv("TEST_JUDGE_KEY", "k2")
+    monkeypatch.setattr(headless_l1, "_commit_batch", lambda con, root, batch_id: True)
+    con_seed = db.connect(repo)
+    oid, _task = _seed_claimed_author(con_seed)  # claimed once; recover will release it
+    # un-claim: reset to queued so run_l1's own claim takes it (fresh-queue scenario)
+    with db.transaction(con_seed):
+        con_seed.execute("UPDATE tasks SET status='queued', worker_id=NULL")
+        con_seed.execute("UPDATE objects SET state='l1_ready' WHERE id=?", (oid,))
+    con_seed.close()
+
+    state = {"judge_calls": 0}
+
+    def fake_complete(profile, system, user, **kwargs):
+        if profile.name == "author":
+            return "```yaml\n" + _canned_author_yaml_text() + "```"
+        state["judge_calls"] += 1
+        # the current run_id is not passed to complete(): recover it from the
+        # only physical run dir (artifacts are written under run-headless-<ts>)
+        runs = sorted((repo / "output" / "runs").iterdir())
+        con = db.connect(repo)
+        try:
+            return _canned_verdict_text(repo, runs[-1].name, oid, con)
+        finally:
+            con.close()
+
+    monkeypatch.setattr(headless_l1.llm_client, "complete", fake_complete)
+    rc = headless_l1.run_l1(limit=5, max_batches=3)
+    assert rc == 0
+    con = db.connect(repo)
+    row = con.execute("SELECT state, doc_level FROM objects WHERE id=?", (oid,)).fetchone()
+    assert row["state"] == "applied" and row["doc_level"] == "L1"
+    con.close()
+    assert (repo / "abap_wiki" / "ZTEST" / "program-ZTEST_PROG.md").exists()
+    assert state["judge_calls"] == 1
+
+
+def test_run_l1_llm_failure_consumes_attempt_and_returns_1(repo, monkeypatch):
+    _write_template(repo)
+    _write_contracts(repo)
+    _write_profiles_file(repo)
+    (repo / ".git").mkdir()  # run_l1's preflight only checks presence; _commit_batch is mocked
+    monkeypatch.setenv("TEST_AUTHOR_KEY", "k1")
+    monkeypatch.setenv("TEST_JUDGE_KEY", "k2")
+    monkeypatch.setattr(headless_l1, "_commit_batch", lambda con, root, batch_id: True)
+    con_seed = db.connect(repo)
+    oid, _ = _seed_claimed_author(con_seed)
+    with db.transaction(con_seed):
+        con_seed.execute("UPDATE tasks SET status='queued', worker_id=NULL")
+        con_seed.execute("UPDATE objects SET state='l1_ready' WHERE id=?", (oid,))
+    con_seed.close()
+
+    def fake_complete(profile, system, user, **kwargs):
+        raise headless_l1.llm_client.LLMError("author: LLM call failed after 3 attempt(s)")
+
+    monkeypatch.setattr(headless_l1.llm_client, "complete", fake_complete)
+    rc = headless_l1.run_l1(limit=5, max_batches=5)
+    assert rc == 1  # attempts exhausted -> failures surfaced in the exit code
+    con = db.connect(repo)
+    row = con.execute("SELECT doc_level FROM objects WHERE id=?", (oid,)).fetchone()
+    assert row["doc_level"] == "L0"  # never promoted
+    con.close()
+
+
+def test_run_l1_missing_profiles_is_preflight_error(repo, capsys):
+    rc = headless_l1.run_l1()
+    assert rc == 2
+    assert "llm-profiles" in capsys.readouterr().err
