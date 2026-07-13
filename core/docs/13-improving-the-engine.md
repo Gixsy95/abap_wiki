@@ -47,6 +47,9 @@ in section 4.
 
 ## 3. Step 1: run on a real case, end to end
 
+- Contributing to the public repo from your own company's system? Set up the isolated,
+  private workspace in section 8 first, then run everything below inside it, so nothing
+  real can reach git.
 - Pick a real, self-contained case: a package, a program with its includes, a slice.
   Small enough to finish, real enough to be messy. A four-object program (a main plus
   three sibling includes) is a good size.
@@ -161,7 +164,87 @@ The finding became [04-lessons-learned](04-lessons-learned.md) material and a pe
 test. That is the point of the loop: a problem seen once on real code becomes a
 guardrail that holds forever.
 
-## 8. What not to do
+## 8. Running on your own real data, safely and in isolation
+
+The loop above needs real SAP code, and your real SAP code is private company data. The
+engine is built so you can run the whole loop on it locally with no path by which that
+data, or the pages generated from it, can reach the public repository. This is how anyone
+can harden the shared engine on their own system and contribute the fix, never the data.
+
+**The isolation guarantee.** `demo.build_workspace(workspace, dataset)` copies only the
+engine (`core/`, `templates/`) and your dataset into a fresh directory, mapping each
+top-level dataset folder to `raw/<name>` there. `db.repo_root()` anchors to the copied
+engine, so every write the engine makes (the state DB in `state/`, the generated vault
+pages in `abap_wiki/`, the run artefacts in `output/`) lands inside that workspace and
+nowhere else. Put the workspace outside your clone and the repository cannot see your
+data by construction, not by remembering to avoid it.
+
+**Defence in depth inside the clone.** `.gitignore` already excludes the real inputs
+(`raw/system-library/*`, `raw/tadir/*`, every `*.xlsx` and `*.xls`), the runtime DB
+(`state/abap_wiki.db`), the run artefacts (`output/`), and the runner config
+(`llm-profiles.yaml`); the pre-commit hook runs a fail-closed secret scan on staged
+files. These are backstops. The rule that makes a leak structurally impossible is the one
+above: run in a workspace outside the clone.
+
+**Set up the workspace** (paths are examples; keep them outside your clone):
+
+```
+# from your clone root
+python -c "import sys; sys.path.insert(0, 'core/src/tools'); import demo; from pathlib import Path; demo.build_workspace(Path('../abapwiki-real/ws'), Path('../abapwiki-real/dataset'))"
+```
+
+Your `dataset/` holds `tadir/` (the TADIR export, `.xlsx` or `.csv`) and `system-library/`
+(sources in the abapGit object-as-file layout that `abap_download` produces); see
+[09-first-clone-and-sap-input-guide](09-first-clone-and-sap-input-guide.md). A very large
+TADIR is worth filtering to the one package you are testing first, so runs stay fast.
+
+**Run the engine from inside the workspace**, so `repo_root()` resolves there:
+
+```
+cd ../abapwiki-real/ws
+python core/src/tools/pipeline.py l0-run
+python core/src/tools/pipeline.py l1-run --package ZYOURPKG   # or open a chat runner here
+```
+
+Invoke the workspace's own copy of `pipeline.py` (the one you just changed into), not your
+clone's, so `db.repo_root()` resolves to the workspace and every write stays there. Any
+interpreter with the engine's dependencies works, so you can reuse your clone's
+virtualenv. For headless L1, put an `llm-profiles.yaml` in the workspace and export the
+key it names (the file stores env-var names, never the key); see
+[15-headless-l1-runner](15-headless-l1-runner.md). Then follow the loop in sections 2
+through 7: the findings log stays in the workspace, the fixes and their regression tests
+go in your clone.
+
+**Prove nothing real leaked before you commit.** From your clone root, with the workspace
+DB as the name source:
+
+```
+python scripts/scan_real_names.py --db ../abapwiki-real/ws/state/abap_wiki.db --extra YourCompanyName
+python core/src/tools/doctor.py --secret-scan --staged
+```
+
+`scan_real_names.py` loads every custom object and package name from that database and
+fails (exit 1) if any of them, or any extra term you pass such as a company name or
+system id, appears in a tracked file that would ship. A green scan is your evidence that
+the change carries the shape, not the data.
+
+**What you contribute, and what stays local.** You contribute the engine fix and a
+regression test built from synthetic fixtures (`ZTEST_*`, `ZDEMO_*`) that reproduce the
+shape you found; the existing suite shows how a shape is encoded without real content
+([06-testing-and-quality](06-testing-and-quality.md)). What never leaves your machine: the
+dataset, the workspace (state DB, generated vault, run artefacts), the findings log, and
+`llm-profiles.yaml`. To turn a real object into a test, keep its structural shape (a main
+program that is only includes; a namespaced type reached through a structure selector; an
+off-by-one count in a long include) and rebuild it with invented names and the least code
+that still triggers the mechanism. The test must fail before the fix and pass after, on
+the shape alone.
+
+This is what lets the public engine be hardened by many systems at once: each contributor
+drives it on private code, keeps that code local by construction, and upstreams only the
+guardrail. Everyone who pulls the repo inherits an engine fixed by runs they never had to
+see.
+
+## 9. What not to do
 
 - **Do not fix during the run.** You lose the clean pass and the backlog.
 - **Do not stop at "the fix works".** A fix that is not regression-checked is a future
