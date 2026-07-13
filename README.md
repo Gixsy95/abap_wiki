@@ -409,6 +409,8 @@ Full architecture: `core/docs/00-architecture.md` (also `02-adversarial-gate.md`
 - `14-abap-fs-integration.md`: provisioning and feeding an instance from ABAP FS
   (release-zip wizard, TADIR/source download via ABAP FS tools, `l0-run`, runner
   setup including Copilot), per issue #473.
+- `15-headless-l1-runner.md`: the `l1-run` headless L1 loop (direct LLM API
+  calls, no chat runner, cron/CI-friendly), configuration and exit codes.
 
 ## Agents
 
@@ -419,6 +421,8 @@ Full architecture: `core/docs/00-architecture.md` (also `02-adversarial-gate.md`
   your choice; it is the only hand-editable line, and the drift check ignores it).
   Copilot agent mode reads the skills from `.agents/skills/` natively and loads
   `AGENTS.md` via the `chat.useAgentsMdFile` setting.
+- Headless (`l1-run`): no agentic runner required, direct LLM API calls
+  instead - schedulable from cron/CI. See `core/docs/15-headless-l1-runner.md`.
 
 The canonical contracts live in `core/src/agentic/programs/` and are synchronised with:
 

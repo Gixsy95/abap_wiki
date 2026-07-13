@@ -240,6 +240,7 @@ All commands run as `pipeline.py <subcommand>` from the repo root with the venv 
 | `enqueue-l1` | Enqueue the `l1_author` tasks for `l1_ready` objects |
 | `progress` | Progress statistics |
 | `l0-run` | one-shot wrapper that runs the whole L0 bootstrap sequence (init-db -> import-tadir -> resolve-sources -> ingest-l0 -> enqueue-l1 -> progress) and stops at the first failure. Same guarantees as the single steps: deterministic, idempotent, no LLM. |
+| `l1-run` | headless L1 loop via direct LLM API calls (config: `llm-profiles.yaml`, see [core/docs/15-headless-l1-runner.md](15-headless-l1-runner.md)) |
 | `slices-registry` | Regenerate `slices.yaml` from the slice manifests |
 | `check-headers` | Verify context headers on engine code files (`--fix` to create missing) |
 | `ingest-metadata` | Deterministic DDIC metadata pages for data-element/message-class (no LLM, L0) |

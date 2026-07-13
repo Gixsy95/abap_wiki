@@ -4,6 +4,19 @@ All notable changes to `abap_wiki` are documented in this file. The format is
 inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions
 follow [SemVer](https://semver.org/lang/en/).
 
+## [1.2.0]
+
+### Added
+
+- **Headless L1 runner**: `l1-run`, a fourth door into the L1 loop via direct
+  LLM API calls (no chat runner, no VS Code, schedulable from cron/CI) - a
+  two-profile `llm-profiles.yaml` config (author/judge, `anthropic`/`openai`
+  wire shapes, keys from environment only), the same fail-closed adversarial
+  gate and canonical contracts as the chat runners, and end-to-end tests
+  against a local HTTP stub impersonating both wire shapes.
+- `llm-profiles.yaml.example`: tracked, credential-free template for the
+  headless runner config.
+
 ## [1.0.0] - 2026-07-08
 
 First public release.

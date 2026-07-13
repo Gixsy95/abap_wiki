@@ -185,8 +185,9 @@ emitting the event AND rendering it in `oplog.build_entries` (never one without 
 
 Single entry point: `core/src/tools/pipeline.py`. Bootstrap/utility sub-commands:
 `init-db`, `migrate`, `import-tadir`, `resolve-sources`, `ingest-l0`, `enqueue-l1`,
-`progress`, `l0-run` (one-shot deterministic L0 sequence, no LLM), `slices-registry`,
-`check-headers`, `ingest-metadata` (deterministic DDIC
+`progress`, `l0-run` (one-shot deterministic L0 sequence, no LLM),
+`l1-run` (headless L1 loop via direct LLM calls, config llm-profiles.yaml),
+`slices-registry`, `check-headers`, `ingest-metadata` (deterministic DDIC
 metadata pages for data-element/message-class, stays L0). L1 loop sub-commands: `claim`,
 `submit-author`, `submit-verdict` (with the `--override-threshold/--operator/--reason` valve),
 `apply`, `recover`, `project`, `git-commit`, `log`, `log-op`, `export-excel`,

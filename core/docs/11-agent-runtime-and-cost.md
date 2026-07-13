@@ -96,3 +96,12 @@ only thing agents write, promotion is fail-closed behind the gate, and
 `pipeline.py recover` + `submit-author --fail` resume exactly where the batch
 stopped - observed live, twice, during the batch measured above. Details:
 [12-faq-and-troubleshooting](12-faq-and-troubleshooting.md).
+
+## 6. Headless runner
+
+`pipeline.py l1-run` (direct LLM API calls, no chat runner) removes the
+orchestration overhead above: chat runners pass every claim/submit/apply
+through agent turns, but here the model is called exactly twice per object
+(one author completion, one judge completion). Cost becomes those two
+completions only - no extra turns to plan, call tools, or narrate the
+loop. Config and usage: [15-headless-l1-runner](15-headless-l1-runner.md).
