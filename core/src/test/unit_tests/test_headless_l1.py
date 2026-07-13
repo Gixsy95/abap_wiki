@@ -44,7 +44,23 @@ def _write_template(repo):
     )
 
 
+def _write_contracts(repo):
+    """Local contract fixtures (same pattern as test_sync_agents._setup): fake
+    analyzer/deepcheck contracts with a frontmatter block to strip."""
+    programs = repo / "core" / "src" / "agentic" / "programs"
+    programs.mkdir(parents=True, exist_ok=True)
+    (programs / "00-abap-analyzer.md").write_text(
+        "---\nmodel: inherit\n---\n\n# ABAP Analyzer\n\nThis is the analyzer contract.\n",
+        encoding="utf-8",
+    )
+    (programs / "00-abap-deepcheck.md").write_text(
+        "---\nmodel: inherit\n---\n\n# ABAP Deepcheck\n\nThis is the deepcheck contract.\n",
+        encoding="utf-8",
+    )
+
+
 def test_author_system_prompt_contract_plus_addendum(repo):
+    _write_contracts(repo)
     text = headless_l1._author_system(repo)
     assert "ABAP Analyzer" in text  # contract body present
     assert "model: inherit" not in text  # frontmatter stripped
@@ -131,4 +147,54 @@ def test_judge_user_prompt_missing_prepared_prompt_fails(repo):
     dc_task = claims_queue.claim(con, "l1_deepcheck", 1, "run-h", run_id="run-h", batch_id="b-h")[0]
     with pytest.raises(headless_l1.TaskPromptError):
         headless_l1._build_judge_user(con, repo, dc_task, "run-h")
+    con.close()
+
+
+def test_collect_source_files_seeds_include_bfs_from_main_not_folder_order(repo):
+    """A per-object folder can hold more than one file; alphabetical order must
+    not decide which text seeds the include BFS (regression: out[0] seeding)."""
+    con = db.connect(repo)
+    prog_dir = repo / "raw/system-library/ZTEST/Source Code Library/Programmi/ZTEST_PROG"
+    # sorts BEFORE ZTEST_PROG.prog.abap and declares an include the main does NOT have
+    (prog_dir / "AAA_NOTES.txt").write_text("INCLUDE ztest_stray.\n", encoding="utf-8")
+    stray_dir = repo / "raw/system-library/ZTEST/Source Code Library/Programmi/ZTEST_STRAY"
+    stray_dir.mkdir(parents=True)
+    (stray_dir / "ZTEST_STRAY.prog.abap").write_text("WRITE 'stray'.\n", encoding="utf-8")
+    with db.transaction(con):
+        con.execute(
+            "INSERT INTO objects (sap_name, sap_type, tadir_object, devclass, is_custom, "
+            "namespace, origin, state, doc_level, slug, raw_source_path, raw_source_status, "
+            "source_hash) VALUES ('ZTEST_STRAY', 'include', 'PROG', 'ZTEST', 1, 'Z', 'tadir', "
+            "'l1_ready', 'L0', ?, 'raw/system-library/ZTEST/Source Code Library/Programmi/"
+            "ZTEST_STRAY/ZTEST_STRAY.prog.abap', 'available', '')",
+            (slugs.make_slug("include", "ZTEST_STRAY"),),
+        )
+    _, task = _seed_claimed_author(con)
+    rels = [rel for rel, _ in headless_l1._collect_source_files(con, repo, task)]
+    assert not any("ZTEST_STRAY" in r for r in rels)
+    con.close()
+
+
+def test_collect_source_files_pulls_declared_includes(repo):
+    con = db.connect(repo)
+    prog_dir = repo / "raw/system-library/ZTEST/Source Code Library/Programmi/ZTEST_PROG"
+    main_path = prog_dir / "ZTEST_PROG.prog.abap"
+    main_path.write_text(
+        main_path.read_text(encoding="utf-8") + "INCLUDE ztest_inc.\n", encoding="utf-8"
+    )
+    inc_dir = repo / "raw/system-library/ZTEST/Source Code Library/Programmi/ZTEST_INC"
+    inc_dir.mkdir(parents=True)
+    (inc_dir / "ZTEST_INC.prog.abap").write_text("WRITE 'inc'.\n", encoding="utf-8")
+    with db.transaction(con):
+        con.execute(
+            "INSERT INTO objects (sap_name, sap_type, tadir_object, devclass, is_custom, "
+            "namespace, origin, state, doc_level, slug, raw_source_path, raw_source_status, "
+            "source_hash) VALUES ('ZTEST_INC', 'include', 'PROG', 'ZTEST', 1, 'Z', 'tadir', "
+            "'l1_ready', 'L0', ?, 'raw/system-library/ZTEST/Source Code Library/Programmi/"
+            "ZTEST_INC/ZTEST_INC.prog.abap', 'available', '')",
+            (slugs.make_slug("include", "ZTEST_INC"),),
+        )
+    _, task = _seed_claimed_author(con)
+    files = headless_l1._collect_source_files(con, repo, task)
+    assert any("ZTEST_INC" in rel for rel, _ in files)
     con.close()

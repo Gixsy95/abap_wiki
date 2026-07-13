@@ -110,9 +110,10 @@ def _collect_source_files(con, root: Path, task: dict) -> list[tuple[str, str]]:
             continue
         seen_paths.add(entry["path"])
         out.append((entry["path"], p.read_text(encoding="utf-8", errors="replace")))
-    if (task["sap_type"] or "") == "program" and out:
+    if (task["sap_type"] or "") == "program":
+        main_text = main.read_text(encoding="utf-8", errors="replace")
         seen_objs = {(task["sap_name"] or "").upper()}
-        queue = list(sources.extract_includes(out[0][1]))
+        queue = list(sources.extract_includes(main_text))
         while queue:
             up = queue.pop(0).upper()
             if up in seen_objs:
