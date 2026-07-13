@@ -53,6 +53,7 @@ def repo(tmp_path, monkeypatch):
         "raw/system-library/ZTEST/Source Code Library/Programmi/ZTEST_PROG",
         "raw/system-library/ZTEST/Dictionary",
         "core/src/agentic/audit",
+        "core/src/agentic/programs",
         "templates",
     ):
         (root / d).mkdir(parents=True, exist_ok=True)
@@ -71,6 +72,16 @@ def repo(tmp_path, monkeypatch):
     )
     (root / "raw/system-library/ZTEST/Dictionary" / "ECRS_DIREC.dtel.xml").write_bytes(
         b'<?xml version="1.0"?><DTEL><NAME>/ECRS/DIREC</NAME></DTEL>\n'
+    )
+
+    # Create contract files with frontmatter and body
+    (root / "core/src/agentic/programs" / "00-abap-analyzer.md").write_text(
+        "---\nmodel: inherit\n---\n\n# ABAP Analyzer\n\nThis is the analyzer contract.\n",
+        encoding="utf-8",
+    )
+    (root / "core/src/agentic/programs" / "00-abap-deepcheck.md").write_text(
+        "---\nmodel: inherit\n---\n\n# ABAP Deepcheck\n\nThis is the deepcheck contract.\n",
+        encoding="utf-8",
     )
 
     monkeypatch.setattr(dbmod, "repo_root", lambda: root)
