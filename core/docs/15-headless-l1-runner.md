@@ -34,8 +34,10 @@ guarantee - context separation - holds anyway: two independent calls).
 
 ## Usage
 
-    python core/src/tools/pipeline.py l1-run [--package ZFOO] [--limit 10]
-        [--max-batches 20] [--profiles path/to/llm-profiles.yaml]
+```
+python core/src/tools/pipeline.py l1-run [--package ZFOO] [--limit 10]
+    [--max-batches 20] [--profiles path/to/llm-profiles.yaml]
+```
 
 Per batch: recover -> claim l1_author -> one LLM call per object (contract +
 runtime addendum as system; template + numbered raw sources + any REVERT
@@ -51,8 +53,10 @@ remain; 2 = preflight/config error (nothing touched).
 - Canonical contracts unchanged; the addendum is composed at runtime.
 - Fail-closed gate inherited: invalid YAML/JSON is rejected by
   submit-author/submit-verdict; a missing verdict is BLOCKED, never ACCEPT.
-- REVERT feedback: the gate's rejected-claims.json is injected into the
-  retry prompt (same task id, same artifact dir, one run_id per invocation).
+- REVERT feedback: the gate writes its findings (rejected-claims.json) into
+  the rejected attempt's artifact dir; the runner locates it through the
+  object's previous author tasks in the DB (across run boundaries) and
+  injects it into the retry prompt.
 - Secrets/customer code never logged: only counts, model names, outcomes.
 
 ## Testing
