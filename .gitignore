@@ -31,6 +31,10 @@ abap_wiki/.obsidian/cache/
 # Local MCP config: may contain local credentials or tokens.
 .mcp.json
 
+# Local LLM profiles for the headless runner: names env vars, never keys,
+# but the endpoints/models are the user's local setup and must not be tracked.
+llm-profiles.yaml
+
 # Real SAP data in the operational inbox must NEVER be published.
 # The root raw/ inbox holds the user's real SAP exports in an operational clone;
 # only the scaffold (README / .gitkeep) is tracked. The public demo sources live

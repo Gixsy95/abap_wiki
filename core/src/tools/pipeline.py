@@ -938,6 +938,12 @@ def _register_phase2(sub) -> None:
         token_metrics.register(sub)
     except ImportError:
         pass
+    try:
+        import headless_l1
+
+        headless_l1.register(sub)
+    except ImportError:
+        pass
 
 
 _HANDLERS = {
@@ -995,6 +1001,10 @@ def main(argv: list[str] | None = None) -> int:
 
             if args.cmd in token_metrics.TOKEN_COMMANDS:
                 return token_metrics.dispatch(args)
+            import headless_l1
+
+            if args.cmd in headless_l1.COMMANDS:
+                return headless_l1.dispatch(args)
             import cli_loop
 
             return cli_loop.dispatch(args)

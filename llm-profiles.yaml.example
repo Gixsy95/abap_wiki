@@ -1,0 +1,31 @@
+# LLM profiles for the headless L1 runner (`pipeline.py l1-run`).
+# Copy to llm-profiles.yaml (gitignored) and fill in.
+#
+# API keys are NEVER written in this file: `api_key_env` names the environment
+# variable that holds the key at runtime.
+#
+# api_shape:
+#   anthropic = Anthropic Messages API   -> POST <base_url>/v1/messages
+#   openai    = OpenAI chat completions  -> POST <base_url>/chat/completions
+#                (include the /v1 suffix in base_url when the provider uses it)
+#
+# The openai shape sends `max_tokens` (the field OpenAI-compatible providers
+# accept). OpenAI reasoning models (gpt-5, o-series) instead require
+# `max_completion_tokens` and will reject this form: pick a model that
+# accepts `max_tokens` (e.g. gpt-4.1) or route through an OpenAI-compatible
+# proxy that translates (e.g. LiteLLM).
+#
+# The judge SHOULD run on a different model than the author (adversarial-gate
+# recommendation); a same-model pair is accepted with a warning.
+author:
+  api_shape: anthropic
+  base_url: https://api.anthropic.com
+  model: claude-sonnet-5
+  api_key_env: ANTHROPIC_API_KEY
+  max_tokens: 16000
+judge:
+  api_shape: openai
+  base_url: https://api.openai.com/v1
+  model: gpt-4.1
+  api_key_env: OPENAI_API_KEY
+  max_tokens: 16000

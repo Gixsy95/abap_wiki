@@ -88,6 +88,12 @@ either way no LLM shapes the result.
 - The adversarial gate contract is runner-independent: author and judge
   must run on different models, and no promotion happens without an ACCEPT
   verdict (fail-closed), whatever the runner.
+- **Headless (`l1-run`)**: the programmatic path a VS Code command or a
+  Copilot-proxy setup can drive without an interactive agent
+  ([15-headless-l1-runner](15-headless-l1-runner.md)). "Config wiki to use
+  abapfs for inference" means pointing `base_url` in `llm-profiles.yaml` at
+  the proxy endpoint, with `api_shape` matching its wire form
+  (`anthropic` or `openai`). No ABAP FS changes required.
 
 ## 5. Live SAP access (optional, read-only)
 
