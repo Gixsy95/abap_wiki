@@ -110,3 +110,80 @@ def load_profiles(path: Path, env: Mapping[str, str]) -> tuple[LLMProfile, LLMPr
             "holds via independent calls)"
         )
     return author, judge, warnings
+
+
+def build_request(profile: LLMProfile, system: str, user: str) -> tuple[str, dict, dict]:
+    """One (system, user) exchange -> (url, headers, json body) for the shape."""
+    base = profile.base_url.rstrip("/")
+    if profile.api_shape == "anthropic":
+        return (
+            base + "/v1/messages",
+            {
+                "content-type": "application/json",
+                "x-api-key": profile.api_key,
+                "anthropic-version": "2023-06-01",
+            },
+            {
+                "model": profile.model,
+                "max_tokens": profile.max_tokens,
+                "system": system,
+                "messages": [{"role": "user", "content": user}],
+            },
+        )
+    return (
+        base + "/chat/completions",
+        {
+            "content-type": "application/json",
+            "authorization": f"Bearer {profile.api_key}",
+        },
+        {
+            "model": profile.model,
+            "max_tokens": profile.max_tokens,
+            "messages": [
+                {"role": "system", "content": system},
+                {"role": "user", "content": user},
+            ],
+        },
+    )
+
+
+def parse_response(profile: LLMProfile, payload: dict) -> LLMResult:
+    """Extracts (text, stop_reason, truncated) from the shape's response body."""
+    if profile.api_shape == "anthropic":
+        blocks = payload.get("content") or []
+        text = "".join(b.get("text", "") for b in blocks if b.get("type") == "text")
+        stop = str(payload.get("stop_reason") or "")
+        return LLMResult(text=text, stop_reason=stop, truncated=stop == "max_tokens")
+    choices = payload.get("choices") or [{}]
+    message = choices[0].get("message") or {}
+    finish = str(choices[0].get("finish_reason") or "")
+    return LLMResult(
+        text=str(message.get("content") or ""),
+        stop_reason=finish,
+        truncated=finish == "length",
+    )
+
+
+def strip_code_fences(text: str) -> str:
+    """Removes a single outer ``` fence pair (models often add one despite the
+    addendum). Unbalanced fences are left untouched: the schema validation
+    downstream will reject them visibly instead of a silent edit here."""
+    s = text.strip()
+    if not s.startswith("```"):
+        return s
+    lines = s.splitlines()
+    if len(lines) >= 2 and lines[-1].strip() == "```":
+        return "\n".join(lines[1:-1]).strip()
+    return s
+
+
+def strip_frontmatter(text: str) -> str:
+    """Drops the YAML frontmatter block (harness metadata: name/model/...) from
+    a canonical contract, keeping the body used as the system prompt."""
+    lines = text.splitlines()
+    if not lines or lines[0].strip() != "---":
+        return text
+    for i in range(1, len(lines)):
+        if lines[i].strip() == "---":
+            return "\n".join(lines[i + 1 :]).lstrip("\n")
+    return text

@@ -82,3 +82,81 @@ def test_profile_repr_never_leaks_the_key(tmp_path):
     author, judge, _ = llm_client.load_profiles(_write_profiles(tmp_path), ENV)
     assert "sk-author-secret" not in repr(author) + str(author)
     assert "sk-judge-secret" not in repr(judge) + str(judge)
+
+
+def _author_profile(tmp_path):
+    return llm_client.load_profiles(_write_profiles(tmp_path), ENV)[0]
+
+
+def _judge_profile(tmp_path):
+    return llm_client.load_profiles(_write_profiles(tmp_path), ENV)[1]
+
+
+def test_build_request_anthropic(tmp_path):
+    url, headers, body = llm_client.build_request(_author_profile(tmp_path), "SYS", "USER")
+    assert url == "https://api.example.test/v1/messages"
+    assert headers["x-api-key"] == "sk-author-secret"
+    assert headers["anthropic-version"] == "2023-06-01"
+    assert body == {
+        "model": "model-a",
+        "max_tokens": 1234,
+        "system": "SYS",
+        "messages": [{"role": "user", "content": "USER"}],
+    }
+
+
+def test_build_request_openai(tmp_path):
+    url, headers, body = llm_client.build_request(_judge_profile(tmp_path), "SYS", "USER")
+    assert url == "http://127.0.0.1:9/v1/chat/completions"
+    assert headers["authorization"] == "Bearer sk-judge-secret"
+    assert body["messages"] == [
+        {"role": "system", "content": "SYS"},
+        {"role": "user", "content": "USER"},
+    ]
+
+
+def test_parse_response_anthropic(tmp_path):
+    res = llm_client.parse_response(
+        _author_profile(tmp_path),
+        {"content": [{"type": "text", "text": "hello"}], "stop_reason": "end_turn"},
+    )
+    assert res.text == "hello" and res.truncated is False
+
+
+def test_parse_response_anthropic_truncated(tmp_path):
+    res = llm_client.parse_response(
+        _author_profile(tmp_path),
+        {"content": [{"type": "text", "text": "cut"}], "stop_reason": "max_tokens"},
+    )
+    assert res.truncated is True
+
+
+def test_parse_response_openai(tmp_path):
+    res = llm_client.parse_response(
+        _judge_profile(tmp_path),
+        {"choices": [{"message": {"content": "hi"}, "finish_reason": "stop"}]},
+    )
+    assert res.text == "hi" and res.truncated is False
+
+
+def test_parse_response_openai_truncated(tmp_path):
+    res = llm_client.parse_response(
+        _judge_profile(tmp_path),
+        {"choices": [{"message": {"content": "cut"}, "finish_reason": "length"}]},
+    )
+    assert res.truncated is True
+
+
+def test_strip_code_fences_variants():
+    assert llm_client.strip_code_fences("plain: 1") == "plain: 1"
+    assert llm_client.strip_code_fences("```yaml\nkey: v\n```") == "key: v"
+    assert llm_client.strip_code_fences('```json\n{"a": 1}\n```') == '{"a": 1}'
+    assert llm_client.strip_code_fences("  ```\nx\n```  ") == "x"
+    # unbalanced fence: leave untouched (fail visible downstream, not silent edit)
+    assert llm_client.strip_code_fences("```yaml\nkey: v").startswith("```")
+
+
+def test_strip_frontmatter():
+    text = "---\nname: x\nmodel: y\n---\n\n# Body\nrest"
+    assert llm_client.strip_frontmatter(text) == "# Body\nrest"
+    assert llm_client.strip_frontmatter("# No fm\nbody") == "# No fm\nbody"
