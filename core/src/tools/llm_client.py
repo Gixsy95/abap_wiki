@@ -124,7 +124,7 @@ def build_request(profile: LLMProfile, system: str, user: str) -> tuple[str, dic
             base + "/v1/messages",
             {
                 "content-type": "application/json",
-                "x-api-key": profile.api_key,
+                "x-api-key": profile.api_key,  # pragma: allowlist secret
                 "anthropic-version": "2023-06-01",
             },
             {
