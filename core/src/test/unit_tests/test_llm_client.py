@@ -13,7 +13,7 @@ beyond tmp_path (block_network guards against accidental real HTTP).
 
 import json
 
-import llm_client  # noqa: E402
+import llm_client
 import pytest
 
 

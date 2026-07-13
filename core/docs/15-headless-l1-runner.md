@@ -64,3 +64,15 @@ remain; 2 = preflight/config error (nothing touched).
 Unit + e2e without secrets: a local HTTP stub impersonates both wire shapes
 (test_headless_e2e.py). Optional live smoke on the demo dataset:
 set ABAPWIKI_LIVE_SMOKE=1 plus a real key locally; never in CI.
+
+## Troubleshooting interrupted runs
+
+A persistent exit code 1 across invocations, with no LLM spend, usually
+means work orphaned by an interrupted run:
+
+- queued `l1_apply` tasks (accepted but never applied): run
+  `pipeline.py apply --run <id> --batch <id>` followed by `project` and
+  `git-commit`, or let a chat-runner round complete the batch;
+- an orphaned deepcheck task whose rendered prompt lives in an old run dir
+  (fail-closed BLOCKED on every retry, by design): reopen the object with
+  `pipeline.py reopen-l1 --object <id>` and let the next `l1-run` redo it.
