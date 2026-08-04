@@ -429,7 +429,12 @@ The canonical contracts live in `core/src/agentic/programs/` and are synchronise
 ```powershell
 .venv\Scripts\python core/src/tools/sync_agents.py
 .venv\Scripts\python core/src/tools/sync_agents.py --check
+.venv\Scripts\python core/src/tools/sync_agents.py --target <workspace>
 ```
+
+`--target` exports the Copilot agents to a VS Code workspace outside this repo,
+for the case where the folder open in the editor is not the wiki instance (see
+`core/docs/14-abap-fs-integration.md`).
 
 Do not manually edit the copies in `.agents/agents/` or `.claude/agents/`.
 

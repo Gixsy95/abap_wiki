@@ -80,7 +80,27 @@ either way no LLM shapes the result.
     canonical contracts by `sync_agents.py`; set each agent's `model:`
     line to a VS Code model (author premium, judge one tier below: same
     tiering ABAP FS documents for its subagents). The drift check ignores
-    the `model:` line.
+    the `model:` line, and a later `sync_agents.py` run carries your pinned
+    model over instead of resetting it.
+  - when the folder open in VS Code is **not** the wiki instance (the
+    normal ABAP FS case: you have the SAP project open, the wiki lives
+    elsewhere), export the projection into that workspace:
+
+    ```
+    .venv\Scripts\python core/src/tools/sync_agents.py --target <workspace>
+    ```
+
+    This writes `<workspace>/.github/agents/*.agent.md` in addition to the
+    in-repo copies. Only agents are exported: the skills stay in the wiki
+    repo, because their commands are relative to the wiki root and would
+    not resolve from another folder. `--check` remains repo-scoped, since a
+    workspace outside the repo is not something CI can police.
+
+    Note on co-location: ABAP FS enables and disables its own subagents by
+    renaming the whole `.github/agents` folder to `.github/agents_disabled`
+    (and deleting a previous `agents_disabled` recursively). Exported wiki
+    agents in that folder therefore follow those transitions. Re-running the
+    export restores them; agent ids do not collide.
   - skills: Copilot agent mode reads `.agents/skills/**/SKILL.md` natively.
   - instructions: enable `chat.useAgentsMdFile` so `AGENTS.md` loads
     automatically; `chat.customAgentInSubagent.enabled` allows agent

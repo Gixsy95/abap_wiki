@@ -12,7 +12,13 @@ makes drift impossible at zero runtime cost. A third target,
 custom agents with one deterministic transform: any frontmatter `model:` line is
 dropped, since the canonical value is a Claude-runner alias (e.g. `sonnet`) while
 the Copilot model is a per-user VS Code choice; `check()` strips the `model:` line
-from both sides before comparing, so a user-pinned model is not drift.
+from both sides before comparing, so a user-pinned model is not drift, and a
+regeneration carries the pinned line over instead of dropping it (the body still
+comes from the canonical contract, so engine upgrades land). `--target <workspace>`
+additionally exports that projection to a workspace outside the repo, for the ABAP
+FS scenario where the folder open in VS Code is not the wiki instance; the export
+is additive and `check()` stays repo-scoped, since CI cannot police a path outside
+the repo.
 contract_parity extracts the numbered `## N.` section bodies of CLAUDE.md and
 AGENTS.md, normalises whitespace, and reports a section-level drift summary (the
 preamble legitimately differs per runtime; CLAUDE.md is the source of truth).
@@ -73,6 +79,39 @@ def _strip_model_line(data: bytes) -> bytes:
     return data[:start] + _MODEL_LINE.sub(b"", data[start:end]) + data[end:]
 
 
+def _write_copilot_agent(path: Path, data: bytes) -> None:
+    """Writes the Copilot projection, carrying over a `model:` line the user
+    already pinned in that file. The body always comes from the canonical
+    contract, so an engine upgrade still lands; only the one field CLAUDE.md §15
+    declares user-owned is preserved. In an ABAP FS workspace that field is
+    written by the extension's own subagent tooling, so overwriting it on every
+    sync would silently drop the user's model choice."""
+    projected = _strip_model_line(data)
+    if not path.exists():
+        path.write_bytes(projected)
+        return
+    pinned = _frontmatter_model_line(path.read_bytes())
+    if pinned is None:
+        path.write_bytes(projected)
+        return
+    fm = _FRONTMATTER.match(projected)
+    if fm is None:  # no frontmatter to pin it into
+        path.write_bytes(projected)
+        return
+    end = fm.span(1)[1]
+    path.write_bytes(projected[:end] + pinned + projected[end:])
+
+
+def _frontmatter_model_line(data: bytes) -> bytes | None:
+    """The frontmatter `model:` line of an existing projection, newline included."""
+    fm = _FRONTMATTER.match(data)
+    if fm is None:
+        return None
+    start, end = fm.span(1)
+    found = _MODEL_LINE.search(data[start:end])
+    return found.group(0) if found else None
+
+
 def _display_path(root: Path, path: Path) -> str:
     return path.relative_to(root).as_posix()
 
@@ -81,13 +120,22 @@ def _sha(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
-def generate(root: Path) -> list[str]:
-    """Copies each canonical contract to the invocable copies. Returns the generated names."""
+def generate(root: Path, target: Path | None = None) -> list[str]:
+    """Copies each canonical contract to the invocable copies. Returns the generated names.
+
+    `target` additionally exports the Copilot projection to an external workspace
+    (`<target>/.github/agents/`), for the ABAP FS scenario where the wiki instance
+    is not the folder open in VS Code. The export is additive: the in-repo copies
+    are written exactly as without it, and `check` stays repo-scoped, since a
+    workspace outside the repo is not something CI can police."""
     agent_dirs = _agent_dirs(root)
     for agents in agent_dirs:
         agents.mkdir(parents=True, exist_ok=True)
-    copilot = _copilot_dir(root)
-    copilot.mkdir(parents=True, exist_ok=True)
+    copilot_dirs = [_copilot_dir(root)]
+    if target is not None:
+        copilot_dirs.append(_copilot_dir(target))
+    for copilot in copilot_dirs:
+        copilot.mkdir(parents=True, exist_ok=True)
     done = []
     for name, canonical in PROGRAMS.items():
         src = _programs_dir(root) / canonical
@@ -96,7 +144,8 @@ def generate(root: Path) -> list[str]:
         data = src.read_bytes()
         for agents in agent_dirs:
             (agents / f"{name}.md").write_bytes(data)
-        (copilot / f"{name}.agent.md").write_bytes(_strip_model_line(data))
+        for copilot in copilot_dirs:
+            _write_copilot_agent(copilot / f"{name}.agent.md", data)
         done.append(name)
     return done
 
@@ -209,6 +258,17 @@ def contract_parity(root: Path) -> list[str]:
     return drifts
 
 
+def _parse_target(argv: list[str]) -> Path | None:
+    """Reads `--target <dir>` from argv. Absent -> None; present without a value
+    -> ValueError, so a typo cannot silently degrade into a repo-only run."""
+    if "--target" not in argv:
+        return None
+    i = argv.index("--target")
+    if i + 1 >= len(argv) or argv[i + 1].startswith("-"):
+        raise ValueError("--target requires a workspace path")
+    return Path(argv[i + 1]).expanduser()
+
+
 def main(argv: list[str] | None = None) -> int:
     import db
 
@@ -222,8 +282,15 @@ def main(argv: list[str] | None = None) -> int:
             return 1
         print("sync_agents: contracts in sync")
         return 0
-    done = generate(root)
+    try:
+        target = _parse_target(argv)
+    except ValueError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
+    done = generate(root, target=target)
     print(f"sync_agents: generated {len(done)} agents ({', '.join(done)})")
+    if target is not None:
+        print(f"sync_agents: exported {len(done)} Copilot agents to {_copilot_dir(target)}")
     return 0
 
 

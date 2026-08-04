@@ -155,6 +155,109 @@ def test_copilot_strip_is_scoped_to_frontmatter(repo):
     assert sync_agents.check(repo) == []
 
 
+# --- export to an external workspace (--target) ------------------------------
+
+
+def test_generate_exports_copilot_agents_to_target(repo, tmp_path):
+    _setup(repo)
+    target = tmp_path / "abapfs-workspace"
+    sync_agents.generate(repo, target=target)
+    for name in EXPECTED_AGENTS:
+        assert (target / COPILOT_DIR / f"{name}.agent.md").exists()
+
+
+def test_target_export_is_additive_to_the_in_repo_copies(repo, tmp_path):
+    _setup(repo)
+    sync_agents.generate(repo, target=tmp_path / "abapfs-workspace")
+    for name in EXPECTED_AGENTS:
+        assert (repo / COPILOT_DIR / f"{name}.agent.md").exists()
+        for invocable_dir in INVOCABLE_DIRS:
+            assert (repo / invocable_dir / f"{name}.md").exists()
+
+
+def test_target_export_strips_the_canonical_model_line(repo, tmp_path):
+    _setup(repo)
+    target = tmp_path / "abapfs-workspace"
+    sync_agents.generate(repo, target=target)
+    # the canonical deepcheck fixture carries "model: sonnet", a Claude alias
+    text = (target / COPILOT_DIR / "abap-deepcheck.agent.md").read_text(encoding="utf-8")
+    assert "model:" not in text
+    assert "# deepcheck" in text  # body preserved verbatim
+
+
+def test_check_ignores_the_target(repo, tmp_path):
+    _setup(repo)
+    target = tmp_path / "abapfs-workspace"
+    sync_agents.generate(repo, target=target)
+    (target / COPILOT_DIR / "abap-analyzer.agent.md").write_text(
+        "---\nname: abap-analyzer\n---\n# EDITED IN THE WORKSPACE\n", encoding="utf-8"
+    )
+    # the export lives outside the repo: the drift check stays repo-scoped
+    assert sync_agents.check(repo) == []
+
+
+def test_main_exports_to_target(repo, tmp_path, capsys):
+    _setup(repo)
+    target = tmp_path / "abapfs-workspace"
+    rc = sync_agents.main(["--target", str(target)])
+    out = capsys.readouterr().out
+    assert rc == 0
+    assert (target / COPILOT_DIR / "abap-analyzer.agent.md").exists()
+    assert str(target) in out
+
+
+def _pin_model(path, model: str = "Claude Haiku 4.5") -> None:
+    content = path.read_text(encoding="utf-8")
+    name = content.split("name: ", 1)[1].split("\n", 1)[0]
+    path.write_text(
+        content.replace(f"name: {name}", f"name: {name}\nmodel: '{model}'", 1), encoding="utf-8"
+    )
+
+
+def test_target_export_preserves_a_user_pinned_model(repo, tmp_path):
+    _setup(repo)
+    target = tmp_path / "abapfs-workspace"
+    sync_agents.generate(repo, target=target)
+    path = target / COPILOT_DIR / "abap-analyzer.agent.md"
+    _pin_model(path)
+    # re-export, e.g. after upgrading the wiki sources: the model is the user's
+    # (and in the ABAP FS workspace it is written by Copilot's own tooling)
+    sync_agents.generate(repo, target=target)
+    assert "model: 'Claude Haiku 4.5'" in path.read_text(encoding="utf-8")
+
+
+def test_regenerate_preserves_a_user_pinned_model_in_repo(repo):
+    _setup(repo)
+    sync_agents.generate(repo)
+    path = repo / COPILOT_DIR / "abap-analyzer.agent.md"
+    _pin_model(path)
+    sync_agents.generate(repo)
+    assert "model: 'Claude Haiku 4.5'" in path.read_text(encoding="utf-8")
+
+
+def test_pinned_model_does_not_freeze_the_body(repo, tmp_path):
+    _setup(repo)
+    target = tmp_path / "abapfs-workspace"
+    sync_agents.generate(repo, target=target)
+    path = target / COPILOT_DIR / "abap-analyzer.agent.md"
+    _pin_model(path)
+    (repo / "core/src/agentic/programs/00-abap-analyzer.md").write_text(
+        "---\nname: abap-analyzer\n---\n# analyzer\nNEW CONTRACT BODY\n", encoding="utf-8"
+    )
+    sync_agents.generate(repo, target=target)
+    text = path.read_text(encoding="utf-8")
+    assert "NEW CONTRACT BODY" in text
+    assert "model: 'Claude Haiku 4.5'" in text
+
+
+def test_pinned_model_survives_and_check_still_sees_no_drift(repo):
+    _setup(repo)
+    sync_agents.generate(repo)
+    _pin_model(repo / COPILOT_DIR / "abap-deepcheck.agent.md")
+    sync_agents.generate(repo)
+    assert sync_agents.check(repo) == []
+
+
 # --- CLAUDE.md / AGENTS.md contract parity ----------------------------------
 
 
