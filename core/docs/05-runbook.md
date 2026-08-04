@@ -107,6 +107,16 @@ python core/src/tools/sync_agents.py --check      # agent contracts in sync
 python core/src/tools/doctor.py                   # local prerequisites + config risks
 ```
 
+To make the Copilot agents available in a VS Code workspace that is not the
+wiki instance (the ABAP FS case), export them there:
+
+```
+python core/src/tools/sync_agents.py --target <workspace>
+```
+
+Agents only, additive to the in-repo copies, and outside the scope of
+`--check`. See [14-abap-fs-integration](14-abap-fs-integration.md).
+
 For what each check covers and how to read the results: [06-testing-and-quality](06-testing-and-quality.md).
 
 On a freshly cloned repo, `progress --json` returns a controlled JSON error

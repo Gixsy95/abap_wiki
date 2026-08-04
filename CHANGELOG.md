@@ -4,6 +4,26 @@ All notable changes to `abap_wiki` are documented in this file. The format is
 inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions
 follow [SemVer](https://semver.org/lang/en/).
 
+## [Unreleased]
+
+### Added
+
+- `sync_agents.py --target <workspace>`: exports the Copilot agent projection
+  to a VS Code workspace outside the wiki repo, for the ABAP FS case where the
+  folder open in the editor is not the wiki instance. Additive to the in-repo
+  copies, agents only (the skills stay in the repo, their commands are relative
+  to the wiki root), and outside the scope of `--check`, which stays
+  repo-scoped.
+
+### Changed
+
+- The Copilot projection now carries over a `model:` line already pinned in a
+  generated file instead of resetting it on every run. The body still comes
+  from the canonical contract, so engine upgrades land unchanged; only the one
+  field CLAUDE.md §15 declares user-owned is preserved. This matters in a
+  shared workspace, where that line is written by ABAP FS's own subagent
+  tooling.
+
 ## [1.2.0] - 2026-07-13
 
 ### Added
