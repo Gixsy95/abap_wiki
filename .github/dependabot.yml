@@ -5,6 +5,13 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    # Bump the pinned versions in requirements.lock.txt, but leave the floors in
+    # requirements.txt alone unless a release genuinely requires raising them.
+    # The default (`increase`) rewrote `pandas>=2.0` into `pandas>=3.0.5` on a
+    # routine patch bump, which locks out anyone whose environment is pinned to
+    # an older but perfectly working release: the wrong trade for a template
+    # meant to be cloned into corporate SAP environments.
+    versioning-strategy: increase-if-necessary
   - package-ecosystem: github-actions
     directory: /
     schedule:
