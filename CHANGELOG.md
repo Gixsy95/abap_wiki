@@ -4,16 +4,20 @@ All notable changes to `abap_wiki` are documented in this file. The format is
 inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions
 follow [SemVer](https://semver.org/lang/en/).
 
-## [Unreleased]
+## [1.3.0] - 2026-08-04
 
 ### Added
 
-- `sync_agents.py --target <workspace>`: exports the Copilot agent projection
-  to a VS Code workspace outside the wiki repo, for the ABAP FS case where the
-  folder open in the editor is not the wiki instance. Additive to the in-repo
-  copies, agents only (the skills stay in the repo, their commands are relative
-  to the wiki root), and outside the scope of `--check`, which stays
+- **`sync_agents.py --target <workspace>`**: exports the Copilot agent
+  projection to a VS Code workspace outside the wiki repo, for the ABAP FS case
+  where the folder open in the editor is not the wiki instance. Additive to the
+  in-repo copies, agents only (the skills stay in the repo, their commands are
+  relative to the wiki root), and outside the scope of `--check`, which stays
   repo-scoped.
+- **`core/docs/13-improving-the-engine.md` §8**: how to run the engine on your
+  own real data in isolation, for public contributors - the workspace isolation
+  guarantee, the pre-commit leak check, and what to contribute back (a fix plus
+  a synthetic test, never the data).
 
 ### Changed
 
@@ -23,6 +27,16 @@ follow [SemVer](https://semver.org/lang/en/).
   field CLAUDE.md §15 declares user-owned is preserved. This matters in a
   shared workspace, where that line is written by ABAP FS's own subagent
   tooling.
+- Dependency floors in `requirements.txt` stay loose: the pinned, tested
+  versions belong to `requirements.lock.txt`, while the floor states what a
+  user's environment must satisfy to run the engine at all. `pandas>=2.0` is
+  restored (verified: the full unit suite passes on pandas 2.2.3 / Python 3.11)
+  and dependabot now runs with `versioning-strategy: increase-if-necessary`, so
+  routine bumps update the lockfile without narrowing what users may install.
+
+### Dependencies
+
+- pandas 3.0.5, tzdata 2026.3, ruff 0.16.1 (dev), actions/setup-python v7.
 
 ## [1.2.0] - 2026-07-13
 
